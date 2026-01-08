@@ -13,12 +13,12 @@ public class MarinePowertrainController : MonoBehaviour
     [Tooltip("Hydrodynamics component providing drag and forward speed.")]
     [SerializeField] private Hydrodynamics hydrodynamics;
 
-    [Tooltip("Audio-facing engine controller (RPM + Load normalised).")]
-    [SerializeField] private EngineController audioEngine;
+    [Tooltip("Audio-facing engine controller (normalized RPM/load/throttle).")]
+    [SerializeField] private AudioEngineController audioEngine;
 
 
     // ─────────────────────────────────────────────────────────────
-    // ENGINE CONFIGURATION
+    // ENGINE CONFIGURATION (PHYSICAL)
     // ─────────────────────────────────────────────────────────────
     [Header("Engine Configuration")]
     [Tooltip("Minimum physical RPM at idle.")]
@@ -46,8 +46,7 @@ public class MarinePowertrainController : MonoBehaviour
 
 
     // ─────────────────────────────────────────────────────────────
-    // PROP THRUST MODEL
-    // TEMPORARY: This block will be moved into PropellerPhysics later.
+    // PROP THRUST MODEL (TEMPORARY)
     // ─────────────────────────────────────────────────────────────
     [Header("Propeller Thrust Model")]
     [Tooltip("Thrust at 0 speed (bollard pull).")]
@@ -72,9 +71,7 @@ public class MarinePowertrainController : MonoBehaviour
 
 
     // ─────────────────────────────────────────────────────────────
-    // THRUST APPLICATION (MIGRATION STEP)
-    // MIGRATION TOGGLE: Allows switching between old and new thrust systems.
-    // TODO: Remove once thrust migration is complete.
+    // THRUST APPLICATION (MIGRATION TOGGLE)
     // ─────────────────────────────────────────────────────────────
     [Header("Thrust Application (Migration Toggle)")]
     [Tooltip("If true, thrust is applied here instead of GigboatMovement.")]
@@ -98,7 +95,10 @@ public class MarinePowertrainController : MonoBehaviour
 
     private Vector3 lastVelocity;
 
-    //public Getters
+
+    // ─────────────────────────────────────────────────────────────
+    // GETTERS (OPTIONAL FOR DEBUG UI)
+    // ─────────────────────────────────────────────────────────────
     public float EngineRPMPhysical => engineRPMPhysical;
     public float EngineRPM01 => engineRPM01;
     public float EngineLoad01 => engineLoad01;
@@ -112,15 +112,9 @@ public class MarinePowertrainController : MonoBehaviour
     {
         if (rb == null) rb = GetComponent<Rigidbody>();
         if (hydrodynamics == null) hydrodynamics = GetComponent<Hydrodynamics>();
-        if (audioEngine == null) audioEngine = GetComponent<EngineController>();
+        if (audioEngine == null) audioEngine = GetComponent<AudioEngineController>();
 
         lastVelocity = rb.linearVelocity;
-
-        if (audioEngine != null)
-        {
-            audioEngine.rpmMin = rpmIdle;
-            audioEngine.rpmMax = rpmMax;
-        }
     }
 
     private void FixedUpdate()
@@ -128,13 +122,12 @@ public class MarinePowertrainController : MonoBehaviour
         UpdateThrottleFromMovement();
         UpdateEngineRPM();
         UpdateEngineLoad();
-        UpdatePropThrust();       // TEMPORARY: Will move later
+        UpdatePropThrust();       // TEMPORARY
         ApplyThrustIfEnabled();   // MIGRATION TOGGLE
         PushValuesToAudio();
 
         lastVelocity = rb.linearVelocity;
     }
-
 
     // ─────────────────────────────────────────────────────────────
     // THROTTLE INPUT
@@ -150,7 +143,7 @@ public class MarinePowertrainController : MonoBehaviour
 
 
     // ─────────────────────────────────────────────────────────────
-    // ENGINE RPM MODEL
+    // ENGINE RPM MODEL (PHYSICAL → NORMALIZED)
     // ─────────────────────────────────────────────────────────────
     private void UpdateEngineRPM()
     {
@@ -159,19 +152,23 @@ public class MarinePowertrainController : MonoBehaviour
 
         float sign = Mathf.Sign(movement.ThrottlePercent);
 
+        // Target physical RPM based on throttle
         float targetRPM = Mathf.Lerp(rpmIdle, rpmMax, throttle01);
 
+        // If throttle is zero, maintain current direction
         if (Mathf.Approximately(movement.ThrottlePercent, 0f))
             sign = Mathf.Sign(engineRPMPhysical);
 
         float targetSignedRPM = targetRPM * sign;
 
+        // Smooth physical RPM change (engine inertia)
         engineRPMPhysical = Mathf.MoveTowards(
             engineRPMPhysical,
             targetSignedRPM,
             rpmChangeRate * Time.fixedDeltaTime
         );
 
+        // Convert to normalized 0–1 RPM
         float rpmMag = Mathf.Abs(engineRPMPhysical);
         engineRPM01 = Mathf.InverseLerp(rpmIdle, rpmMax, rpmMag);
     }
@@ -182,32 +179,40 @@ public class MarinePowertrainController : MonoBehaviour
     // ─────────────────────────────────────────────────────────────
     private void UpdateEngineLoad()
     {
+        // Drag-based load
         forwardDragMag = hydrodynamics != null
             ? hydrodynamics.ForwardDragForce.magnitude
             : 0f;
 
+        // Forward speed
         forwardSpeed = hydrodynamics != null
             ? hydrodynamics.ForwardSpeed
             : transform.InverseTransformDirection(rb.linearVelocity).z;
 
+        // Acceleration estimate
         Vector3 vel = rb.linearVelocity;
         Vector3 deltaV = (vel - lastVelocity) / Time.fixedDeltaTime;
         float forwardAccel = Vector3.Dot(transform.forward, deltaV);
         estimatedAccel = forwardAccel;
 
+        // Normalize drag
         float dragComponent = referenceMaxDrag > 0.001f
             ? Mathf.Clamp01(forwardDragMag / referenceMaxDrag)
             : 0f;
 
+        // Normalize acceleration
         float accel01 = Mathf.InverseLerp(-2f, 2f, forwardAccel);
         float accelComponent = Mathf.Clamp01(accel01);
 
+        // Blend drag + acceleration
         float rawLoad =
             dragComponent * (1f - accelInfluence) +
             accelComponent * accelInfluence;
 
+        // Load only matters when throttle is applied
         rawLoad *= throttle01;
 
+        // Smooth load
         engineLoad01 = Mathf.MoveTowards(
             engineLoad01,
             Mathf.Clamp01(rawLoad),
@@ -236,7 +241,6 @@ public class MarinePowertrainController : MonoBehaviour
 
         // ─────────────────────────────────────────────────────────────
         // PROP DRAG OVERRIDE (when throttle is zero)
-        // TEMPORARY: This may move into PropellerPhysics later.
         // ─────────────────────────────────────────────────────────────
         if (throttle01 < 0.05f)
         {
@@ -255,11 +259,9 @@ public class MarinePowertrainController : MonoBehaviour
             return;
         }
 
-
         // 5. Apply reverse thrust shaping
         if (direction < 0f)
             thrust *= reverseThrustMultiplier;
-
 
         // 6. Final thrust output
         currentThrust = thrust * direction;
@@ -280,15 +282,15 @@ public class MarinePowertrainController : MonoBehaviour
 
 
     // ─────────────────────────────────────────────────────────────
-    // AUDIO OUTPUT
+    // AUDIO OUTPUT (NEW API)
     // ─────────────────────────────────────────────────────────────
     private void PushValuesToAudio()
     {
         if (audioEngine == null) return;
 
-        audioEngine.SetRPMFromPhysical(engineRPMPhysical);
-        audioEngine.SetLoad(engineLoad01);
-        audioEngine.SetThrottle(throttle01);
+        audioEngine.SetRPM01(engineRPM01);
+        audioEngine.SetLoad01(engineLoad01);
+        audioEngine.SetThrottle01(throttle01);
         audioEngine.SetSpeed(rb.linearVelocity.magnitude);
         audioEngine.SetReverse(engineRPMPhysical < 0f);
     }

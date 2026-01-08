@@ -2,75 +2,97 @@
 
 public class Hydrodynamics : MonoBehaviour
 {
+    // ─────────────────────────────────────────────────────────────
+    // CORE REFERENCES
+    // ─────────────────────────────────────────────────────────────
     [Header("Core References")]
-    [Tooltip("This is assigned automatically through code")]
+    [Tooltip("Assigned automatically if left empty.")]
     [SerializeField] private Rigidbody rb;
 
+
+    // ─────────────────────────────────────────────────────────────
+    // LATERAL DRAG
+    // ─────────────────────────────────────────────────────────────
     [Header("Lateral Drag")]
-    [Tooltip("Low-speed sideways grip. Higher values reduce drifting at slow and medium speeds. Think of this as the boat's basic resistance to sliding sideways.")]
+    [Tooltip("Low-speed sideways grip. Reduces drifting at slow/medium speeds.")]
     [SerializeField] private float lateralLinearDrag = 0f;
-    [Tooltip("High-speed sideways grip. Strongly reduces drifting when the boat is moving fast. Helps the hull 'bite' the water during sharp turns.")]
+
+    [Tooltip("High-speed sideways grip. Strongly reduces drifting at high speed.")]
     [SerializeField] private float lateralQuadraticDrag = 0f;
 
+
+    // ─────────────────────────────────────────────────────────────
+    // FORWARD DRAG
+    // ─────────────────────────────────────────────────────────────
     [Header("Forward Drag")]
-    [Tooltip("Low-speed forward water resistance. Higher values make the boat slow down more quickly when you release the throttle.")]
+    [Tooltip("Low-speed forward water resistance.")]
     [SerializeField] private float forwardLinearDrag = 0f;
 
-    [Tooltip("High-speed forward water resistance. Strongly limits top speed and adds realistic water braking at high velocity.")]
+    [Tooltip("High-speed forward water resistance. Limits top speed.")]
     [SerializeField] private float forwardQuadraticDrag = 0f;
 
+
+    // ─────────────────────────────────────────────────────────────
+    // YAW HYDRODYNAMICS
+    // ─────────────────────────────────────────────────────────────
     [Header("Yaw Hydrodynamics")]
-    [Tooltip("Base yaw resistance from the hull. Higher values make the boat resist spinning (yaw) more strongly.")]
+    [Tooltip("Base yaw resistance from the hull.")]
     [SerializeField] private float yawDampingCoefficient = 0f;
 
-    [Tooltip("Extra yaw resistance when there is sideways (lateral) motion. Helps the stern 'bite' the water in turns.")]
+    [Tooltip("Extra yaw resistance when sliding sideways.")]
     [SerializeField] private float yawLateralCoupling = 0f;
 
-    [Header("Hull Downforce")]
 
-    [Tooltip("Base strength of the downward force applied to the hull at speed. " +
-         "Higher values make the boat feel more planted and reduce high‑speed slide.")]
+    // ─────────────────────────────────────────────────────────────
+    // HULL DOWNFORCE
+    // ─────────────────────────────────────────────────────────────
+    [Header("Hull Downforce")]
+    [Tooltip("Base strength of downward force applied at speed.")]
     [SerializeField] private float hullDownforceCoefficient = 0.5f;
 
-    [Tooltip("How sharply downforce increases with forward speed. " +
-             "1 = linear, 1.5–2 = realistic for small planing hulls.")]
+    [Tooltip("Exponent controlling how sharply downforce grows with speed.")]
     [SerializeField] private float hullDownforceSpeedExponent = 1.5f;
 
+
+    // ─────────────────────────────────────────────────────────────
+    // DEBUG (READ ONLY)
+    // ─────────────────────────────────────────────────────────────
     [Header("Debug (Read Only)")]
     [SerializeField] private float lateralSpeed;
     [SerializeField] private Vector3 lateralDragForce;
-    
+
     [Header("Forward Drag Debug (Read Only)")]
     [SerializeField] private float forwardSpeed;
     [SerializeField] private Vector3 forwardDragForce;
 
     [Header("Yaw Debug (Read Only)")]
-    [SerializeField] private float yawRate;           // rad/s around up axis
-    [SerializeField] private float yawDampingTorque;  // scalar for debug
+    [SerializeField] private float yawRate;
+    [SerializeField] private float yawDampingTorque;
 
-    [Tooltip("Debug: shows the actual downforce vector applied this frame.")]
+    [Tooltip("Debug: actual downforce vector applied this frame.")]
     [SerializeField] private Vector3 hullDownforce;
 
+
+    // ─────────────────────────────────────────────────────────────
+    // PUBLIC GETTERS
+    // ─────────────────────────────────────────────────────────────
     public float LateralSpeed => lateralSpeed;
     public Vector3 LateralDragForce => lateralDragForce;
 
     public float ForwardSpeed => forwardSpeed;
     public Vector3 ForwardDragForce => forwardDragForce;
+
     public float YawRate => yawRate;
     public float YawDampingTorque => yawDampingTorque;
 
-    public bool IsPlaning
-    {
-        get
-        {
-            // Self-adjusting logic: no thresholds to maintain
-            // Boat is planing when hydrodynamic forces dominate buoyancy
-            return forwardDragForce.magnitude > lateralDragForce.magnitude * 2f &&
-                   Mathf.Abs(transform.eulerAngles.x) < 8f;
-        }
-    }
+    public bool IsPlaning =>
+        forwardDragForce.magnitude > lateralDragForce.magnitude * 2f &&
+        Mathf.Abs(transform.eulerAngles.x) < 8f;
 
 
+    // ─────────────────────────────────────────────────────────────
+    // UNITY EVENTS
+    // ─────────────────────────────────────────────────────────────
     private void Awake()
     {
         if (rb == null)
@@ -85,74 +107,72 @@ public class Hydrodynamics : MonoBehaviour
         ApplyHullDownforce();
     }
 
+
+    // ─────────────────────────────────────────────────────────────
+    // LATERAL DRAG
+    // ─────────────────────────────────────────────────────────────
     private void ApplyLateralDrag()
     {
-        // Safe by default: no drag when coefficients are zero
         lateralDragForce = Vector3.zero;
         lateralSpeed = 0f;
 
         if (lateralLinearDrag == 0f && lateralQuadraticDrag == 0f)
             return;
 
-        Vector3 worldVel = rb.linearVelocity;
-        Vector3 localVel = transform.InverseTransformDirection(worldVel);
-
-        float vLat = localVel.x;  // sideways in boat space
+        Vector3 localVel = transform.InverseTransformDirection(rb.linearVelocity);
+        float vLat = localVel.x;
         lateralSpeed = vLat;
 
         if (Mathf.Approximately(vLat, 0f))
             return;
 
-        float sign = Mathf.Sign(vLat);
         float absV = Mathf.Abs(vLat);
-
         float dragMag =
             lateralLinearDrag * absV +
             lateralQuadraticDrag * absV * absV;
 
-        // Oppose lateral movement
-        float dragLocalX = -sign * dragMag;
-
+        float dragLocalX = -Mathf.Sign(vLat) * dragMag;
         Vector3 dragLocal = new Vector3(dragLocalX, 0f, 0f);
-        lateralDragForce = transform.TransformDirection(dragLocal);
 
+        lateralDragForce = transform.TransformDirection(dragLocal);
         rb.AddForce(lateralDragForce, ForceMode.Force);
     }
 
+
+    // ─────────────────────────────────────────────────────────────
+    // FORWARD DRAG
+    // ─────────────────────────────────────────────────────────────
     private void ApplyForwardDrag()
     {
         forwardDragForce = Vector3.zero;
         forwardSpeed = 0f;
 
-        // No drag if coefficients are zero
         if (forwardLinearDrag == 0f && forwardQuadraticDrag == 0f)
             return;
 
-        Vector3 worldVel = rb.linearVelocity;
-        Vector3 localVel = transform.InverseTransformDirection(worldVel);
-
-        float vFwd = localVel.z;  // forward speed in boat space
+        Vector3 localVel = transform.InverseTransformDirection(rb.linearVelocity);
+        float vFwd = localVel.z;
         forwardSpeed = vFwd;
 
         if (Mathf.Approximately(vFwd, 0f))
             return;
 
-        float sign = Mathf.Sign(vFwd);
         float absV = Mathf.Abs(vFwd);
-
         float dragMag =
             forwardLinearDrag * absV +
             forwardQuadraticDrag * absV * absV;
 
-        // Oppose forward movement
-        float dragLocalZ = -sign * dragMag;
-
+        float dragLocalZ = -Mathf.Sign(vFwd) * dragMag;
         Vector3 dragLocal = new Vector3(0f, 0f, dragLocalZ);
-        forwardDragForce = transform.TransformDirection(dragLocal);
 
+        forwardDragForce = transform.TransformDirection(dragLocal);
         rb.AddForce(forwardDragForce, ForceMode.Force);
     }
 
+
+    // ─────────────────────────────────────────────────────────────
+    // YAW HYDRODYNAMICS
+    // ─────────────────────────────────────────────────────────────
     private void ApplyYawHydrodynamics()
     {
         yawRate = 0f;
@@ -161,21 +181,14 @@ public class Hydrodynamics : MonoBehaviour
         if (yawDampingCoefficient == 0f && yawLateralCoupling == 0f)
             return;
 
-        // World angular velocity
-        Vector3 angVel = rb.angularVelocity;
-        float yawVel = angVel.y; // rad/s around global up
+        float yawVel = rb.angularVelocity.y;
         yawRate = yawVel;
 
-        // Lateral speed in boat space
         Vector3 localVel = transform.InverseTransformDirection(rb.linearVelocity);
         float vLat = localVel.x;
 
-        // Base yaw damping: always opposes yawVel
         float baseTorque = -yawVel * yawDampingCoefficient;
-
-        // Extra damping that scales with lateral slip, but STILL opposes yawVel
-        float slipFactor = Mathf.Abs(vLat);
-        float slipTorque = -yawVel * slipFactor * yawLateralCoupling;
+        float slipTorque = -yawVel * Mathf.Abs(vLat) * yawLateralCoupling;
 
         float totalTorque = baseTorque + slipTorque;
         yawDampingTorque = totalTorque;
@@ -183,6 +196,10 @@ public class Hydrodynamics : MonoBehaviour
         rb.AddTorque(Vector3.up * totalTorque, ForceMode.Acceleration);
     }
 
+
+    // ─────────────────────────────────────────────────────────────
+    // HULL DOWNFORCE
+    // ─────────────────────────────────────────────────────────────
     private void ApplyHullDownforce()
     {
         hullDownforce = Vector3.zero;
@@ -190,19 +207,14 @@ public class Hydrodynamics : MonoBehaviour
         if (hullDownforceCoefficient <= 0f)
             return;
 
-        // Forward speed in boat space
         Vector3 localVel = transform.InverseTransformDirection(rb.linearVelocity);
         float fwd = Mathf.Max(0f, localVel.z);
 
-        // Downforce grows with speed^exponent
-        float magnitude = hullDownforceCoefficient * Mathf.Pow(fwd, hullDownforceSpeedExponent);
+        float magnitude =
+            hullDownforceCoefficient *
+            Mathf.Pow(fwd, hullDownforceSpeedExponent);
 
-        // Apply downward force at COM
         hullDownforce = Vector3.down * magnitude;
         rb.AddForce(hullDownforce, ForceMode.Acceleration);
     }
-
-
-
-
 }

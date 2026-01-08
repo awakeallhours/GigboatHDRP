@@ -1,76 +1,87 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using Unity.Cinemachine;
 
 public class GigboatSpawner : MonoBehaviour
 {
+    // ─────────────────────────────────────────────────────────────
+    // REFERENCES
+    // ─────────────────────────────────────────────────────────────
+    [Header("References")]
+
+    [Tooltip("Prefab of the gigboat to spawn.")]
     [SerializeField] private GameObject gigboatPrefab;
+
+    [Tooltip("Spawn point for the boat.")]
     [SerializeField] private Transform spawnPoint;
+
+    [Tooltip("Debug UI for buoyancy probes.")]
     [SerializeField] private BuoyancyDebugUI debugUI;
-    [SerializeField] private float respawnDelay = 1.5f;
-    [SerializeField] private CinemachineCamera cineCam;
+
+    [Tooltip("UI for steering/throttle display.")]
     [SerializeField] private GigboatUI steeringUI;
 
+    [Tooltip("Cinemachine camera that should follow the spawned boat.")]
+    [SerializeField] private CinemachineCamera cineCam;
+
+
+    // ─────────────────────────────────────────────────────────────
+    // SETTINGS
+    // ─────────────────────────────────────────────────────────────
+    [Header("Respawn Settings")]
+    [Tooltip("Delay before respawning the boat after capsizing.")]
+    [SerializeField] private float respawnDelay = 1.5f;
+
+
+    // ─────────────────────────────────────────────────────────────
+    // INTERNAL STATE
+    // ─────────────────────────────────────────────────────────────
     private bool isRespawning = false;
     private GameObject currentBoat;
 
-    public Transform CameraTarget;
 
-    void Start()
+    // ─────────────────────────────────────────────────────────────
+    // UNITY EVENTS
+    // ─────────────────────────────────────────────────────────────
+    private void Start()
     {
         SpawnBoat();
     }
 
-    void Update()
+    private void Update()
     {
-        if (currentBoat == null) return;
+        if (currentBoat == null)
+            return;
 
-        float roll = currentBoat.transform.eulerAngles.z;
-        roll = Mathf.DeltaAngle(0, roll);
+        // Detect capsizing
+        float roll = Mathf.DeltaAngle(0f, currentBoat.transform.eulerAngles.z);
 
         if (Mathf.Abs(roll) > 90f)
+        {
             StartRespawn();
+        }
         else if (Input.GetKeyDown(KeyCode.R))
+        {
             StartRespawn();
+        }
     }
 
+
+    // ─────────────────────────────────────────────────────────────
+    // RESPAWN LOGIC
+    // ─────────────────────────────────────────────────────────────
     public void RespawnBoat()
     {
         if (currentBoat != null)
-        {
             Destroy(currentBoat);
-        }
 
         SpawnBoat();
-    }
-
-    private void SpawnBoat()
-    {
-        // Spawn slightly above water to prevent buoyancy explosion
-        Vector3 spawnPos = spawnPoint.position + Vector3.up * 0.0f;
-
-        currentBoat = Instantiate(gigboatPrefab, spawnPos, spawnPoint.rotation);
-        cineCam.Target.TrackingTarget = currentBoat.GetComponent<GigboatMovement>().CameraTarget;
-        
-        // Reset physics state to avoid inherited prefab velocity
-        Rigidbody rb = currentBoat.GetComponent<Rigidbody>();
-        rb.linearVelocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
-
-        StartCoroutine(EnableBuoyancyNextFixedUpdate(currentBoat));
-
-#if UNITY_EDITOR
-        UnityEditor.Selection.activeGameObject = currentBoat;
-#endif
-
-        
-        steeringUI.SetBoat(currentBoat.GetComponent<GigboatMovement>());
-        debugUI.SetBoat(currentBoat.GetComponent<GigboatDebugProbe>());
     }
 
     private void StartRespawn()
     {
-        if (isRespawning) return;
+        if (isRespawning)
+            return;
 
         isRespawning = true;
         StartCoroutine(RespawnAfterDelay());
@@ -83,14 +94,71 @@ public class GigboatSpawner : MonoBehaviour
         isRespawning = false;
     }
 
+
+    // ─────────────────────────────────────────────────────────────
+    // SPAWNING
+    // ─────────────────────────────────────────────────────────────
+    private void SpawnBoat()
+    {
+        if (gigboatPrefab == null || spawnPoint == null)
+        {
+            Debug.LogError("GigboatSpawner: Missing prefab or spawn point.");
+            return;
+        }
+
+        // Spawn slightly above water to avoid buoyancy explosion
+        Vector3 spawnPos = spawnPoint.position;
+
+        currentBoat = Instantiate(gigboatPrefab, spawnPos, spawnPoint.rotation);
+
+        // Cache components
+        var movement = currentBoat.GetComponent<GigboatMovement>();
+        var rb = currentBoat.GetComponent<Rigidbody>();
+        var debugProbe = currentBoat.GetComponent<GigboatDebugProbe>();
+
+        if (movement == null || rb == null)
+        {
+            Debug.LogError("GigboatSpawner: Spawned boat missing required components.");
+            return;
+        }
+
+        // Assign camera target
+        if (cineCam != null && movement.CameraTarget != null)
+        {
+            cineCam.Target.TrackingTarget = movement.CameraTarget;
+        }
+
+        // Reset physics state
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
+        // Enable buoyancy next fixed update
+        StartCoroutine(EnableBuoyancyNextFixedUpdate(currentBoat));
+
+#if UNITY_EDITOR
+        UnityEditor.Selection.activeGameObject = currentBoat;
+#endif
+
+        // UI hookups
+        if (steeringUI != null)
+            steeringUI.SetBoat(movement);
+
+        if (debugUI != null && debugProbe != null)
+            debugUI.SetBoat(debugProbe);
+    }
+
+
+    // ─────────────────────────────────────────────────────────────
+    // BUOYANCY SAFETY DELAY
+    // ─────────────────────────────────────────────────────────────
     private IEnumerator EnableBuoyancyNextFixedUpdate(GameObject boat)
     {
         var buoy = boat.GetComponent<Buoyancy>();
+        if (buoy == null)
+            yield break;
+
         buoy.enabled = false;
-
         yield return new WaitForFixedUpdate();
-
         buoy.enabled = true;
-
     }
 }

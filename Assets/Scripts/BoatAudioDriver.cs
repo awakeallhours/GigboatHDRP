@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
 
 /// <summary>
-/// Drives the EngineController audio system using:
-/// - Throttle from GigboatMovement
-/// - RPM + Load from MarinePowertrainController
-/// - Speed from Hydrodynamics
+/// Bridges MarinePowertrainController → AudioEngineController.
+/// Sends normalized RPM, load, throttle, reverse, and speed to the audio system.
 /// </summary>
 public class BoatAudioDriver : MonoBehaviour
 {
@@ -13,18 +11,14 @@ public class BoatAudioDriver : MonoBehaviour
     // ─────────────────────────────────────────────────────────────
     [Header("References")]
 
-    [Tooltip("Audio engine controller receiving RPM, load, throttle, etc.")]
-    [SerializeField] private EngineController engine;
+    [Tooltip("Audio engine controller receiving normalized values.")]
+    [SerializeField] private AudioEngineController audioEngine;
 
-    [Tooltip("Movement script providing throttle input (-100 to +100).")]
-    [SerializeField] private GigboatMovement gigboat;
-
-    [Tooltip("Hydrodynamics component providing forward speed.")]
-    [SerializeField] private Hydrodynamics hydro;
-
-    [Tooltip("Marine powertrain providing physical RPM + load.")]
+    [Tooltip("Marine powertrain providing physical + normalized engine state.")]
     [SerializeField] private MarinePowertrainController powertrain;
 
+    [Tooltip("Hydrodynamics component providing forward speed (optional).")]
+    [SerializeField] private Hydrodynamics hydro;
 
 
     // ─────────────────────────────────────────────────────────────
@@ -32,36 +26,29 @@ public class BoatAudioDriver : MonoBehaviour
     // ─────────────────────────────────────────────────────────────
     private void Update()
     {
-        if (engine == null || gigboat == null || powertrain == null)
+        if (audioEngine == null || powertrain == null)
             return;
 
         // ---------------------------------------------------------
-        // 1. THROTTLE (0–1 forward, 0–1 reverse)
+        // 1. NORMALIZED ENGINE STATE (from powertrain)
         // ---------------------------------------------------------
-        float throttlePercent = gigboat.ThrottlePercent;
+        audioEngine.SetRPM01(powertrain.EngineRPM01);
+        audioEngine.SetLoad01(powertrain.EngineLoad01);
+        audioEngine.SetThrottle01(powertrain.Throttle01);
 
-        float forward01 = Mathf.Clamp01(throttlePercent / 100f);
-        float load01 = Mathf.Clamp01(Mathf.Abs(throttlePercent) / 100f);
-
-        engine.SetThrottle(forward01);
-        engine.SetLoad(load01);
-        engine.SetReverse(throttlePercent < 0f);
-
-
+        // Reverse flag based on physical RPM sign
+        audioEngine.SetReverse(powertrain.EngineRPMPhysical < 0f);
 
         // ---------------------------------------------------------
-        // 2. RPM (physical RPM from MarinePowertrain)
+        // 2. SPEED (from hydrodynamics or fallback)
         // ---------------------------------------------------------
-        engine.SetRPMFromPhysical(powertrain.EngineRPMPhysical);
+        float speed = 0f;
 
-
-
-        // ---------------------------------------------------------
-        // 3. SPEED (forward speed from hydrodynamics)
-        // ---------------------------------------------------------
         if (hydro != null)
-            engine.SetSpeed(hydro.ForwardSpeed);
+            speed = hydro.ForwardSpeed;
         else
-            engine.SetSpeed(0f);
+            speed = powertrain.GetComponent<Rigidbody>().linearVelocity.magnitude;
+
+        audioEngine.SetSpeed(speed);
     }
 }

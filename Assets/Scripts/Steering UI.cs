@@ -1,65 +1,91 @@
-using UnityEngine;
-using UnityEngine.Rendering;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
 public class GigboatUI : MonoBehaviour
 {
-    [SerializeField] private GigboatMovement gigboat; 
+    // ─────────────────────────────────────────────────────────────
+    // REFERENCES
+    // ─────────────────────────────────────────────────────────────
+    [Header("Boat Reference")]
+    [Tooltip("The boat whose movement values drive the UI.")]
+    [SerializeField] private GigboatMovement gigboat;
 
+    [Header("UI Elements")]
+    [Tooltip("Slider showing rudder position (-1 to +1).")]
     [SerializeField] private Slider steeringSlider;
-    [SerializeField] private Slider ThrottleSlider;
-    //[SerializeField] private float maxRotation = 90f;           // this will be for settiong the steering wheel angle when that is used instead of a slider
-    [SerializeField] TextMeshProUGUI speed;
+
+    [Tooltip("Slider showing throttle percentage (-100 to +100).")]
+    [SerializeField] private Slider throttleSlider;
+
+    //[SerializeField] private float maxRotation = 90f; // this will be for setting the steering wheel angle when that is used instead of a slider
+
+    [Tooltip("Text element showing boat speed in knots.")]
+    [SerializeField] private TextMeshProUGUI speedText;
 
 
-
+    // ─────────────────────────────────────────────────────────────
+    // PUBLIC API
+    // ─────────────────────────────────────────────────────────────
     public void SetBoat(GigboatMovement newBoat)
     {
         gigboat = newBoat;
     }
 
 
-    void Start()
+    // ─────────────────────────────────────────────────────────────
+    // UNITY EVENTS
+    // ─────────────────────────────────────────────────────────────
+    private void Start()
     {
-        if(steeringSlider == null)
-        {
+        // Steering slider fallback
+        if (steeringSlider == null)
             steeringSlider = GetComponent<Slider>();
-        }
 
-        steeringSlider.minValue = -1f;
-        steeringSlider.maxValue = 1f;
-
-        if (ThrottleSlider == null)
+        if (steeringSlider != null)
         {
-            ThrottleSlider = GetComponent<Slider>();
+            steeringSlider.minValue = -1f;
+            steeringSlider.maxValue = 1f;
         }
 
-        ThrottleSlider.minValue = -100f;
-        ThrottleSlider.maxValue = 100f;
+        // Throttle slider fallback
+        if (throttleSlider == null)
+            throttleSlider = GetComponent<Slider>();
 
-       
+        if (throttleSlider != null)
+        {
+            throttleSlider.minValue = -100f;
+            throttleSlider.maxValue = 100f;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if (gigboat == null) return;
-        Steering();
-        Throttle();
+        if (gigboat == null)
+            return;
+
+        UpdateSteering();
+        UpdateThrottle();
     }
 
-    private void Steering()
+
+    // ─────────────────────────────────────────────────────────────
+    // UI UPDATE METHODS
+    // ─────────────────────────────────────────────────────────────
+    private void UpdateSteering()
     {
-        if (gigboat == null) return;
-        float rudderPosition = gigboat.RudderAngle;
-        steeringSlider.value = rudderPosition;
+        if (steeringSlider == null)
+            return;
+
+        steeringSlider.value = gigboat.RudderAngle;
     }
 
-    private void Throttle()
+    private void UpdateThrottle()
     {
-        ThrottleSlider.value = gigboat.ThrottlePercent;
-       
-        speed.text = $"Speed {gigboat.SpeedKnots.ToString("F1")} Kn";
+        if (throttleSlider != null)
+            throttleSlider.value = gigboat.ThrottlePercent;
+
+        if (speedText != null)
+            speedText.text = $"Speed {gigboat.SpeedKnots:F1} Kn";
     }
 }
