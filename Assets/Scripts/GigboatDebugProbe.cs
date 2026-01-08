@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// Centralised debug data provider for the gig boat.
@@ -7,16 +7,9 @@ using UnityEngine;
 /// </summary>
 public class GigboatDebugProbe : MonoBehaviour
 {
-    // --- Public Accessors (Debug UI reads from these) ---
-
-    public Buoyancy Buoyancy => buoyancy;
-    public GigboatMovement Movement => gigboat;
-    public Hydrodynamics WaterForces => hydrodynamics;
-    public Transform[] Points => points;
-    public Rigidbody RB => rb;
-
-    // --- References ---
-
+    // ─────────────────────────────────────────────────────────────
+    // CORE REFERENCES
+    // ─────────────────────────────────────────────────────────────
     [Header("Core References")]
 
     [Tooltip("Buoyancy system providing wave-aware depth sampling.")]
@@ -25,31 +18,41 @@ public class GigboatDebugProbe : MonoBehaviour
     [Tooltip("Movement controller providing throttle, rudder, and yaw data.")]
     [SerializeField] private GigboatMovement gigboat;
 
-    [Tooltip("Propeller spin system providing RPM data.")]
-    [SerializeField] private PropSpin propSpin;
-
     [Tooltip("Hydrodynamics system providing drag and planing data.")]
     [SerializeField] private Hydrodynamics hydrodynamics;
 
     [Tooltip("Buoyancy probe transforms used for depth visualisation.")]
     [SerializeField] private Transform[] points;
 
-    private Rigidbody rb;
+    [Tooltip("Rigidbody of the boat.")]
+    [SerializeField] private Rigidbody rb;
 
-    void Awake()
-    {
-        rb = GetComponent<Rigidbody>();
-    }
+    [Tooltip("Marine powertrain providing engine RPM + load.")]
+    [SerializeField] private MarinePowertrainController powertrain;
 
-    // --- Propulsion Debug ---
 
-    /// <summary>Throttle input as a 0�1 value.</summary>
+
+    // ─────────────────────────────────────────────────────────────
+    // PUBLIC ACCESSORS (Debug UI reads from these)
+    // ─────────────────────────────────────────────────────────────
+
+    public Buoyancy Buoyancy => buoyancy;
+    public GigboatMovement Movement => gigboat;
+    public Hydrodynamics WaterForces => hydrodynamics;
+    public Transform[] Points => points;
+    public Rigidbody RB => rb;
+
+    /// <summary>Throttle input as a -100 to +100 value.</summary>
     public float ThrottlePercent => gigboat.ThrottlePercent;
 
-    /// <summary>Current propeller RPM.</summary>
-    public float RPM => propSpin.currentRPM;
+    /// <summary>Current physical engine RPM from MarinePowertrain.</summary>
+    public float RPM => powertrain != null ? powertrain.EngineRPMPhysical : 0f;
 
-    // --- Orientation Debug ---
+
+
+    // ─────────────────────────────────────────────────────────────
+    // ORIENTATION DEBUG
+    // ─────────────────────────────────────────────────────────────
 
     /// <summary>Boat roll angle in degrees (-180 to 180).</summary>
     public float Roll => Mathf.DeltaAngle(0, transform.eulerAngles.z);
@@ -66,21 +69,27 @@ public class GigboatDebugProbe : MonoBehaviour
     /// <summary>Yaw rate in degrees per second.</summary>
     public float YawRateDeg => gigboat.YawRateDeg;
 
-    // --- Water Depth Sampling ---
+
+
+    // ─────────────────────────────────────────────────────────────
+    // WATER DEPTH SAMPLING
+    // ─────────────────────────────────────────────────────────────
 
     /// <summary>
     /// Returns the depth of a buoyancy probe relative to the water surface.
-    /// Uses wave height if a Water component is present, otherwise falls back to flat water level.
+    /// Uses wave height if a Water component is present, otherwise flat water at Y=0.
     /// </summary>
     public float GetPointDepth(Transform p)
     {
-        // Water system disabled � assume flat water at Y = 0
-        float waterHeight = 0f;
+        float waterHeight = 0f; // placeholder until wave system is wired
         return waterHeight - p.position.y;
     }
 
 
-    // --- Roll Damping Debug ---
+
+    // ─────────────────────────────────────────────────────────────
+    // ROLL DAMPING DEBUG (values pulled from GigboatMovement)
+    // ─────────────────────────────────────────────────────────────
 
     public float RollDamping => gigboat.RollDampingStrength;
     public float RollStiffnessBase => gigboat.RollStiffnessBase;
@@ -88,7 +97,11 @@ public class GigboatDebugProbe : MonoBehaviour
     public float RudderRoll => gigboat.RudderRollTorqueStrength;
     public float RudderRollThreshold => gigboat.RudderRollActivationSpeed;
 
-    // --- Hydrodynamics Debug ---
+
+
+    // ─────────────────────────────────────────────────────────────
+    // HYDRODYNAMICS DEBUG
+    // ─────────────────────────────────────────────────────────────
 
     public float ForwardSpeed => hydrodynamics.ForwardSpeed;
     public Vector3 ForwardDragForce => hydrodynamics.ForwardDragForce;
@@ -103,7 +116,11 @@ public class GigboatDebugProbe : MonoBehaviour
 
     public bool IsPlaning => hydrodynamics.IsPlaning;
 
-    // --- Utility ---
+
+
+    // ─────────────────────────────────────────────────────────────
+    // UTILITY
+    // ─────────────────────────────────────────────────────────────
 
     /// <summary>
     /// Forces all buoyancy probe transforms to sit at local Y = 0.

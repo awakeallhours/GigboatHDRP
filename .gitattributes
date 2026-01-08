@@ -1,0 +1,36 @@
+# Force consistent line endings
+* text=auto
+
+# Unity YAML files (scenes, prefabs, materials, etc.)
+*.meta text merge=unityyamlmerge eol=lf
+*.unity text merge=unityyamlmerge eol=lf
+*.prefab text merge=unityyamlmerge eol=lf
+*.mat text merge=unityyamlmerge eol=lf
+*.anim text merge=unityyamlmerge eol=lf
+*.controller text merge=unityyamlmerge eol=lf
+
+# Shader files
+*.shader text eol=lf
+
+# C# scripts
+*.cs text eol=lf
+
+# Binary files (no diffing)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.tga binary
+*.psd binary
+*.fbx binary
+*.mp3 binary
+*.wav binary
+*.ogg binary
+*.dll binary
+*.exe binary
+
+# Ignore Unity-generated files from diff/merge
+[Ll]ibrary/** -diff -merge
+[Tt]emp/** -diff -merge
+[Oo]bj/** -diff -merge
+[Bb]uild/** -diff -merge
+[Bb]uilds/** -diff -merge

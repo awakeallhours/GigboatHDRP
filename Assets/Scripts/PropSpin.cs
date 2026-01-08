@@ -1,45 +1,30 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Purely visual propeller rotation driven by MarinePowertrainController.
+/// No physics, no RPM modelling, no load modelling.
+/// </summary>
 public class PropSpin : MonoBehaviour
 {
-    [SerializeField] private GigboatMovement movement;
+    [Header("References")]
+    [SerializeField] private MarinePowertrainController powertrain;
 
-    [Header("Input")]
-    public float throttle; // 0–1 from your UI or input system
+    [Header("Settings")]
+    [Tooltip("Multiplier for visual exaggeration (1 = real RPM).")]
+    [SerializeField] private float visualRPMScale = 1f;
 
-    [Header("RPM Settings")]
-    public float idleRPM = 300f;
-    public float maxRPM = 3000f;
-    public float spinAcceleration = 5f;
-
-    [Header("Debug")]
-    public float currentRPM;
-
-    void Update()
+    private void Update()
     {
-        // Convert throttle (-100 to +100) into -1 to +1
-        float throttle01 = movement.ThrottlePercent / 100f;
+        if (powertrain == null)
+            return;
 
-        // Engine tries to reach a target RPM based on throttle
-        float desiredRPM = Mathf.Lerp(idleRPM, maxRPM, Mathf.Abs(throttle01));
+        // Get physical RPM from powertrain
+        float rpm = powertrain.EngineRPMPhysical * visualRPMScale;
 
-        // Water load reduces RPM at low speed (realistic bogging)
-        float speed = movement.RB.linearVelocity.magnitude;
-        float loadFactor = Mathf.Clamp01(speed / 15f); // tune 15f to taste
-        float loadedRPM = Mathf.Lerp(desiredRPM * 0.4f, desiredRPM, loadFactor);
+        // Convert RPM → degrees per second
+        float degreesPerSecond = (rpm / 60f) * 360f;
 
-        // Apply sign for forward/reverse spin
-        float targetRPM = loadedRPM * Mathf.Sign(throttle01);
-
-        // Smooth RPM change
-        currentRPM = Mathf.Lerp(currentRPM, targetRPM, Time.deltaTime * spinAcceleration);
-
-        // Convert RPM to degrees per second
-        float degreesPerSecond = (currentRPM / 60f) * 360f;
-
-        // Spin around local Z
+        // Rotate prop mesh
         transform.Rotate(0f, 0f, degreesPerSecond * Time.deltaTime, Space.Self);
     }
-
-
 }

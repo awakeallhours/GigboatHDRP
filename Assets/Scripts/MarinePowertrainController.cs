@@ -98,6 +98,12 @@ public class MarinePowertrainController : MonoBehaviour
 
     private Vector3 lastVelocity;
 
+    //public Getters
+    public float EngineRPMPhysical => engineRPMPhysical;
+    public float EngineRPM01 => engineRPM01;
+    public float EngineLoad01 => engineLoad01;
+    public float Throttle01 => throttle01;
+
 
     // ─────────────────────────────────────────────────────────────
     // UNITY EVENTS

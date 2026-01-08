@@ -1602,6 +1602,8 @@ MonoBehaviour:
   maxThrottleForce: 2000
   throttleChangeRate: 60
   propWash: {fileID: 6352648788331008396, guid: da4d08b56c92fea42a03355e279346de, type: 3}
+  usePowertrainThrust: 0
+  neutralGate: 2
   pitchDampingStrength: 10
   rudderInputExponent: 2.5
   rudderAuthorityLowSpeed: 20
@@ -1611,8 +1613,13 @@ MonoBehaviour:
   rudderMinEffectiveSpeed: 1
   maxYawRateDeg: 12
   yawTurnDampingFactor: 1.5
+  maxTurnBankAngleDeg: 15
   rollDampingStrength: 20
-  rollStiffnessBase: 12
+  maxRestoringTorque: 0
+  lowSpeedRollStiffnessMultiplier: 0.05
+  lowSpeedRollDampingMultiplier: 1.5
+  rollAngleDampingCoefficient: 0.5
+  rollStiffnessBase: 1.6
   rollStiffnessSpeedMultiplier: 0.3
   rollStiffnessFullSpeed: 10
   rudderRollTorqueStrength: 120
@@ -1620,6 +1627,7 @@ MonoBehaviour:
   rudderRollFadeRange: 5
   maxRollAngularVelocityDeg: 30
   naturalRollActivationSpeed: 2
+  naturalRollDampingActivationSpeed: 2
   thrustPointForce: {x: 0, y: 0, z: 0}
   thrustPointForceMagnitude: 0
 --- !u!114 &-722261251768253797
