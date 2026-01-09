@@ -436,7 +436,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c82b8b44cbdb9b47bea14985baf2f43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  engine: {fileID: 4812670200014810190}
+  audioEngine: {fileID: 0}
   layerName: Forward High
   enabledLayer: 1
   volumeByRPM:
@@ -966,7 +966,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c82b8b44cbdb9b47bea14985baf2f43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  engine: {fileID: 4812670200014810190}
+  audioEngine: {fileID: 0}
   layerName: Forward Idle
   enabledLayer: 1
   volumeByRPM:
@@ -1555,9 +1555,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 361113420622967515}
-  - component: {fileID: 7194902096994621572}
-  - component: {fileID: 7637350465852271551}
   - component: {fileID: 7804635203045131661}
+  - component: {fileID: 7637350465852271551}
+  - component: {fileID: 7194902096994621572}
   - component: {fileID: 2887459210936165740}
   - component: {fileID: 723849269608935986}
   - component: {fileID: 1353307552192101508}
@@ -1589,7 +1589,7 @@ Transform:
   - {fileID: 5913771198336057280}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7194902096994621572
+--- !u!114 &7804635203045131661
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1598,51 +1598,35 @@ MonoBehaviour:
   m_GameObject: {fileID: 4833431607046282324}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 014c455dd2d52244983ca5a08b7824d8, type: 3}
+  m_Script: {fileID: 11500000, guid: bb2f04091d8e78f419bd4d37936f1b76, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GigboatMovement
-  rb: {fileID: 6401897688909232224}
-  thrustPoint: {fileID: 7717750645490284848}
-  cameraTarget: {fileID: 910222708283239493}
-  buoyancy: {fileID: 2887459210936165740}
-  maxThrottleForce: 2000
-  throttleChangeRate: 60
-  propWash: {fileID: 1167820960212077776}
-  usePowertrainThrust: 1
-  neutralGate: 2
-  pitchDampingStrength: 10
-  rudderInputExponent: 2.5
-  rudderAuthorityLowSpeed: 20
-  rudderResponseRate: 3
-  rudderFadeSpeed: 10
-  rudderMinResponse: 0.2
-  rudderMinEffectiveSpeed: 1
-  maxYawRateDeg: 12
-  yawTurnDampingFactor: 1.5
-  bankResponseSpeed: 1000
-  maxTurnBankAngleDeg: 18
-  currentDesiredBankDeg: 0
-  rollDampingStrength: 1.5
-  maxRestoringTorque: 6
-  lowSpeedRollStiffnessMultiplier: 0.15
-  lowSpeedRollDampingMultiplier: 1.3
-  rollAngleDampingCoefficient: 0.15
-  rollStiffnessBase: 1.2
-  rollStiffnessSpeedMultiplier: 0.12
-  rollStiffnessFullSpeed: 10
-  rudderRollTorqueStrength: 10
-  rudderRollActivationSpeed: 0.5
-  rudderRollFadeRange: 4
-  rudderRollMaxEffectAngle: 30
-  maxRollAngularVelocityDeg: 45
-  naturalRollActivationSpeed: 2
-  naturalRollDampingActivationSpeed: 2
-  thrustPointForce: {x: 0, y: 0, z: 0}
-  thrustPointForceMagnitude: 0
-  forceUprightTest: 0
-  forceUprightTorqueLimit: 50
-  rollDebugOutput: 0
-  gizmoDrawer: {fileID: 6263178763644586018}
+  m_EditorClassIdentifier: Assembly-CSharp::Hydrodynamics
+  rb: {fileID: 0}
+  waterVelocity: {x: 0, y: 0, z: 0}
+  lateralLinearDrag: 40
+  lateralQuadraticDrag: 80
+  forwardLinearDrag: 30
+  forwardQuadraticDrag: 20
+  yawDampingCoefficient: 2
+  yawLateralCoupling: 1
+  rudderMinFlowSpeed: 0.5
+  rudderAuthorityRefSpeed: 6
+  yawLowFlowDamping: 100
+  rollDampingCoefficient: 60
+  rollCouplingCoefficient: 0
+  rollStiffnessCoefficient: 100
+  rollRate: 0
+  rollDampingTorque: 0
+  rollCouplingTorque: 0
+  hullDownforceCoefficient: 0.2
+  hullDownforceSpeedExponent: 1.5
+  lateralSpeed: 0
+  lateralDragForce: {x: 0, y: 0, z: 0}
+  forwardSpeed: 0
+  forwardDragForce: {x: 0, y: 0, z: 0}
+  yawRate: 0
+  yawDampingTorque: 0
+  hullDownforce: {x: 0, y: 0, z: 0}
 --- !u!114 &7637350465852271551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1678,7 +1662,7 @@ MonoBehaviour:
   forwardDragMag: 0
   forwardSpeed: 0
   estimatedAccel: 0
---- !u!114 &7804635203045131661
+--- !u!114 &7194902096994621572
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1687,25 +1671,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 4833431607046282324}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb2f04091d8e78f419bd4d37936f1b76, type: 3}
+  m_Script: {fileID: 11500000, guid: 014c455dd2d52244983ca5a08b7824d8, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Hydrodynamics
-  rb: {fileID: 0}
-  lateralLinearDrag: 40
-  lateralQuadraticDrag: 80
-  forwardLinearDrag: 30
-  forwardQuadraticDrag: 20
-  yawDampingCoefficient: 2
-  yawLateralCoupling: 1
-  hullDownforceCoefficient: 0.2
-  hullDownforceSpeedExponent: 1.5
-  lateralSpeed: 0
-  lateralDragForce: {x: 0, y: 0, z: 0}
-  forwardSpeed: 0
-  forwardDragForce: {x: 0, y: 0, z: 0}
-  yawRate: 0
-  yawDampingTorque: 0
-  hullDownforce: {x: 0, y: 0, z: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::GigboatMovement
+  rb: {fileID: 6401897688909232224}
+  buoyancy: {fileID: 2887459210936165740}
+  propWash: {fileID: 1167820960212077776}
+  gizmoDrawer: {fileID: 6263178763644586018}
+  cameraTarget: {fileID: 910222708283239493}
+  throttleChangeRate: 60
+  neutralGate: 2
+  pitchDampingStrength: 10
+  rudderMaxStepPerSecond: 0.4
+  rudderInputExponent: 2.5
+  rudderAuthorityLowSpeed: 20
+  rudderResponseRate: 3
+  rudderFadeSpeed: 10
+  rudderMinResponse: 0.2
+  rudderMinEffectiveSpeed: 1
+  maxYawRateDeg: 12
+  yawTurnDampingFactor: 1.5
 --- !u!114 &2887459210936165740
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1713,7 +1698,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4833431607046282324}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d1017d3b051cac642b25847ad9960687, type: 3}
   m_Name: 
@@ -1898,12 +1883,9 @@ MonoBehaviour:
   engineRPM: 0
   engineLoad: 0
   throttle: 0
-  rpmMin: 120
-  rpmMax: 2320
-  currentRPM: 600
-  layers: []
-  boatSpeed: 0
   isReversing: 0
+  boatSpeed: 0
+  layers: []
 --- !u!1 &5254906184254150532
 GameObject:
   m_ObjectHideFlags: 0
@@ -2046,7 +2028,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c82b8b44cbdb9b47bea14985baf2f43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  engine: {fileID: 4812670200014810190}
+  audioEngine: {fileID: 0}
   layerName: Forward Cruise
   enabledLayer: 1
   volumeByRPM:
@@ -2328,7 +2310,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c82b8b44cbdb9b47bea14985baf2f43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  engine: {fileID: 4812670200014810190}
+  audioEngine: {fileID: 0}
   layerName: Reverse Cruise
   enabledLayer: 1
   volumeByRPM:
@@ -2560,10 +2542,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b06df706240238c47b1c40046a51caf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  engine: {fileID: 4812670200014810190}
-  gigboat: {fileID: 7194902096994621572}
-  hydro: {fileID: 7804635203045131661}
+  audioEngine: {fileID: 0}
   powertrain: {fileID: 7637350465852271551}
+  hydro: {fileID: 7804635203045131661}
 --- !u!1 &5994724930234248195
 GameObject:
   m_ObjectHideFlags: 0
@@ -2823,7 +2804,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c82b8b44cbdb9b47bea14985baf2f43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  engine: {fileID: 4812670200014810190}
+  audioEngine: {fileID: 0}
   layerName: Reverse High
   enabledLayer: 1
   volumeByRPM:
@@ -3510,7 +3491,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c82b8b44cbdb9b47bea14985baf2f43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  engine: {fileID: 4812670200014810190}
+  audioEngine: {fileID: 0}
   layerName: Reverse Idle
   enabledLayer: 1
   volumeByRPM:

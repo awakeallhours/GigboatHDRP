@@ -40,6 +40,10 @@ public class GigboatMovement : MonoBehaviour
     // (Next section begins in Part 2)
     // ─────────────────────────────────────────────────────────────
     [Header("Rudder Behaviour")]
+
+    [Tooltip("Maximum rudder movement per second (0.1 = slow, 1 = fast)")]
+    [SerializeField] private float rudderMaxStepPerSecond = 0.4f;
+
     [Tooltip("Exponent applied to rudder input for non-linear steering response.")]
     [SerializeField] private float rudderInputExponent = 2.5f;
 
@@ -70,7 +74,7 @@ public class GigboatMovement : MonoBehaviour
     [SerializeField] private float yawTurnDampingFactor = 0.4f;
 
 
-    // ─────────────────────────────────────────────────────────────
+    /*// ─────────────────────────────────────────────────────────────
     // ROLL CONTROL — LEFT UNTOUCHED
     // ─────────────────────────────────────────────────────────────
     [Header("Roll Behaviour")]
@@ -117,25 +121,17 @@ public class GigboatMovement : MonoBehaviour
     [SerializeField] private float naturalRollActivationSpeed = 2f;
 
     [SerializeField, Tooltip("Speed at which full roll damping is reached.")]
-    private float naturalRollDampingActivationSpeed = 2f;
+    private float naturalRollDampingActivationSpeed = 2f;*/
 
 
-    // ─────────────────────────────────────────────────────────────
-    // DEBUG / DIAGNOSTICS
-    // ─────────────────────────────────────────────────────────────
-    [Header("Debug / Diagnostics")]
-    [SerializeField] private bool forceUprightTest = false;
-    [SerializeField] private float forceUprightTorqueLimit = 50f;
-
-
-    // ─────────────────────────────────────────────────────────────
+    /*// ─────────────────────────────────────────────────────────────
     // RUNTIME PROPERTIES
     // ─────────────────────────────────────────────────────────────
     public float RollDampingStrength => rollDampingStrength;
     public float RollStiffnessBase => rollStiffnessBase;
     public float RollStiffnessSpeedMultiplier => rollStiffnessSpeedMultiplier;
     public float RudderRollTorqueStrength => rudderRollTorqueStrength;
-    public float RudderRollActivationSpeed => rudderRollActivationSpeed;
+    public float RudderRollActivationSpeed => rudderRollActivationSpeed;*/
 
     public float RudderAngle
     {
@@ -175,7 +171,7 @@ public class GigboatMovement : MonoBehaviour
         HandleThrottle();
         HandleRudder();
         HandleYawPhysics();
-        HandleRollPhysics();
+        //HandleRollPhysics();
         HandlePitchPhysics();
         UpdateDebugValues();
 
@@ -245,27 +241,34 @@ public class GigboatMovement : MonoBehaviour
 
 
     // ─────────────────────────────────────────────────────────────
-    // RUDDER CONTROL
+    // RUDDER CONTROL (Positional, predictable, no runaway sensitivity)
     // ─────────────────────────────────────────────────────────────
     private void HandleRudder()
     {
         float input = Input.GetAxisRaw("Horizontal");
 
-        // Non-linear response curve
+        // Non-linear response curve (kept exactly as you had it)
         float commanded = Mathf.Sign(input) * Mathf.Pow(Mathf.Abs(input), rudderInputExponent);
 
-        // Speed-based rudder authority
+        // Speed-based rudder authority (kept exactly as you had it)
         float speed = rb.linearVelocity.magnitude;
         float fade = Mathf.InverseLerp(rudderFadeSpeed, rudderMinEffectiveSpeed, speed);
         float authority = Mathf.Lerp(rudderMinResponse, rudderAuthorityLowSpeed, fade);
 
-        // Smooth rudder movement
-        RudderAngle = Mathf.MoveTowards(
-            RudderAngle,
-            commanded * authority,
-            rudderResponseRate * Time.fixedDeltaTime
-        );
+        // NEW: positional rudder with sane sensitivity
+        float delta = commanded * authority * rudderResponseRate * Time.fixedDeltaTime;
+
+        // Clamp delta so it can't jump to 90% instantly
+        float maxStep = rudderMaxStepPerSecond * Time.fixedDeltaTime;
+        delta = Mathf.Clamp(delta, -maxStep, maxStep);
+
+        // Apply positional change
+        RudderAngle += delta;
+
+        // Clamp final rudder angle
+        RudderAngle = Mathf.Clamp(RudderAngle, -1f, 1f);
     }
+
 
     // ─────────────────────────────────────────────────────────────
     // YAW PHYSICS
@@ -288,7 +291,7 @@ public class GigboatMovement : MonoBehaviour
         YawRateDeg = rb.angularVelocity.y * Mathf.Rad2Deg;
     }
 
-    // ─────────────────────────────────────────────────────────────
+    /*// ─────────────────────────────────────────────────────────────
     // ROLL PHYSICS  (LEFT UNTOUCHED AS REQUESTED)
     // ─────────────────────────────────────────────────────────────
     private void HandleRollPhysics()
@@ -349,7 +352,7 @@ public class GigboatMovement : MonoBehaviour
             RudderAngle * maxTurnBankAngleDeg,
             bankResponseSpeed * Time.fixedDeltaTime
         );
-    }
+    }*/
 
 
 

@@ -87,7 +87,7 @@ public class GigboatDebugProbe : MonoBehaviour
 
 
 
-    // ─────────────────────────────────────────────────────────────
+    /*// ─────────────────────────────────────────────────────────────
     // ROLL DAMPING DEBUG (values pulled from GigboatMovement)
     // ─────────────────────────────────────────────────────────────
 
@@ -95,7 +95,7 @@ public class GigboatDebugProbe : MonoBehaviour
     public float RollStiffnessBase => gigboat.RollStiffnessBase;
     public float RollStiffnessSpeed => gigboat.RollStiffnessSpeedMultiplier;
     public float RudderRoll => gigboat.RudderRollTorqueStrength;
-    public float RudderRollThreshold => gigboat.RudderRollActivationSpeed;
+    public float RudderRollThreshold => gigboat.RudderRollActivationSpeed;*/
 
 
 
@@ -114,7 +114,7 @@ public class GigboatDebugProbe : MonoBehaviour
     public float YawRateHydro => hydrodynamics.YawRate;
     public float YawDampingTorque => hydrodynamics.YawDampingTorque;
 
-    public bool IsPlaning => hydrodynamics.IsPlaning;
+    
 
 
 

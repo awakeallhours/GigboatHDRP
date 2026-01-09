@@ -97,11 +97,11 @@ public class BuoyancyDebugUI : MonoBehaviour
         // ROLL TUNING
         // ---------------------------------------------------------
         output += $"\n<b><size=110%>ROLL TUNING</size></b>\n";
-        output += $"Damping: {Colour(probe.RollDamping)}{probe.RollDamping:F2}</color>\n";
+        /*output += $"Damping: {Colour(probe.RollDamping)}{probe.RollDamping:F2}</color>\n";
         output += $"Stiffness Base: {Colour(probe.RollStiffnessBase)}{probe.RollStiffnessBase:F2}</color>\n";
         output += $"Stiffness Speed: {Colour(probe.RollStiffnessSpeed)}{probe.RollStiffnessSpeed:F2}</color>\n";
         output += $"Rudder Roll: {Colour(probe.RudderRoll)}{probe.RudderRoll:F2}</color>\n";
-        output += $"Roll Threshold: {Colour(probe.RudderRollThreshold)}{probe.RudderRollThreshold:F2}</color>\n";
+        output += $"Roll Threshold: {Colour(probe.RudderRollThreshold)}{probe.RudderRollThreshold:F2}</color>\n";*/
 
         // ---------------------------------------------------------
         // HYDRODYNAMICS
