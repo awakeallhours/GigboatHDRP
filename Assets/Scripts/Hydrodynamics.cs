@@ -83,6 +83,17 @@ public class Hydrodynamics : MonoBehaviour
     [SerializeField] private float hullDownforceSpeedExponent = 1.5f;
 
     // ─────────────────────────────────────────────────────────────
+    // RUDDER HYDRODYNAMICS (SIDE FORCE APPLIED AT RUDDER PIVOT)
+    // ─────────────────────────────────────────────────────────────
+    [Header("Rudder Hydrodynamics")]
+    [SerializeField] private Transform rudderPivot;          // assign in inspector
+    [SerializeField] private float rudderAngleDegrees = 0f;  // set by your input system
+    [SerializeField] private float rudderForceCoefficient = 500f;
+
+    
+
+
+    // ─────────────────────────────────────────────────────────────
     // DEBUG (READ ONLY)
     // ─────────────────────────────────────────────────────────────
     [Header("Debug (Read Only)")]
@@ -100,6 +111,10 @@ public class Hydrodynamics : MonoBehaviour
     [Tooltip("Debug: actual downforce vector applied this frame.")]
     [SerializeField] private Vector3 hullDownforce;
 
+    [Header("Rudder Debug (Read Only)")]
+    [SerializeField] private float rudderSideForceMagnitude;
+    [SerializeField] private Vector3 rudderForceWorld;
+
     // ─────────────────────────────────────────────────────────────
     // PUBLIC GETTERS
     // ─────────────────────────────────────────────────────────────
@@ -111,6 +126,13 @@ public class Hydrodynamics : MonoBehaviour
 
     public float YawRate => yawRate;
     public float YawDampingTorque => yawDampingTorque;
+
+    public float RudderAngleDegrees
+    {
+        get => rudderAngleDegrees;
+        set => rudderAngleDegrees = value;
+    }
+
 
     public Vector3 HullDownforce => hullDownforce; //add if i want downforce viewable or need to use it 
 
@@ -145,6 +167,7 @@ public class Hydrodynamics : MonoBehaviour
         ApplyYawHydrodynamics(relVel);
         ApplyRollHydrodynamics(relVel);
         ApplyHullDownforce(relVel);
+        ApplyRudderHydrodynamics(relVel);
 
         if (Input.GetKeyDown(KeyCode.T))
         {
@@ -306,4 +329,34 @@ public class Hydrodynamics : MonoBehaviour
         hullDownforce = Vector3.down * magnitude;
         rb.AddForce(hullDownforce, ForceMode.Acceleration);
     }
+
+    private void ApplyRudderHydrodynamics(Vector3 relVel)
+    {
+        if (rudderPivot == null)
+            return;
+
+        // Convert velocity to local space
+        Vector3 localVel = transform.InverseTransformDirection(relVel);
+
+        // Forward flow (rudder effectiveness)
+        float forwardSpeed = localVel.z;
+        if (Mathf.Abs(forwardSpeed) < 0.1f)
+            return; // no flow over rudder → no force
+
+        // Compute side force magnitude
+        float angleRad = rudderAngleDegrees * Mathf.Deg2Rad;
+        float forceMag = forwardSpeed * Mathf.Sin(angleRad) * rudderForceCoefficient;
+
+        // Store debug
+        rudderSideForceMagnitude = forceMag;
+
+        // Direction: local +X is right side
+        Vector3 localForce = new Vector3(forceMag, 0f, 0f);
+        rudderForceWorld = transform.TransformDirection(localForce);
+
+        // Apply at the rudder pivot (THIS is the key for roll)
+        rb.AddForceAtPosition(rudderForceWorld, rudderPivot.position, ForceMode.Force);
+    }
+
+
 }

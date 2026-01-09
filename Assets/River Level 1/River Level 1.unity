@@ -5201,10 +5201,9 @@ MonoBehaviour:
   gigboatPrefab: {fileID: 4833431607046282324, guid: 3ac50655355bc154da75baaa96ab89c5, type: 3}
   spawnPoint: {fileID: 1478300452}
   debugUI: {fileID: 439371789}
-  respawnDelay: 1.5
-  cineCam: {fileID: 2138374938}
   steeringUI: {fileID: 1760061555}
-  CameraTarget: {fileID: 0}
+  cineCam: {fileID: 2138374938}
+  respawnDelay: 1.5
 --- !u!4 &1478300452
 Transform:
   m_ObjectHideFlags: 0
@@ -6788,8 +6787,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SteeringUI
   gigboat: {fileID: 2050300757709181683, guid: 0c06ffc04a5ccdc499382d578d8ea26b, type: 3}
   steeringSlider: {fileID: 387623031}
-  ThrottleSlider: {fileID: 1431310125}
-  speed: {fileID: 2120206238}
+  throttleSlider: {fileID: 0}
+  speedText: {fileID: 0}
 --- !u!1 &1774470947
 GameObject:
   m_ObjectHideFlags: 0

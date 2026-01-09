@@ -48,7 +48,7 @@ public class GigboatGizmos : MonoBehaviour
         Vector3 com = rb.worldCenterOfMass;
 
         Gizmos.color = Color.cyan;
-        Gizmos.DrawSphere(com, 0.15f);
+        Gizmos.DrawSphere(com, 0f);
 
         // Vertical line
         Gizmos.DrawLine(com + Vector3.up * 2f, com - Vector3.up * 2f);
