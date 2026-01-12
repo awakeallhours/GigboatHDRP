@@ -9,10 +9,9 @@ public class Hydrodynamics : MonoBehaviour
     [Tooltip("Assigned automatically if left empty.")]
     [SerializeField] private Rigidbody rb;
 
-    // Placeholder for water/current velocity (world-space).
-    // Currently unused, but once currents are introduced this will be set externally.
     [Tooltip("World-space velocity of water/current. Currently unused until currents are implemented.")]
     [SerializeField] private Vector3 waterVelocity = Vector3.zero;
+
 
     // ─────────────────────────────────────────────────────────────
     // LATERAL DRAG
@@ -24,6 +23,7 @@ public class Hydrodynamics : MonoBehaviour
     [Tooltip("High-speed sideways grip. Strongly reduces drifting at high speed.")]
     [SerializeField] private float lateralQuadraticDrag = 0f;
 
+
     // ─────────────────────────────────────────────────────────────
     // FORWARD DRAG
     // ─────────────────────────────────────────────────────────────
@@ -34,69 +34,36 @@ public class Hydrodynamics : MonoBehaviour
     [Tooltip("High-speed forward water resistance. Limits top speed.")]
     [SerializeField] private float forwardQuadraticDrag = 0f;
 
-    // ─────────────────────────────────────────────────────────────
-    // YAW HYDRODYNAMICS
-    // ─────────────────────────────────────────────────────────────
-    [Header("Yaw Hydrodynamics")]
-    [Tooltip("Base yaw resistance from the hull.")]
-    [SerializeField] private float yawDampingCoefficient = 0f;
-
-    [Tooltip("Extra yaw resistance when sliding sideways.")]
-    [SerializeField] private float yawLateralCoupling = 0f;
-
-    [Tooltip("Below this forward flow, rudder/hull should not induce turning.")]
-    [SerializeField] private float rudderMinFlowSpeed = 0.5f; // m/s
-
-    [Tooltip("Reference forward speed for scaling low-flow yaw damping.")]
-    [SerializeField] private float rudderAuthorityRefSpeed = 6f; // m/s
-
-    [Tooltip("Extra yaw damping that engages as forward flow approaches zero.")]
-    [SerializeField] private float yawLowFlowDamping = 150f; // Nm per rad/s
 
     // ─────────────────────────────────────────────────────────────
-    // ROLL HYDRODYNAMICS
-    // ─────────────────────────────────────────────────────────────
-    [Header("Roll Hydrodynamics")]
-    [Tooltip("How strongly the hull resists rolling motion (damping).")]
-    [SerializeField] private float rollDampingCoefficient = 0f;
-
-    [Tooltip("How strongly lateral slip generates roll torque (lean into turns).")]
-    [SerializeField] private float rollCouplingCoefficient = 0f;
-
-    [SerializeField] private float rollStiffnessCoefficient = 0f;
-    
-
-
-    [Header("Roll Debug (Read Only)")]
-    [SerializeField] private float rollRate;           // rad/s around local X
-    [SerializeField] private float rollDampingTorque;  // Nm
-    [SerializeField] private float rollCouplingTorque; // Nm
-
-    // ─────────────────────────────────────────────────────────────
-    // HULL DOWNFORCE
-    // ─────────────────────────────────────────────────────────────
-    [Header("Hull Downforce")]
-    [Tooltip("Base strength of downward force applied at speed.")]
-    [SerializeField] private float hullDownforceCoefficient = 0.5f;
-
-    [Tooltip("Exponent controlling how sharply downforce grows with speed.")]
-    [SerializeField] private float hullDownforceSpeedExponent = 1.5f;
-
-    // ─────────────────────────────────────────────────────────────
-    // RUDDER HYDRODYNAMICS (SIDE FORCE APPLIED AT RUDDER PIVOT)
+    // RUDDER HYDRODYNAMICS
     // ─────────────────────────────────────────────────────────────
     [Header("Rudder Hydrodynamics")]
-    [SerializeField] private Transform rudderPivot;          // assign in inspector
-    [SerializeField] private float rudderAngleDegrees = 0f;  // set by your input system
+    [Tooltip("World-space position of the rudder pivot where force is applied.")]
+    [SerializeField] private Transform rudderPivot;
+
+    [Tooltip("Current physical rudder angle in degrees (set by external controller).")]
+    [SerializeField] private float rudderAngleDegrees = 0f;
+
+    [Tooltip("Coefficient controlling how strongly rudder generates side force.")]
     [SerializeField] private float rudderForceCoefficient = 500f;
 
-    
+    // ─────────────────────────────────────────────────────────────
+    // YAW DEBUG (READ ONLY)
+    // ─────────────────────────────────────────────────────────────
+    [Header("Yaw Debug (Read Only)")]
+    [SerializeField] private float yawRate;
+    [SerializeField] private float yawDampingTorque;
+
+    public float YawRate => yawRate;
+    public float YawDampingTorque => yawDampingTorque;
+
 
 
     // ─────────────────────────────────────────────────────────────
     // DEBUG (READ ONLY)
     // ─────────────────────────────────────────────────────────────
-    [Header("Debug (Read Only)")]
+    [Header("Lateral Debug (Read Only)")]
     [SerializeField] private float lateralSpeed;
     [SerializeField] private Vector3 lateralDragForce;
 
@@ -104,16 +71,10 @@ public class Hydrodynamics : MonoBehaviour
     [SerializeField] private float forwardSpeed;
     [SerializeField] private Vector3 forwardDragForce;
 
-    [Header("Yaw Debug (Read Only)")]
-    [SerializeField] private float yawRate;
-    [SerializeField] private float yawDampingTorque;
-
-    [Tooltip("Debug: actual downforce vector applied this frame.")]
-    [SerializeField] private Vector3 hullDownforce;
-
     [Header("Rudder Debug (Read Only)")]
     [SerializeField] private float rudderSideForceMagnitude;
     [SerializeField] private Vector3 rudderForceWorld;
+
 
     // ─────────────────────────────────────────────────────────────
     // PUBLIC GETTERS
@@ -121,11 +82,8 @@ public class Hydrodynamics : MonoBehaviour
     public float LateralSpeed => lateralSpeed;
     public Vector3 LateralDragForce => lateralDragForce;
 
-    public float ForwardSpeed => forwardSpeed;   
+    public float ForwardSpeed => forwardSpeed;
     public Vector3 ForwardDragForce => forwardDragForce;
-
-    public float YawRate => yawRate;
-    public float YawDampingTorque => yawDampingTorque;
 
     public float RudderAngleDegrees
     {
@@ -133,18 +91,9 @@ public class Hydrodynamics : MonoBehaviour
         set => rudderAngleDegrees = value;
     }
 
+    public Vector3 RelativeVelocity => rb.linearVelocity - waterVelocity;
 
-    public Vector3 HullDownforce => hullDownforce; //add if i want downforce viewable or need to use it 
-
-    public Vector3 RelativeVelocity => rb.linearVelocity - waterVelocity; //add if i want relative water velocity viewable when i add currents
-
-    // Private backing calculation
-    private bool isPlaning =>
-        forwardDragForce.magnitude > lateralDragForce.magnitude * 2f &&
-        Mathf.Abs(transform.eulerAngles.x) < 8f;
-
-    // Public accessor for debug/UI
-    public bool IsPlaningStatus => isPlaning;
+   
 
 
     // ─────────────────────────────────────────────────────────────
@@ -158,25 +107,14 @@ public class Hydrodynamics : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Compute relative velocity (boat vs water).
-        // Currently waterVelocity = Vector3.zero, so relVel == rb.linearVelocity.
+        // Boat velocity relative to water (currents later).
         Vector3 relVel = rb.linearVelocity - waterVelocity;
 
         ApplyLateralDrag(relVel);
         ApplyForwardDrag(relVel);
-        ApplyYawHydrodynamics(relVel);
-        ApplyRollHydrodynamics(relVel);
-        ApplyHullDownforce(relVel);
         ApplyRudderHydrodynamics(relVel);
-
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            Debug.Log("Manual roll torque triggered.");
-            rb.AddTorque(transform.TransformDirection(Vector3.forward) * 20000f, ForceMode.Impulse);
-
-        }
-
     }
+
 
     // ─────────────────────────────────────────────────────────────
     // LATERAL DRAG
@@ -208,6 +146,7 @@ public class Hydrodynamics : MonoBehaviour
         rb.AddForce(lateralDragForce, ForceMode.Force);
     }
 
+
     // ─────────────────────────────────────────────────────────────
     // FORWARD DRAG
     // ─────────────────────────────────────────────────────────────
@@ -238,125 +177,30 @@ public class Hydrodynamics : MonoBehaviour
         rb.AddForce(forwardDragForce, ForceMode.Force);
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // YAW HYDRODYNAMICS
-    // ─────────────────────────────────────────────────────────────
-    private void ApplyYawHydrodynamics(Vector3 relVel)
-    {
-        yawRate = 0f;
-        yawDampingTorque = 0f; // no longer used for AddTorque, but we’ll keep it for debug
-
-        if (yawDampingCoefficient == 0f && yawLateralCoupling == 0f && yawLowFlowDamping == 0f)
-            return;
-
-        float yawVel = rb.angularVelocity.y;
-        yawRate = yawVel;
-
-        Vector3 localVel = transform.InverseTransformDirection(relVel);
-        float vLat = localVel.x;
-        float forwardFlow = Mathf.Abs(localVel.z);
-
-        // Base hull damping torque (still applied directly)
-        float baseTorque = -yawVel * yawDampingCoefficient;
-
-        // Slip‑induced torque (only if flow is present)
-        float slipTorque = forwardFlow < rudderMinFlowSpeed ? 0f : -yawVel * Mathf.Abs(vLat) * yawLateralCoupling;
-
-        // Instead of brute‑force low‑flow torque, adjust angularDrag dynamically
-        float lowFlowFactor = 1f - Mathf.Clamp01(forwardFlow / rudderAuthorityRefSpeed); 
-        rb.angularDamping = Mathf.Lerp(0.5f, 5f, lowFlowFactor);
-        // tune 0.5–5 range: 0.5 = normal cruise drag, 5 = heavy stabiliser at standstill
-
-        // Total torque is now just base + slip
-        float totalTorque = baseTorque + slipTorque;
-        yawDampingTorque = totalTorque; // for debug readout
-
-        rb.AddTorque(Vector3.up * totalTorque, ForceMode.Acceleration);
-    }
 
     // ─────────────────────────────────────────────────────────────
-    // ROLL HYDRODYNAMICS — restore + damping only (corrected to Z axis)
+    // RUDDER HYDRODYNAMICS
     // ─────────────────────────────────────────────────────────────
-    private void ApplyRollHydrodynamics(Vector3 relVel)
-    {
-        rollRate = 0f;
-        rollDampingTorque = 0f;
-        rollCouplingTorque = 0f;
-
-        if (rollStiffnessCoefficient == 0f && rollDampingCoefficient == 0f)
-            return;
-
-        // World angular velocity → local roll rate (about local Z)
-        Vector3 angVel = rb.angularVelocity;
-        Vector3 localAngVel = transform.InverseTransformDirection(angVel);
-        float rollVel = localAngVel.z;
-        rollRate = rollVel;
-
-        // Base roll damping (opposes roll velocity)
-        float dampingTorqueLocal = -rollVel * rollDampingCoefficient;
-        rollDampingTorque = dampingTorqueLocal;
-
-        // Upright restoring torque (spring back to level about local Z)
-        float rollAngleRad = Mathf.Deg2Rad * Mathf.DeltaAngle(0f, transform.eulerAngles.z);
-        float restoreTorqueLocal = -rollAngleRad * rollStiffnessCoefficient;
-
-        // Total torque in local space (restore + damping only)
-        float totalLocalTorque = dampingTorqueLocal + restoreTorqueLocal;
-
-        // Apply torque about local Z in world space
-        Vector3 worldTorque = transform.rotation * new Vector3(0f, 0f, totalLocalTorque);
-        rb.AddTorque(worldTorque, ForceMode.Acceleration);
-    }
-
-
-    // ─────────────────────────────────────────────────────────────
-    // HULL DOWNFORCE
-    // ─────────────────────────────────────────────────────────────
-    private void ApplyHullDownforce(Vector3 relVel)
-    {
-        hullDownforce = Vector3.zero;
-
-        if (hullDownforceCoefficient <= 0f)
-            return;
-
-        Vector3 localVel = transform.InverseTransformDirection(relVel);
-        float fwd = Mathf.Max(0f, localVel.z);
-
-        float magnitude =
-            hullDownforceCoefficient *
-            Mathf.Pow(fwd, hullDownforceSpeedExponent);
-
-        hullDownforce = Vector3.down * magnitude;
-        rb.AddForce(hullDownforce, ForceMode.Acceleration);
-    }
-
     private void ApplyRudderHydrodynamics(Vector3 relVel)
     {
         if (rudderPivot == null)
             return;
 
-        // Convert velocity to local space
         Vector3 localVel = transform.InverseTransformDirection(relVel);
+        float fwd = localVel.z;
 
-        // Forward flow (rudder effectiveness)
-        float forwardSpeed = localVel.z;
-        if (Mathf.Abs(forwardSpeed) < 0.1f)
-            return; // no flow over rudder → no force
+        // No flow over rudder → no force.
+        if (Mathf.Abs(fwd) < 0.1f)
+            return;
 
-        // Compute side force magnitude
         float angleRad = rudderAngleDegrees * Mathf.Deg2Rad;
-        float forceMag = forwardSpeed * Mathf.Sin(angleRad) * rudderForceCoefficient;
+        float forceMag = fwd * Mathf.Sin(angleRad) * rudderForceCoefficient;
 
-        // Store debug
         rudderSideForceMagnitude = forceMag;
 
-        // Direction: local +X is right side
         Vector3 localForce = new Vector3(forceMag, 0f, 0f);
         rudderForceWorld = transform.TransformDirection(localForce);
 
-        // Apply at the rudder pivot (THIS is the key for roll)
         rb.AddForceAtPosition(rudderForceWorld, rudderPivot.position, ForceMode.Force);
     }
-
-
 }

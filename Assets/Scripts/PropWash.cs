@@ -17,13 +17,8 @@ public class PropWash : MonoBehaviour
     // EMISSION (THROTTLE DRIVEN)
     // ─────────────────────────────────────────────────────────────
     [Header("Emission Tuning")]
-    [Tooltip("Emission rate at zero throttle.")]
     [SerializeField] private float idleEmission = 5f;
-
-    [Tooltip("Emission rate at full throttle.")]
     [SerializeField] private float maxEmission = 80f;
-
-    [Tooltip("Multiplier applied when throttle is negative (reverse).")]
     [SerializeField] private float reverseMultiplier = 1.5f;
 
 
@@ -31,13 +26,8 @@ public class PropWash : MonoBehaviour
     // LIFETIME (VELOCITY DRIVEN)
     // ─────────────────────────────────────────────────────────────
     [Header("Velocity Influence")]
-    [Tooltip("Minimum particle lifetime when stationary.")]
     [SerializeField] private float minLifetime = 0.3f;
-
-    [Tooltip("Maximum particle lifetime at max speed.")]
     [SerializeField] private float maxLifetime = 1.2f;
-
-    [Tooltip("Speed at which lifetime reaches maximum.")]
     [SerializeField] private float maxSpeed = 20f;
 
 
@@ -45,19 +35,10 @@ public class PropWash : MonoBehaviour
     // CAVITATION SETTINGS
     // ─────────────────────────────────────────────────────────────
     [Header("Cavitation")]
-    [Tooltip("How much throttle must change in one frame to trigger cavitation.")]
     [SerializeField] private float cavitationThrottleThreshold = 0.35f;
-
-    [Tooltip("Depth below which cavitation triggers (0 = surface, 1 = fully submerged).")]
     [SerializeField] private float cavitationDepthThreshold = 0.2f;
-
-    [Tooltip("Throttle value (negative) required to trigger reverse cavitation.")]
     [SerializeField] private float reverseCavitationThreshold = -0.8f;
-
-    [Tooltip("Number of particles spawned during a cavitation burst.")]
     [SerializeField] private short cavitationBurstAmount = 20;
-
-    [Tooltip("Minimum time between cavitation bursts.")]
     [SerializeField] private float cavitationCooldown = 0.25f;
 
 
@@ -68,7 +49,8 @@ public class PropWash : MonoBehaviour
     private float lastThrottle;
     private float lastCavitationTime;
 
-    private float propDepth = 1f; // 1 = fully submerged, 0 = out of water
+    // Set externally by MarineProp
+    private float propDepth01 = 1f;
 
     private ParticleSystem.EmissionModule emission;
     private ParticleSystem.MainModule main;
@@ -97,7 +79,7 @@ public class PropWash : MonoBehaviour
 
     public void SetPropDepth(float depth01)
     {
-        propDepth = Mathf.Clamp01(depth01);
+        propDepth01 = Mathf.Clamp01(depth01);
     }
 
 
@@ -149,7 +131,7 @@ public class PropWash : MonoBehaviour
             return;
 
         bool throttleSpike = Mathf.Abs(throttleInput - lastThrottle) > cavitationThrottleThreshold;
-        bool shallowProp = propDepth < cavitationDepthThreshold;
+        bool shallowProp = propDepth01 < cavitationDepthThreshold;
         bool reverseSlam = throttleInput < reverseCavitationThreshold;
 
         if (throttleSpike || shallowProp || reverseSlam)

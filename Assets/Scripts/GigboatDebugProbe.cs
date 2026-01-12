@@ -11,126 +11,91 @@ public class GigboatDebugProbe : MonoBehaviour
     // CORE REFERENCES
     // ─────────────────────────────────────────────────────────────
     [Header("Core References")]
-
-    [Tooltip("Buoyancy system providing wave-aware depth sampling.")]
     [SerializeField] private Buoyancy buoyancy;
-
-    [Tooltip("Movement controller providing throttle, rudder, and yaw data.")]
     [SerializeField] private GigboatMovement gigboat;
-
-    [Tooltip("Hydrodynamics system providing drag and planing data.")]
     [SerializeField] private Hydrodynamics hydrodynamics;
+    [SerializeField] private MarinePowertrainController powertrain;
+    [SerializeField] private Rigidbody rb;
 
     [Tooltip("Buoyancy probe transforms used for depth visualisation.")]
     [SerializeField] private Transform[] points;
-
-    [Tooltip("Rigidbody of the boat.")]
-    [SerializeField] private Rigidbody rb;
-
-    [Tooltip("Marine powertrain providing engine RPM + load.")]
-    [SerializeField] private MarinePowertrainController powertrain;
-
 
 
     // ─────────────────────────────────────────────────────────────
     // PUBLIC ACCESSORS (Debug UI reads from these)
     // ─────────────────────────────────────────────────────────────
-
     public Buoyancy Buoyancy => buoyancy;
     public GigboatMovement Movement => gigboat;
     public Hydrodynamics WaterForces => hydrodynamics;
-    public Transform[] Points => points;
+    public MarinePowertrainController Powertrain => powertrain;
     public Rigidbody RB => rb;
+    public Transform[] Points => points;
 
     /// <summary>Throttle input as a -100 to +100 value.</summary>
-    public float ThrottlePercent => gigboat.ThrottlePercent;
+    public float ThrottlePercent => gigboat != null ? gigboat.ThrottlePercent : 0f;
 
     /// <summary>Current physical engine RPM from MarinePowertrain.</summary>
     public float RPM => powertrain != null ? powertrain.EngineRPMPhysical : 0f;
 
+    /// <summary>Yaw rate from hydrodynamics (rad/s), debug only.</summary>
+    public float YawRateHydro => hydrodynamics != null ? hydrodynamics.YawRate : 0f;
+
+    /// <summary>Yaw damping torque from hydrodynamics (debug only).</summary>
+    public float YawDampingTorque => hydrodynamics != null ? hydrodynamics.YawDampingTorque : 0f;
 
 
     // ─────────────────────────────────────────────────────────────
     // ORIENTATION DEBUG
     // ─────────────────────────────────────────────────────────────
+    public float Roll => Mathf.DeltaAngle(0f, transform.eulerAngles.z);
+    public float Pitch => Mathf.DeltaAngle(0f, transform.eulerAngles.x);
+    public float Heave => rb != null ? rb.worldCenterOfMass.y : 0f;
 
-    /// <summary>Boat roll angle in degrees (-180 to 180).</summary>
-    public float Roll => Mathf.DeltaAngle(0, transform.eulerAngles.z);
+    /// <summary>Current rudder angle in degrees (-1..1 mapped externally).</summary>
+    public float RudderAngle => gigboat != null ? gigboat.RudderAngle : 0f;
 
-    /// <summary>Boat pitch angle in degrees (-180 to 180).</summary>
-    public float Pitch => Mathf.DeltaAngle(0, transform.eulerAngles.x);
-
-    /// <summary>Vertical position of the boat's center of mass.</summary>
-    public float Heave => rb.worldCenterOfMass.y;
-
-    /// <summary>Current rudder angle in degrees.</summary>
-    public float RudderAngle => gigboat.RudderAngle;
-
-    /// <summary>Yaw rate in degrees per second.</summary>
-    public float YawRateDeg => gigboat.YawRateDeg;
-
+    /// <summary>Yaw rate in degrees per second (from movement controller).</summary>
+    public float YawRateDeg => gigboat != null ? gigboat.YawRateDeg : 0f;
 
 
     // ─────────────────────────────────────────────────────────────
     // WATER DEPTH SAMPLING
     // ─────────────────────────────────────────────────────────────
-
     /// <summary>
     /// Returns the depth of a buoyancy probe relative to the water surface.
-    /// Uses wave height if a Water component is present, otherwise flat water at Y=0.
+    /// Placeholder until wave system is wired.
     /// </summary>
     public float GetPointDepth(Transform p)
     {
-        float waterHeight = 0f; // placeholder until wave system is wired
+        float waterHeight = 0f; // placeholder
         return waterHeight - p.position.y;
     }
-
-
-
-    /*// ─────────────────────────────────────────────────────────────
-    // ROLL DAMPING DEBUG (values pulled from GigboatMovement)
-    // ─────────────────────────────────────────────────────────────
-
-    public float RollDamping => gigboat.RollDampingStrength;
-    public float RollStiffnessBase => gigboat.RollStiffnessBase;
-    public float RollStiffnessSpeed => gigboat.RollStiffnessSpeedMultiplier;
-    public float RudderRoll => gigboat.RudderRollTorqueStrength;
-    public float RudderRollThreshold => gigboat.RudderRollActivationSpeed;*/
-
 
 
     // ─────────────────────────────────────────────────────────────
     // HYDRODYNAMICS DEBUG
     // ─────────────────────────────────────────────────────────────
+    public float ForwardSpeed => hydrodynamics != null ? hydrodynamics.ForwardSpeed : 0f;
+    public Vector3 ForwardDragForce => hydrodynamics != null ? hydrodynamics.ForwardDragForce : Vector3.zero;
+    public float ForwardDragMagnitude => ForwardDragForce.magnitude;
 
-    public float ForwardSpeed => hydrodynamics.ForwardSpeed;
-    public Vector3 ForwardDragForce => hydrodynamics.ForwardDragForce;
-    public float ForwardDragMagnitude => hydrodynamics.ForwardDragForce.magnitude;
-
-    public float LateralSpeed => hydrodynamics.LateralSpeed;
-    public Vector3 LateralDragForce => hydrodynamics.LateralDragForce;
-    public float LateralDragMagnitude => hydrodynamics.LateralDragForce.magnitude;
-
-    public float YawRateHydro => hydrodynamics.YawRate;
-    public float YawDampingTorque => hydrodynamics.YawDampingTorque;
-
-    
-
+    public float LateralSpeed => hydrodynamics != null ? hydrodynamics.LateralSpeed : 0f;
+    public Vector3 LateralDragForce => hydrodynamics != null ? hydrodynamics.LateralDragForce : Vector3.zero;
+    public float LateralDragMagnitude => LateralDragForce.magnitude;
 
 
     // ─────────────────────────────────────────────────────────────
     // UTILITY
     // ─────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Forces all buoyancy probe transforms to sit at local Y = 0.
-    /// Useful when adjusting hull probe layout.
-    /// </summary>
     [ContextMenu("Apply Buoyancy Point Offset")]
     private void ApplyOffset()
     {
+        if (points == null) return;
+
         foreach (Transform p in points)
         {
+            if (p == null) continue;
+
             Vector3 local = p.localPosition;
             local.y = 0f;
             p.localPosition = local;

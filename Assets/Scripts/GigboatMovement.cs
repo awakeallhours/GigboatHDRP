@@ -103,11 +103,9 @@ public class GigboatMovement : MonoBehaviour
     {
         HandleThrottle();
         HandleRudder();
-        HandleYawPhysics();
         HandlePitchPhysics();
         UpdateDebugValues();
 
-        propWash.SetPropDepth(buoyancy.SternSubmerged01);
         propWash.SetThrottle(ThrottlePercent);
 
         gizmoDrawer.SetThrustForce(Vector3.zero);

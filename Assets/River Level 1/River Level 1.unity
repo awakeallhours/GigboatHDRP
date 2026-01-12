@@ -2069,7 +2069,7 @@ Transform:
   m_GameObject: {fileID: 536443355}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -125.599976, y: 0.5, z: 169.5}
+  m_LocalPosition: {x: -135.4, y: 0.5, z: 169.5}
   m_LocalScale: {x: 20, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7373,6 +7373,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2256907156504980049, guid: 28ac723fe97de2e42bd317635323d158, type: 3}
+      propertyPath: crossflowArea
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2256907156504980049, guid: 28ac723fe97de2e42bd317635323d158, type: 3}
+      propertyPath: lateralDragArea
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2256907156504980049, guid: 28ac723fe97de2e42bd317635323d158, type: 3}
+      propertyPath: crossflowCoefficient
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2256907156504980049, guid: 28ac723fe97de2e42bd317635323d158, type: 3}
+      propertyPath: lateralDragCoefficient
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3518177311362791887, guid: 28ac723fe97de2e42bd317635323d158, type: 3}
       propertyPath: m_Name
       value: MooringDolly 1

@@ -16,6 +16,10 @@ public class MarinePowertrainController : MonoBehaviour
     [Tooltip("Audio-facing engine controller (normalized RPM/load/throttle).")]
     [SerializeField] private AudioEngineController audioEngine;
 
+    [Tooltip("Prop immersion + ventilation state.")]
+    [SerializeField] private MarineProp marineProp;
+
+
 
     // ─────────────────────────────────────────────────────────────
     // ENGINE CONFIGURATION (PHYSICAL)
@@ -237,6 +241,18 @@ public class MarinePowertrainController : MonoBehaviour
 
         // 4. Scale by engine load
         float thrust = thrustAtSpeed * engineLoad01;
+
+        // NEW: scale thrust by prop immersion
+        if (marineProp != null)
+            thrust *= marineProp.PropImmersion01;
+
+        // NEW: ventilation = prop out of water
+        if (marineProp != null && !marineProp.PropIsUnderwater)
+        {
+            // kill thrust when ventilated
+            thrust *= 0.1f;
+        }
+
 
 
         // ─────────────────────────────────────────────────────────────
