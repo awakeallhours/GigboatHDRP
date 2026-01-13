@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Primary helm control for the gigboat.
+/// Handles throttle, rudder, and helm‑side debug values.
+/// </summary>
 public class GigboatMovement : MonoBehaviour
 {
     // ─────────────────────────────────────────────────────────────
@@ -11,73 +15,66 @@ public class GigboatMovement : MonoBehaviour
     [SerializeField] private PropWash propWash;
     [SerializeField] private GigboatGizmos gizmoDrawer;
     [SerializeField] private Transform cameraTarget;
-
-    // NEW: Hydrodynamics reference for rudder angle injection
     [SerializeField] private Hydrodynamics hydrodynamics;
 
-
-
     // ─────────────────────────────────────────────────────────────
-    // THROTTLE (REALISTIC MARINE THROTTLE — CLEANED)
+    // THROTTLE (REALISTIC MARINE THROTTLE)
     // ─────────────────────────────────────────────────────────────
     [Header("Throttle")]
-    [SerializeField] private float throttleChangeRate = 60f;
+    [Tooltip("Rate at which the throttle lever moves (units per second).  \nSI‑integration: convert to a RateValue later.")]
+    [SerializeField] private float throttleChangeRate = 60f;   // SI‑TODO
+
+    [Tooltip("Dead‑zone around neutral where throttle snaps cleanly.")]
     [SerializeField] private float neutralGate = 2f;
 
-    private float throttleMagnitude;
+    private float throttleMagnitude;      // internal smoothing
 
-
-
-    // ─────────────────────────────────────────────────────────────
-    // PITCH CONTROL
-    // ─────────────────────────────────────────────────────────────
-    [Header("Pitch & Trim")]
-    [SerializeField] private float pitchDampingStrength = 10f;
-
-
-
-    // ─────────────────────────────────────────────────────────────
-    // RUDDER CONTROL
-    // ─────────────────────────────────────────────────────────────
-    [Header("Rudder Behaviour")]
-    [SerializeField] private float rudderMaxStepPerSecond = 0.4f;
-    [SerializeField] private float rudderInputExponent = 2.5f;
-    [SerializeField] private float rudderAuthorityLowSpeed = 2f;
-    [SerializeField] private float rudderResponseRate = 3f;
-    [SerializeField] private float rudderFadeSpeed = 10f;
-    [SerializeField] private float rudderMinResponse = 0.2f;
-    [SerializeField] private float rudderMinEffectiveSpeed = 1f;
-
-    // NEW: authoritative physical rudder angle range (degrees)
-    [SerializeField] private float maxRudderAngleDegrees = 30f;
-
-
-
-    // ─────────────────────────────────────────────────────────────
-    // YAW CONTROL
-    // ─────────────────────────────────────────────────────────────
-    [Header("Yaw Control")]
-    [SerializeField] private float maxYawRateDeg = 12f;
-    [SerializeField] private float yawTurnDampingFactor = 0.4f;
-
-
-
-    // ─────────────────────────────────────────────────────────────
-    // PUBLIC PROPERTIES
-    // ─────────────────────────────────────────────────────────────
-    public float RudderAngle
-    {
-        get; private set;
-    }     // normalized -1..1
-    public float YawRateDeg
-    {
-        get; private set;
-    }
+    // Lever / output
     public float ThrottlePercent
     {
         get; private set;
-    }
+    }   // −100..+100
     public float TargetThrottle
+    {
+        get; private set;
+    }   // −100..+100
+
+    // ─────────────────────────────────────────────────────────────
+    // KICK AHEAD / KICK ASTERN
+    // ─────────────────────────────────────────────────────────────
+    [Header("Kick Ahead / Kick Astern")]
+    [Tooltip("Maximum time between taps to register a double‑tap.")]
+    [SerializeField] private float doubleTapWindow = 0.25f;    // SI‑TODO
+
+    private float lastTapForward = -1f;
+    private float lastTapReverse = -1f;
+
+    private bool overrideActive = false;
+    private float overrideThrottle = 0f;   // −100..+100 during override
+    private float savedThrottle = 0f;      // lever position before override
+
+    // ─────────────────────────────────────────────────────────────
+    // RUDDER
+    // ─────────────────────────────────────────────────────────────
+    [Header("Rudder Behaviour")]
+    [SerializeField] private float rudderMaxStepPerSecond = 0.4f;   // SI‑TODO
+    [SerializeField] private float rudderInputExponent = 2.5f;
+    [SerializeField] private float rudderAuthorityLowSpeed = 2f;    // SI‑TODO
+    [SerializeField] private float rudderResponseRate = 3f;         // SI‑TODO
+    [SerializeField] private float rudderFadeSpeed = 10f;           // SI‑TODO
+    [SerializeField] private float rudderMinResponse = 0.2f;
+    [SerializeField] private float rudderMinEffectiveSpeed = 1f;    // SI‑TODO
+    [SerializeField] private float maxRudderAngleDegrees = 30f;     // SI‑TODO
+
+    [Header("Yaw Control")]
+    [SerializeField] private float maxYawRateDeg = 12f;             // SI‑TODO
+    [SerializeField] private float yawTurnDampingFactor = 0.4f;
+
+    public float RudderAngle
+    {
+        get; private set;
+    }      // −1..1
+    public float YawRateDeg
     {
         get; private set;
     }
@@ -87,9 +84,7 @@ public class GigboatMovement : MonoBehaviour
     private float forwardSpeed;
 
     public Transform CameraTarget => cameraTarget;
-    public float SpeedKnots => speed * 1.943844f;
-
-
+    public float SpeedKnots => speed * 1.943844f;       // SI‑TODO
 
     // ─────────────────────────────────────────────────────────────
     // UNITY EVENTS
@@ -103,23 +98,61 @@ public class GigboatMovement : MonoBehaviour
     {
         HandleThrottle();
         HandleRudder();
-        HandlePitchPhysics();
         UpdateDebugValues();
 
         propWash.SetThrottle(ThrottlePercent);
-
         gizmoDrawer.SetThrustForce(Vector3.zero);
     }
 
-
-
     // ─────────────────────────────────────────────────────────────
-    // THROTTLE
+    // THROTTLE (WITH KICK AHEAD / ASTERN)
     // ─────────────────────────────────────────────────────────────
     private void HandleThrottle()
     {
         float input = Input.GetAxisRaw("Vertical");
 
+        // ─────────────────────────────────────────────
+        // MODIFIER‑BASED KICK (Shift + W / Shift + S)
+        // ─────────────────────────────────────────────
+        bool kickAhead = Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.W);
+        bool kickAstern = Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.S);
+
+        if (kickAhead)
+        {
+            overrideActive = true;
+            overrideThrottle = 100f;
+
+            Debug.Log("[Gigboat] Kick Ahead (modifier)");
+        }
+        else if (kickAstern)
+        {
+            overrideActive = true;
+            overrideThrottle = -100f;
+
+            Debug.Log("[Gigboat] Kick Astern (modifier)");
+        }
+        else if (overrideActive)
+        {
+            // Modifier released → go to neutral
+            overrideActive = false;
+            overrideThrottle = 0f;
+            TargetThrottle = 0f;
+            throttleMagnitude = 0f;
+            ThrottlePercent = 0f;
+
+            Debug.Log("[Gigboat] Kick Released → Neutral");
+        }
+
+        // If override is active, bypass everything
+        if (overrideActive)
+        {
+            ThrottlePercent = overrideThrottle;
+            return;
+        }
+
+        // ─────────────────────────────────────────────
+        // NORMAL THROTTLE LOGIC
+        // ─────────────────────────────────────────────
         if (Mathf.Abs(TargetThrottle) < neutralGate)
         {
             if (Mathf.Abs(input) < 0.1f)
@@ -145,7 +178,6 @@ public class GigboatMovement : MonoBehaviour
     }
 
 
-
     // ─────────────────────────────────────────────────────────────
     // RUDDER CONTROL
     // ─────────────────────────────────────────────────────────────
@@ -167,44 +199,9 @@ public class GigboatMovement : MonoBehaviour
         RudderAngle += delta;
         RudderAngle = Mathf.Clamp(RudderAngle, -1f, 1f);
 
-        // NEW: Feed Hydrodynamics the real rudder angle in degrees
         if (hydrodynamics != null)
             hydrodynamics.RudderAngleDegrees = -RudderAngle * maxRudderAngleDegrees;
     }
-
-
-
-    // ─────────────────────────────────────────────────────────────
-    // YAW PHYSICS
-    // ─────────────────────────────────────────────────────────────
-    private void HandleYawPhysics()
-    {
-        float speed = rb.linearVelocity.magnitude;
-
-        float yawCommand = RudderAngle * maxYawRateDeg;
-
-        float damping = 1f / (1f + speed * yawTurnDampingFactor);
-        yawCommand *= damping;
-
-        rb.AddTorque(Vector3.up * yawCommand, ForceMode.Acceleration);
-
-        YawRateDeg = rb.angularVelocity.y * Mathf.Rad2Deg;
-    }
-
-
-
-    // ─────────────────────────────────────────────────────────────
-    // PITCH PHYSICS
-    // ─────────────────────────────────────────────────────────────
-    private void HandlePitchPhysics()
-    {
-        float pitchVel = rb.angularVelocity.x;
-        float damping = -pitchVel * pitchDampingStrength;
-
-        rb.AddTorque(new Vector3(damping, 0f, 0f), ForceMode.Acceleration);
-    }
-
-
 
     // ─────────────────────────────────────────────────────────────
     // DEBUG VALUES

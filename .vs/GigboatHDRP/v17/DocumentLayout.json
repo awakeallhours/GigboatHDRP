@@ -3,24 +3,32 @@
   "WorkspaceRootPath": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\hydrodynamics.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\hydrodynamics.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\gigboatmovement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\gigboatmovement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|c:\\users\\awake\\desktop\\unity projects\\gigboathdrp\\assets\\scripts\\waterprobesampler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\waterprobesampler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|c:\\users\\awake\\desktop\\unity projects\\gigboathdrp\\assets\\scripts\\buoyancy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\buoyancy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|c:\\users\\awake\\desktop\\unity projects\\gigboathdrp\\assets\\scripts\\hydrodynamics.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\hydrodynamics.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\buoyancydebug.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\buoyancydebug.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\gigboatdebugprobe.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\gigboatdebugprobe.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\ruddercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\ruddercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\gigboatmovement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\gigboatmovement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\pitchphysics.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\pitchphysics.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\marinepowertraincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -31,36 +39,12 @@
       "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\gigboatgizmos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\marineprop.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\marineprop.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\propspin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\propspin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\buoyancydebug.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\buoyancydebug.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\sternsquat.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\sternsquat.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\unitconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\unitconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\waketrail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\waketrail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\gigboatspawner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\gigboatspawner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\steering ui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\steering ui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\waketrail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\waketrail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -70,169 +54,123 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
+              "Title": "WaterProbeSampler.cs",
+              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\WaterProbeSampler.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\WaterProbeSampler.cs",
+              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\WaterProbeSampler.cs",
+              "RelativeToolTip": "Assets\\Scripts\\WaterProbeSampler.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAD8AAAByAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-13T00:08:37.422Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "Buoyancy.cs",
               "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Buoyancy.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Buoyancy.cs",
               "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Buoyancy.cs",
               "RelativeToolTip": "Assets\\Scripts\\Buoyancy.cs",
-              "ViewState": "AgIAAL8AAAAAAAAAAAAuwNMAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAqwLYAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-12T01:19:03.128Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "MarineProp.cs",
-              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\MarineProp.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\MarineProp.cs",
-              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\MarineProp.cs",
-              "RelativeToolTip": "Assets\\Scripts\\MarineProp.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAADwAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-10T21:37:43.361Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "PropSpin.cs",
-              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\PropSpin.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\PropSpin.cs",
-              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\PropSpin.cs",
-              "RelativeToolTip": "Assets\\Scripts\\PropSpin.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-10T21:32:59.087Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "Steering UI.cs",
-              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Steering UI.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Steering UI.cs",
-              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Steering UI.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Steering UI.cs",
-              "ViewState": "AgIAAEgAAAAAAAAAAAAQwFoAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-09T22:11:50.622Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "RudderController.cs",
-              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\RudderController.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\RudderController.cs",
-              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\RudderController.cs",
-              "RelativeToolTip": "Assets\\Scripts\\RudderController.cs",
-              "ViewState": "AgIAABwAAAAAAAAAAAAiwDsAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-09T22:11:13.025Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "WakeTrail.cs",
-              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\WakeTrail.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\WakeTrail.cs",
-              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\WakeTrail.cs*",
-              "RelativeToolTip": "Assets\\Scripts\\WakeTrail.cs*",
-              "ViewState": "AgIAAFEAAAAAAAAAAAAQwGsAAAAHAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-09T21:42:26.396Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "GigboatGizmos.cs",
-              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\GigboatGizmos.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\GigboatGizmos.cs",
-              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\GigboatGizmos.cs",
-              "RelativeToolTip": "Assets\\Scripts\\GigboatGizmos.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAADIAAAAgAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-09T20:39:44.894Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "MarinePowertrainController.cs",
-              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\MarinePowertrainController.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\MarinePowertrainController.cs",
-              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\MarinePowertrainController.cs",
-              "RelativeToolTip": "Assets\\Scripts\\MarinePowertrainController.cs",
-              "ViewState": "AgIAAOIAAAAAAAAAAAAYwP4AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-05T23:14:57.527Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "Hydrodynamics.cs",
               "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Hydrodynamics.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Hydrodynamics.cs",
               "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Hydrodynamics.cs",
               "RelativeToolTip": "Assets\\Scripts\\Hydrodynamics.cs",
-              "ViewState": "AgIAAFMAAAAAAAAAAAAkwHIAAAAIAAAAAAAAAA==",
+              "ViewState": "AgIAAPABAAAAAAAAAAAuwAICAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-01T16:11:59.745Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
               "Title": "GigboatMovement.cs",
               "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\GigboatMovement.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\GigboatMovement.cs",
               "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\GigboatMovement.cs",
               "RelativeToolTip": "Assets\\Scripts\\GigboatMovement.cs",
-              "ViewState": "AgIAAFkAAAAAAAAAAAA7wGgAAAAXAAAAAAAAAA==",
+              "ViewState": "AgIAAJgAAAAAAAAAAAAuwLEAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-08T02:59:23.601Z"
+              "WhenOpened": "2026-01-12T21:49:20.491Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 6,
+              "Title": "PitchPhysics.cs",
+              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\PitchPhysics.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\PitchPhysics.cs",
+              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\PitchPhysics.cs",
+              "RelativeToolTip": "Assets\\Scripts\\PitchPhysics.cs",
+              "ViewState": "AgIAAHYAAAAAAAAAAAAAwDMAAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-12T20:50:45.577Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "WakeTrail.cs",
+              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\WakeTrail.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\WakeTrail.cs",
+              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\WakeTrail.cs",
+              "RelativeToolTip": "Assets\\Scripts\\WakeTrail.cs",
+              "ViewState": "AgIAACAAAAAAAAAAAAA9wEAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-09T21:42:26.396Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "GigboatGizmos.cs",
+              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\GigboatGizmos.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\GigboatGizmos.cs",
+              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\GigboatGizmos.cs",
+              "RelativeToolTip": "Assets\\Scripts\\GigboatGizmos.cs",
+              "ViewState": "AgIAAFQAAAAAAAAAAAAywDIAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-09T20:39:44.894Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "MarinePowertrainController.cs",
+              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\MarinePowertrainController.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\MarinePowertrainController.cs",
+              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\MarinePowertrainController.cs",
+              "RelativeToolTip": "Assets\\Scripts\\MarinePowertrainController.cs",
+              "ViewState": "AgIAAL0AAAAAAAAAAAAIwNsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-05T23:14:57.527Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "GigboatDebugProbe.cs",
               "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\GigboatDebugProbe.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\GigboatDebugProbe.cs",
               "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\GigboatDebugProbe.cs",
               "RelativeToolTip": "Assets\\Scripts\\GigboatDebugProbe.cs",
-              "ViewState": "AgIAADMAAAAAAAAAAAA9wFsAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFsAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-01T01:56:19.677Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "UnitConverter.cs",
-              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\UnitConverter.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\UnitConverter.cs",
-              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\UnitConverter.cs",
-              "RelativeToolTip": "Assets\\Scripts\\UnitConverter.cs",
-              "ViewState": "AgIAAAICAAAAAAAAAAAmwCICAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-10T15:47:15.472Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "SternSquat.cs",
-              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\SternSquat.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\SternSquat.cs",
-              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\SternSquat.cs",
-              "RelativeToolTip": "Assets\\Scripts\\SternSquat.cs",
-              "ViewState": "AgIAAGAAAAAAAAAAAAAywAIAAAAXAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-10T21:06:45.122Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 4,
               "Title": "BuoyancyDebug.cs",
               "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\BuoyancyDebug.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\BuoyancyDebug.cs",
@@ -244,7 +182,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 10,
               "Title": "GigboatSpawner.cs",
               "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\GigboatSpawner.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\GigboatSpawner.cs",

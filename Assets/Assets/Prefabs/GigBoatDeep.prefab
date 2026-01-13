@@ -1422,10 +1422,8 @@ Transform:
   m_Children:
   - {fileID: 5585519512765138739}
   - {fileID: 4758076792132221299}
-  - {fileID: 5260950941779752028}
-  - {fileID: 4132408208251962415}
-  - {fileID: 3273649465197570229}
   - {fileID: 1980936415652246005}
+  - {fileID: 553241246400679064}
   m_Father: {fileID: 6083827959470830711}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4496940535345935029
@@ -1555,16 +1553,18 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 361113420622967515}
+  - component: {fileID: 5038006742448109422}
   - component: {fileID: 7804635203045131661}
-  - component: {fileID: 7637350465852271551}
   - component: {fileID: 7194902096994621572}
   - component: {fileID: 2887459210936165740}
   - component: {fileID: 723849269608935986}
   - component: {fileID: 1353307552192101508}
   - component: {fileID: 1326908602361906052}
+  - component: {fileID: 7637350465852271551}
   - component: {fileID: 6401897688909232224}
   - component: {fileID: 3381699315492899737}
   - component: {fileID: 6263178763644586018}
+  - component: {fileID: -143646874513710580}
   m_Layer: 0
   m_Name: GigBoatDeep
   m_TagString: Untagged
@@ -1590,6 +1590,30 @@ Transform:
   - {fileID: 5913771198336057280}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5038006742448109422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4833431607046282324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42cbda5583a859643966e73ca9ff357d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 0}
+  hydrodynamics: {fileID: 7804635203045131661}
+  dragApplicationPoint: {fileID: 7125151700591957417}
+  pitchDampingCoefficient: 10
+  dampingStartSpeed: 1
+  dampingFullSpeed: 15
+  maxDampingScale: 1
+  pitchRateRad: 0
+  pitchRateDeg: 0
+  dampingScale: 0
+  pitchDampingTorque: {x: 0, y: 0, z: 0}
+  dragPitchTorque: {x: 0, y: 0, z: 0}
 --- !u!114 &7804635203045131661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1604,6 +1628,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Hydrodynamics
   rb: {fileID: 0}
   waterVelocity: {x: 0, y: 0, z: 0}
+  probeSampler: {fileID: -143646874513710580}
+  buoyancy: {fileID: 2887459210936165740}
   lateralLinearDrag: 40
   lateralQuadraticDrag: 80
   forwardLinearDrag: 30
@@ -1611,50 +1637,21 @@ MonoBehaviour:
   rudderPivot: {fileID: 1778909944695638150}
   rudderAngleDegrees: 0
   rudderForceCoefficient: 30
+  yawLinearDamping: 40
+  yawQuadraticDamping: 200
   yawRate: 0
   yawDampingTorque: 0
+  rudderYawTorqueDebug: 0
+  crossflowCoefficient: 1.5
+  crossflowArea: 0.25
+  yawAccumulatedDegrees: 0
+  lastRudderSign: 0
   lateralSpeed: 0
   lateralDragForce: {x: 0, y: 0, z: 0}
   forwardSpeed: 0
   forwardDragForce: {x: 0, y: 0, z: 0}
   rudderSideForceMagnitude: 0
   rudderForceWorld: {x: 0, y: 0, z: 0}
---- !u!114 &7637350465852271551
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4833431607046282324}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18a284eead3bb974fbd42fe86f58217a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rb: {fileID: 6401897688909232224}
-  hydrodynamics: {fileID: 7804635203045131661}
-  audioEngine: {fileID: 4812670200014810190}
-  marineProp: {fileID: 0}
-  rpmIdle: 120
-  rpmMax: 2350
-  rpmChangeRate: 800
-  referenceMaxDrag: 4000
-  accelInfluence: 0.4
-  loadSmoothing: 5
-  maxStaticThrust: 6000
-  maxDynamicThrust: 3000
-  thrustFadeSpeed: 20
-  reverseThrustMultiplier: 0.9
-  currentThrust: 0
-  applyThrust: 1
-  thrustPoint: {fileID: 7717750645490284848}
-  throttle01: 0
-  engineRPMPhysical: 0
-  engineRPM01: 0
-  engineLoad01: 0
-  forwardDragMag: 0
-  forwardSpeed: 0
-  estimatedAccel: 0
 --- !u!114 &7194902096994621572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1675,7 +1672,6 @@ MonoBehaviour:
   hydrodynamics: {fileID: 7804635203045131661}
   throttleChangeRate: 60
   neutralGate: 2
-  pitchDampingStrength: 10
   rudderMaxStepPerSecond: 0.8
   rudderInputExponent: 2.5
   rudderAuthorityLowSpeed: 20
@@ -1699,38 +1695,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 6401897688909232224}
-  samplePoints:
-  - {fileID: 5998854642304655755}
-  - {fileID: 3129992416833491610}
-  - {fileID: 6728273268906666960}
-  - {fileID: 4267753403338524935}
-  - {fileID: 4436612481927714831}
-  - {fileID: 1407071608131589043}
+  sampler: {fileID: -143646874513710580}
   buoyancyStrength: 5500
   waterDrag: 1.2
   waterAngularDrag: 0.5
-  heaveDampingStrength: 2000
+  heaveDampingStrength: 3000
   waterDensity:
     waterType: 1
     inputValue: 1025
     unit: 0
   probeArea:
-    inputValue: 0.25
+    inputValue: 0.4
     unit: 0
   autoComputeStrength: 1
   enableRightingMoment: 1
   rightingStrength: 0.3
-  crossflowCoefficient: 0
-  crossflowArea: 0
-  lateralDragCoefficient: 0
-  lateralDragArea: 0
   sternProbeIndex: 0
   sternReferenceDepth:
     inputValue: 0.4
     unit: 0
-  pointHeights: []
-  pointNormals: []
-  pointValid: 
 --- !u!114 &723849269608935986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1797,6 +1780,40 @@ MonoBehaviour:
   immersion01: 0
   rawDepthMeters: 0
   valid: 0
+--- !u!114 &7637350465852271551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4833431607046282324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18a284eead3bb974fbd42fe86f58217a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 6401897688909232224}
+  hydrodynamics: {fileID: 7804635203045131661}
+  audioEngine: {fileID: 4812670200014810190}
+  marineProp: {fileID: 1326908602361906052}
+  rpmIdle: 120
+  rpmMax: 2350
+  rpmChangeRate: 800
+  referenceMaxDrag: 4000
+  accelInfluence: 0.4
+  loadSmoothing: 5
+  maxStaticThrust: 6000
+  maxDynamicThrust: 3000
+  thrustFadeSpeed: 20
+  reverseThrustMultiplier: 0.9
+  thrustPoint: {fileID: 7717750645490284848}
+  throttle01: 0
+  engineRPMPhysical: 0
+  engineRPM01: 0
+  engineLoad01: 0
+  forwardDragMag: 0
+  forwardSpeed: 0
+  estimatedAccel: 0
 --- !u!54 &6401897688909232224
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1860,6 +1877,83 @@ MonoBehaviour:
   rb: {fileID: 6401897688909232224}
   thrustPoint: {fileID: 7717750645490284848}
   thrustPointForce: {x: 0, y: 0, z: 0}
+--- !u!114 &-143646874513710580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4833431607046282324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb753618636bea64293e6b1461fb4aec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  samplePoints:
+  - {fileID: 5998854642304655755}
+  - {fileID: 3129992416833491610}
+  - {fileID: 6728273268906666960}
+  - {fileID: 4267753403338524935}
+  - {fileID: 4436612481927714831}
+  - {fileID: 1407071608131589043}
+--- !u!1 &4864625990696992598
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 553241246400679064}
+  - component: {fileID: 3033656547177380949}
+  m_Layer: 0
+  m_Name: WakeTrail
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &553241246400679064
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4864625990696992598}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.016, z: -3.423}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5260950941779752028}
+  - {fileID: 4132408208251962415}
+  - {fileID: 3273649465197570229}
+  m_Father: {fileID: 8157893938280392111}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3033656547177380949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4864625990696992598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c9cefba6de55ed438a069baa86ac920, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 6401897688909232224}
+  wakeAnchor: {fileID: 553241246400679064}
+  wakeParticles:
+  - {fileID: 5812933021595479460}
+  - {fileID: 2373480103072734679}
+  - {fileID: 3803111845949108557}
+  idleEmission: 0
+  maxEmissionRate: 10
+  maxWakeSpeed: 20
+  minWidth: 0.2
+  maxWidth: 1
 --- !u!1 &5234435885790757786
 GameObject:
   m_ObjectHideFlags: 0
@@ -2661,6 +2755,37 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &6062109007721612087
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7125151700591957417}
+  m_Layer: 0
+  m_Name: PitchPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7125151700591957417
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6062109007721612087}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6083827959470830711}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6321623895841630248
 GameObject:
   m_ObjectHideFlags: 0
@@ -3668,6 +3793,7 @@ Transform:
   - {fileID: 1916916977404125456}
   - {fileID: 910222708283239493}
   - {fileID: 7717750645490284848}
+  - {fileID: 7125151700591957417}
   - {fileID: 6922723222970537001}
   - {fileID: 4318033409439622710}
   - {fileID: 1778909944695638150}
@@ -3839,7 +3965,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8157893938280392111}
+    m_TransformParent: {fileID: 553241246400679064}
     m_Modifications:
     - target: {fileID: 304492806899098329, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
       propertyPath: ShapeModule.type
@@ -3875,11 +4001,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2130429478973618977, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.464
+      value: -0.44799998
       objectReference: {fileID: 0}
     - target: {fileID: 2130429478973618977, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.351163
+      value: 0.07183719
       objectReference: {fileID: 0}
     - target: {fileID: 2130429478973618977, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3946,6 +4072,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
+--- !u!198 &2373480103072734679 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 304492806899098329, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
+  m_PrefabInstance: {fileID: 2650804939151539982}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4132408208251962415 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2130429478973618977, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
@@ -4038,7 +4169,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8157893938280392111}
+    m_TransformParent: {fileID: 553241246400679064}
     m_Modifications:
     - target: {fileID: 304492806899098329, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
       propertyPath: ShapeModule.type
@@ -4074,11 +4205,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2130429478973618977, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.464
+      value: -0.44799998
       objectReference: {fileID: 0}
     - target: {fileID: 2130429478973618977, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.351163
+      value: 0.07183719
       objectReference: {fileID: 0}
     - target: {fileID: 2130429478973618977, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
       propertyPath: m_LocalRotation.w
@@ -4150,13 +4281,18 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2130429478973618977, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
   m_PrefabInstance: {fileID: 3530426879817388948}
   m_PrefabAsset: {fileID: 0}
+--- !u!198 &3803111845949108557 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 304492806899098329, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
+  m_PrefabInstance: {fileID: 3530426879817388948}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6094049041739927421
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8157893938280392111}
+    m_TransformParent: {fileID: 553241246400679064}
     m_Modifications:
     - target: {fileID: 2130429478973618977, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4164,11 +4300,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2130429478973618977, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.464
+      value: -0.44799998
       objectReference: {fileID: 0}
     - target: {fileID: 2130429478973618977, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.5541625
+      value: -0.1311624
       objectReference: {fileID: 0}
     - target: {fileID: 2130429478973618977, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
       propertyPath: m_LocalRotation.w
@@ -4226,7 +4362,8 @@ PrefabInstance:
       propertyPath: idleEmission
       value: 50
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6477943588512429350, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -4234,5 +4371,10 @@ PrefabInstance:
 --- !u!4 &5260950941779752028 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2130429478973618977, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
+  m_PrefabInstance: {fileID: 6094049041739927421}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &5812933021595479460 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 304492806899098329, guid: 7fdfc33728a2f24408093dd2b135c549, type: 3}
   m_PrefabInstance: {fileID: 6094049041739927421}
   m_PrefabAsset: {fileID: 0}
