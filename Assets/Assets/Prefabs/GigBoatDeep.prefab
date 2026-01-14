@@ -1553,6 +1553,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 361113420622967515}
+  - component: {fileID: -17380652402312966}
   - component: {fileID: 5038006742448109422}
   - component: {fileID: 7804635203045131661}
   - component: {fileID: 7194902096994621572}
@@ -1565,6 +1566,7 @@ GameObject:
   - component: {fileID: 3381699315492899737}
   - component: {fileID: 6263178763644586018}
   - component: {fileID: -143646874513710580}
+  - component: {fileID: -5939297710904165419}
   m_Layer: 0
   m_Name: GigBoatDeep
   m_TagString: Untagged
@@ -1590,6 +1592,21 @@ Transform:
   - {fileID: 5913771198336057280}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-17380652402312966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4833431607046282324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bba47549cff22e74b8a31ccee80db587, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  config: {fileID: 11400000, guid: 14531589eaadd2f4b90c3007aa27bb57, type: 2}
+  buoyancy: {fileID: 2887459210936165740}
+  followCam: {fileID: -5939297710904165419}
 --- !u!114 &5038006742448109422
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1637,8 +1654,8 @@ MonoBehaviour:
   rudderPivot: {fileID: 1778909944695638150}
   rudderAngleDegrees: 0
   rudderForceCoefficient: 30
-  rudderRollScale: 0
-  rollAsymmetrySensitivity: 0
+  rudderRollScale: 3
+  rollAsymmetrySensitivity: 1
   rollAsymmetryCurve:
     serializedVersion: 2
     m_Curve:
@@ -1663,9 +1680,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  lateralAsymmetryScale: 0
-  lateralForceHalfBeam: 0
-  lateralForceVerticalOffset: 0
+  lateralAsymmetryScale: 0.5
+  lateralForceHalfBeam: 1.5
+  lateralForceVerticalOffset: -0.5
   yawLinearDamping: 40
   yawQuadraticDamping: 200
   yawRate: 0
@@ -1751,7 +1768,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 6401897688909232224}
   sampler: {fileID: -143646874513710580}
-  buoyancyStrength: 5500
+  buoyancyStrength: 3500
   waterDrag: 1.2
   waterAngularDrag: 0.5
   heaveDampingStrength: 3000
@@ -1951,6 +1968,26 @@ MonoBehaviour:
   - {fileID: 4267753403338524935}
   - {fileID: 4436612481927714831}
   - {fileID: 1407071608131589043}
+--- !u!114 &-5939297710904165419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4833431607046282324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3ef298683bf1a6449401eeccc4fe95f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraTarget: {fileID: 910222708283239493}
+  boatRb: {fileID: 6401897688909232224}
+  sideDriftStrength: 0.08
+  forwardDriftStrength: 0.03
+  reverseSlewSpeed: 2.5
+  deadZone: 0.5
+  reverseCommit: -1.5
+  forwardCommit: 1
 --- !u!1 &4864625990696992598
 GameObject:
   m_ObjectHideFlags: 0
@@ -2721,7 +2758,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b06df706240238c47b1c40046a51caf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioEngine: {fileID: 0}
+  audioEngine: {fileID: 4812670200014810190}
   powertrain: {fileID: 7637350465852271551}
   hydro: {fileID: 7804635203045131661}
 --- !u!1 &5994724930234248195

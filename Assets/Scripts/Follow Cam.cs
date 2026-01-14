@@ -115,4 +115,15 @@ public class FollowCam : MonoBehaviour
             0f
         );
     }
+
+    public void ApplyFollowCamConfig(FollowCamConfig cfg)
+    {
+        sideDriftStrength = cfg.sideDriftStrength;
+        forwardDriftStrength = cfg.forwardDriftStrength;
+
+        reverseSlewSpeed = cfg.reverseSlewSpeed;
+        deadZone = cfg.deadZone;
+        reverseCommit = cfg.reverseCommit;
+        forwardCommit = cfg.forwardCommit;
+    }
 }

@@ -975,12 +975,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c22f0d932d5662847b2d5d00a6a28bc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PropSpin
-  movement: {fileID: 1108138743037943846}
-  throttle: 0
-  idleRPM: 300
-  maxRPM: 3000
-  spinAcceleration: 5
-  currentRPM: 0
+  powertrain: {fileID: 0}
+  visualRPMScale: 1
 --- !u!1 &6490459349987017072
 GameObject:
   m_ObjectHideFlags: 0
@@ -1294,21 +1290,85 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Hydrodynamics
   rb: {fileID: 0}
+  waterVelocity: {x: 0, y: 0, z: 0}
+  probeSampler: {fileID: 0}
+  buoyancy: {fileID: 0}
   lateralLinearDrag: 40
   lateralQuadraticDrag: 80
   forwardLinearDrag: 30
   forwardQuadraticDrag: 20
-  yawDampingCoefficient: 2
-  yawLateralCoupling: 1
-  hullDownforceCoefficient: 0.2
-  hullDownforceSpeedExponent: 1.5
+  rudderPivot: {fileID: 0}
+  rudderAngleDegrees: 0
+  rudderForceCoefficient: 500
+  rudderRollScale: 0.2
+  rollAsymmetrySensitivity: 1
+  rollAsymmetryCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -30
+      value: -1
+      inSlope: 0
+      outSlope: 0.033333335
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 30
+      value: 1
+      inSlope: 0.033333335
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  lateralAsymmetryScale: 0.5
+  lateralForceHalfBeam: 1.5
+  lateralForceVerticalOffset: -0.5
+  yawLinearDamping: 20
+  yawQuadraticDamping: 50
+  yawRate: 0
+  yawDampingTorque: 0
+  rudderYawTorqueDebug: 0
+  crossflowCoefficient: 1.5
+  crossflowArea: 0.25
+  crossflowReferenceDepth: 1
+  crossflowDepthCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  yawAccumulatedDegrees: 0
+  lastRudderSign: 0
   lateralSpeed: 0
   lateralDragForce: {x: 0, y: 0, z: 0}
   forwardSpeed: 0
   forwardDragForce: {x: 0, y: 0, z: 0}
-  yawRate: 0
-  yawDampingTorque: 0
-  hullDownforce: {x: 0, y: 0, z: 0}
+  rudderSideForceMagnitude: 0
+  rudderForceWorld: {x: 0, y: 0, z: 0}
 --- !u!114 &2330989946330761280
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1345,22 +1405,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Buoyancy
   rb: {fileID: 0}
-  samplePoints:
-  - {fileID: 6810434849939502609}
-  - {fileID: 5940668481687351267}
-  - {fileID: 7792053451859476292}
-  - {fileID: 3956806310794818918}
-  - {fileID: 5029400522975973690}
-  - {fileID: 6735478667692793085}
+  sampler: {fileID: 0}
   buoyancyStrength: 2500
   waterDrag: 4
   waterAngularDrag: 1.5
   heaveDampingStrength: 2000
-  sternIndex: 0
-  sternMaxDepth: 0.5
-  pointHeights: []
-  pointNormals: []
-  pointValid: 
+  waterDensity:
+    waterType: 1
+    inputValue: 1025
+    unit: 0
+  probeArea:
+    inputValue: 1
+    unit: 0
+  autoComputeStrength: 0
+  enableRightingMoment: 1
+  rightingStrength: 0.5
+  sternProbeIndex: 0
+  sternReferenceDepth:
+    inputValue: 0
+    unit: 0
 --- !u!114 &1108138743037943846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1374,39 +1437,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GigboatMovement
   rb: {fileID: 6341502006564020111}
-  thrustPoint: {fileID: 9101276027245868460}
-  cameraTarget: {fileID: 8963203713805327607}
   buoyancy: {fileID: 6607925723396070134}
-  maxThrottleForce: 2000
-  throttleChangeRate: 60
   propWash: {fileID: 6352648788331008396}
-  usePowertrainThrust: 0
+  gizmoDrawer: {fileID: 0}
+  cameraTarget: {fileID: 8963203713805327607}
+  hydrodynamics: {fileID: 0}
+  throttleChangeRate: 60
   neutralGate: 2
-  pitchDampingStrength: 10
+  doubleTapWindow: 0.25
+  rudderMaxStepPerSecond: 0.4
   rudderInputExponent: 2.5
   rudderAuthorityLowSpeed: 20
   rudderResponseRate: 3
   rudderFadeSpeed: 10
   rudderMinResponse: 0.2
   rudderMinEffectiveSpeed: 1
+  maxRudderAngleDegrees: 30
   maxYawRateDeg: 12
   yawTurnDampingFactor: 1.5
-  maxTurnBankAngleDeg: 15
-  rollDampingStrength: 20
-  lowSpeedRollStiffnessMultiplier: 0.05
-  lowSpeedRollDampingMultiplier: 1.5
-  rollAngleDampingCoefficient: 0.5
-  rollStiffnessBase: 12
-  rollStiffnessSpeedMultiplier: 0.3
-  rollStiffnessFullSpeed: 10
-  rudderRollTorqueStrength: 120
-  rudderRollActivationSpeed: 0.3
-  rudderRollFadeRange: 5
-  maxRollAngularVelocityDeg: 30
-  naturalRollActivationSpeed: 2
-  naturalRollDampingActivationSpeed: 2
-  thrustPointForce: {x: 0, y: 0, z: 0}
-  thrustPointForceMagnitude: 0
 --- !u!114 &6198677817798013879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1421,8 +1469,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GigboatDebugProbe
   buoyancy: {fileID: 6607925723396070134}
   gigboat: {fileID: 1108138743037943846}
-  propSpin: {fileID: 1391658866325668390}
   hydrodynamics: {fileID: 4877801854733031549}
+  powertrain: {fileID: 0}
+  rb: {fileID: 0}
   points:
   - {fileID: 2084843967159022497}
   - {fileID: 2084843967159022497}

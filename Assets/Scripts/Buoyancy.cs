@@ -65,14 +65,16 @@ public class Buoyancy : MonoBehaviour
     {
         if (rb == null)
             rb = GetComponent<Rigidbody>();
+        
+        
+    
+    }
 
+    private void Start()
+    {
         if (autoComputeStrength)
-        {
-            buoyancyStrength =
-                waterDensity.ValueKgPerCubicMeter *
-                Physics.gravity.magnitude *
-                probeArea.ValueSquareMeters;
-        }
+            RecomputeBuoyancyStrength();
+
     }
 
     private void FixedUpdate()
@@ -125,6 +127,15 @@ public class Buoyancy : MonoBehaviour
             }
         }
     }
+
+    public void RecomputeBuoyancyStrength()
+    {
+        buoyancyStrength =
+            waterDensity.ValueKgPerCubicMeter *
+            Physics.gravity.magnitude *
+            probeArea.ValueSquareMeters;
+    }
+
 
     private void ApplyAllBuoyancyForces()
     {
@@ -179,5 +190,28 @@ public class Buoyancy : MonoBehaviour
 
         float depth = waterY - pointY;
         SternImmersion01 = Mathf.Clamp01(depth / sternReferenceDepth.ValueMeters);
+    }
+
+    public void ApplyBuoyancyConfig(BuoyancyConfig cfg)
+    {
+        buoyancyStrength = cfg.buoyancyStrength;
+        waterDrag = cfg.waterDrag;
+        waterAngularDrag = cfg.waterAngularDrag;
+
+        heaveDampingStrength = cfg.heaveDampingStrength;
+
+        waterDensity = cfg.waterDensity;
+        probeArea = cfg.probeArea;
+        autoComputeStrength = cfg.autoComputeStrength;
+
+        enableRightingMoment = cfg.enableRightingMoment;
+        rightingStrength = cfg.rightingStrength;
+
+        sternProbeIndex = cfg.sternProbeIndex;
+        sternReferenceDepth = cfg.sternReferenceDepth;
+
+        if (autoComputeStrength)
+            RecomputeBuoyancyStrength();
+
     }
 }
