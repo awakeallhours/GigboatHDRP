@@ -113,6 +113,22 @@ public class Hydrodynamics : MonoBehaviour
     
     [SerializeField] private float rudderForceCoefficient = 500f;
 
+    // ROLL COUPLING
+    [Header("Rudder Roll Coupling")]
+    [SerializeField] private float rudderRollScale = 0.2f;
+
+    [Header("Roll–Lateral Coupling")]
+    [SerializeField] private float rollAsymmetrySensitivity = 1f;   // how strongly roll angle influences asymmetry
+    [SerializeField] private AnimationCurve rollAsymmetryCurve = AnimationCurve.Linear(-30f, -1f, 30f, 1f);
+    [SerializeField] private float lateralAsymmetryScale = 0.5f;    // strength of the effect
+
+    // ─────────────────────────────────────────────────────────────
+    // LATERAL DRAG GEOMETRY & COUPLING
+    // ─────────────────────────────────────────────────────────────
+
+    [Header("Lateral Drag Geometry")]
+    [SerializeField] private float lateralForceHalfBeam = 1.5f;          // Lateral offset from COM where drag is applied (m)
+    [SerializeField] private float lateralForceVerticalOffset = -0.5f;   // Vertical offset from COM where drag is applied (m, negative = below)
 
     // ─────────────────────────────────────────────────────────────
     // YAW DAMPING COEFFICIENTS
@@ -176,6 +192,16 @@ public class Hydrodynamics : MonoBehaviour
 
     [SerializeField] private float crossflowCoefficient = 1.5f;
     [SerializeField] private float crossflowArea = 0.25f;
+
+    // ─────────────────────────────────────────────────────────────
+    // CROSSFLOW NORMALISATION
+    // ─────────────────────────────────────────────────────────────
+
+    [Header("Crossflow Normalisation")]
+    [SerializeField] private float crossflowReferenceDepth = 1.0f;       // Depth at which submergedFactor = 1 (m)
+    [SerializeField]
+    private AnimationCurve crossflowDepthCurve =
+        AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
     // ─────────────────────────────────────────────────────────────
     // TURN REVERSAL DEBUG
@@ -273,12 +299,11 @@ public class Hydrodynamics : MonoBehaviour
         lateralDragForce = Vector3.zero;
         lateralSpeed = 0f;
 
-        // Early-out if both coefficients are zero.
         if (Mathf.Approximately(lateralLinearDrag, 0f) &&
             Mathf.Approximately(lateralQuadraticDrag, 0f))
             return;
 
-        // Convert to local space to isolate lateral (sideways) component.
+        // Local velocity
         Vector3 localVel = transform.InverseTransformDirection(relVel);
         float vLat = localVel.x;
         lateralSpeed = vLat;
@@ -288,16 +313,78 @@ public class Hydrodynamics : MonoBehaviour
 
         float absV = Mathf.Abs(vLat);
 
-        // Linear + quadratic lateral drag model.
+        // ─────────────────────────────────────────────────────────────
+        // ROLL → LATERAL ASYMMETRY (unchanged, still valid)
+        // ─────────────────────────────────────────────────────────────
+
+        float rollAngle = transform.eulerAngles.z;
+        if (rollAngle > 180f) rollAngle -= 360f;
+
+        float rollNorm = rollAsymmetryCurve.Evaluate(rollAngle * rollAsymmetrySensitivity);
+        float asymmetry = 1f + (rollNorm * Mathf.Sign(vLat) * lateralAsymmetryScale);
+
         float dragMag =
             lateralLinearDrag * absV +
             lateralQuadraticDrag * absV * absV;
 
+        dragMag *= asymmetry;
+
+        // Force direction: resist lateral motion
         float dragLocalX = -Mathf.Sign(vLat) * dragMag;
         Vector3 dragLocal = new Vector3(dragLocalX, 0f, 0f);
+        Vector3 worldDragForce = transform.TransformDirection(dragLocal);
 
-        lateralDragForce = transform.TransformDirection(dragLocal);
-        rb.AddForce(lateralDragForce, ForceMode.Force);
+        // ─────────────────────────────────────────────────────────────
+        // TURN‑ALIGNED ROLL TORQUE (REALISTIC)
+        // +20° rudder = LEFT turn
+        // -20° rudder = RIGHT turn
+        // ─────────────────────────────────────────────────────────────
+
+        // Determine turn direction from yaw rate
+        float yawRateRad = Vector3.Dot(rb.angularVelocity, Vector3.up);
+        float turnSign = Mathf.Sign(yawRateRad);
+
+        // If yaw rate is tiny, fall back to YOUR rudder convention:
+        // +rudderAngleDegrees = LEFT turn
+        // -rudderAngleDegrees = RIGHT turn
+        if (Mathf.Approximately(turnSign, 0f))
+            turnSign = Mathf.Sign(rudderAngleDegrees);
+
+        // If still zero → no turn → symmetric drag only
+        if (Mathf.Approximately(turnSign, 0f))
+        {
+            rb.AddForce(worldDragForce, ForceMode.Force);
+            lateralDragForce = worldDragForce;
+            return;
+        }
+
+        // Inward side = turn direction
+        // +turnSign = LEFT turn → inward side = port
+        // -turnSign = RIGHT turn → inward side = starboard
+        float inwardSideSign = turnSign;
+
+        // Apply force off‑centre to generate roll torque
+        Vector3 localForcePos = new Vector3(
+            inwardSideSign * lateralForceHalfBeam,
+            lateralForceVerticalOffset,
+            0f
+        );
+
+        Vector3 worldForcePos =
+            rb.worldCenterOfMass + transform.TransformDirection(localForcePos);
+
+        // Debug torque
+        Vector3 r = worldForcePos - rb.worldCenterOfMass;
+        Vector3 torque = Vector3.Cross(r, worldDragForce);
+        float rollTorqueFromLateral = Vector3.Dot(torque, transform.forward);
+
+        Debug.Log(
+            $"LAT ROLL TORQUE | roll={rollAngle:F1} | vLat={vLat:F2} | asym={asymmetry:F2} | " +
+            $"yawRate={yawRateRad:F2} | rudder={rudderAngleDegrees:F1} | rollTorque={rollTorqueFromLateral:F1}"
+        );
+
+        rb.AddForceAtPosition(worldDragForce, worldForcePos, ForceMode.Force);
+        lateralDragForce = worldDragForce;
     }
 
 
@@ -310,16 +397,17 @@ public class Hydrodynamics : MonoBehaviour
         forwardDragForce = Vector3.zero;
         forwardSpeed = 0f;
 
-        // Early-out if both coefficients are zero.
+        // Early-out if both coefficients are zero (no forward drag).
         if (Mathf.Approximately(forwardLinearDrag, 0f) &&
             Mathf.Approximately(forwardQuadraticDrag, 0f))
             return;
 
-        // Convert to local space to isolate forward component.
+        // Convert to local space to isolate forward component (local Z = forward).
         Vector3 localVel = transform.InverseTransformDirection(relVel);
         float vFwd = localVel.z;
         forwardSpeed = vFwd;
 
+        // No meaningful forward speed → no forward drag.
         if (Mathf.Approximately(vFwd, 0f))
             return;
 
@@ -330,6 +418,7 @@ public class Hydrodynamics : MonoBehaviour
             forwardLinearDrag * absV +
             forwardQuadraticDrag * absV * absV;
 
+        // Local-space forward drag force (resists forward/backward motion).
         float dragLocalZ = -Mathf.Sign(vFwd) * dragMag;
         Vector3 dragLocal = new Vector3(0f, 0f, dragLocalZ);
 
@@ -359,7 +448,10 @@ public class Hydrodynamics : MonoBehaviour
         if (Mathf.Abs(vFwd) < 0.1f)
             return;
 
+        // Rudder angle (radians).
         float angleRad = rudderAngleDegrees * Mathf.Deg2Rad;
+
+        // Simple lift term ~ sin(angle).
         float lift = Mathf.Sin(angleRad);
 
         // Quadratic rudder lift-style side-force model:
@@ -378,8 +470,20 @@ public class Hydrodynamics : MonoBehaviour
         Vector3 r = rudderPivot.position - rb.worldCenterOfMass;
         Vector3 rudderTorque = Vector3.Cross(r, rudderForceWorld);
         float rudderYawTorque = Vector3.Dot(rudderTorque, Vector3.up);
-
         rudderYawTorqueDebug = rudderYawTorque;
+
+        // ─────────────────────────────────────────────────────────
+        // RUDDER → ROLL COUPLING
+        // ─────────────────────────────────────────────────────────
+
+        // Roll component of the rudder torque (about the boat's forward axis).
+        float rudderRollTorque = Vector3.Dot(rudderTorque, transform.forward);
+
+        // Scaled roll torque for tuning.
+        float scaledRollTorque = rudderRollTorque * rudderRollScale;
+
+        // Apply roll torque.
+        rb.AddTorque(transform.forward * scaledRollTorque, ForceMode.Force);
     }
 
 
@@ -389,7 +493,7 @@ public class Hydrodynamics : MonoBehaviour
 
     private void ApplyYawDamping()
     {
-        // World-space angular velocity of the hull.
+        // World-space angular velocity of the hull (rad/s about each axis).
         Vector3 angVel = rb.angularVelocity;
 
         // Yaw rate around global up (rad/s).
@@ -411,9 +515,6 @@ public class Hydrodynamics : MonoBehaviour
 
         // Apply yaw damping torque about global up.
         rb.AddTorque(new Vector3(0f, dampingTorqueY, 0f), ForceMode.Force);
-
-        // Optional debug: compare damping vs rudder torque visually.
-        //Debug.Log($"YAW DEBUG | w={w:F2} rad/s | lin={linear:F1} | quad={quadratic:F1} | " + $"dampTotal={dampingTorqueY:F1} | rudderYaw={rudderYawTorqueDebug:F1}");
     }
 
 
@@ -421,19 +522,16 @@ public class Hydrodynamics : MonoBehaviour
     {
         float currentSign = Mathf.Sign(rudderAngleDegrees);
 
-        // Detect rudder sign change (left → right or right → left)
+        // Detect rudder sign change (left → right or right → left).
         if (currentSign != 0f && currentSign != lastRudderSign)
         {
             yawAccumulatedDegrees = 0f;
             lastRudderSign = currentSign;
         }
 
-        // Integrate yaw rotation using angular velocity (no wrap issues)
+        // Integrate yaw rotation using angular velocity (no wrap issues).
         float yawRateRad = Vector3.Dot(rb.angularVelocity, Vector3.up);
         yawAccumulatedDegrees += yawRateRad * Mathf.Rad2Deg * Time.fixedDeltaTime;
-
-        // Optional debug
-        // Debug.Log($"ΔYaw since reversal = {yawAccumulatedDegrees:F1}°");
     }
 
     private void ApplyCrossflowDrag()
@@ -444,16 +542,16 @@ public class Hydrodynamics : MonoBehaviour
         if (crossflowCoefficient <= 0f)
             return;
 
-        // Pure horizontal forward direction (boat heading)
+        // Pure horizontal forward direction (boat heading).
         Vector3 forward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
         if (forward.sqrMagnitude < 0.0001f)
             return;
 
-        // Pure horizontal right direction
+        // Pure horizontal right direction.
         Vector3 right = Vector3.Cross(Vector3.up, forward).normalized;
 
-        // Hull lateral velocity in world space (NO rotational component)
-        Vector3 velWorld = rb.linearVelocity; // same as in Buoyancy
+        // Hull lateral velocity in world space (NO rotational component).
+        Vector3 velWorld = rb.linearVelocity; // same as in Buoyancy.
         float vLat = Vector3.Dot(velWorld, right);
 
         if (Mathf.Abs(vLat) < 0.1f)
@@ -472,7 +570,7 @@ public class Hydrodynamics : MonoBehaviour
             Transform p = points[i];
 
             float waterY = heights[i];
-            float depth = waterY - p.position.y; // > 0 means submerged
+            float depth = waterY - p.position.y; // > 0 means submerged.
 
             if (depth <= 0f)
                 continue;
@@ -486,8 +584,15 @@ public class Hydrodynamics : MonoBehaviour
 
         float avgDepth = totalDepth / validCount;
 
-        float referenceDepth = 1.0f;
-        float submergedFactor = Mathf.Clamp01(avgDepth / referenceDepth);
+        // Explicit, tunable normalisation instead of Clamp01.
+        // depthRatio = avgDepth / referenceDepth (user-defined).
+        float depthRatio = (crossflowReferenceDepth > 0f)
+            ? avgDepth / crossflowReferenceDepth
+            : 0f;
+
+        // Map depthRatio through a user-defined curve to get submergedFactor.
+        // You control saturation, nonlinearity, etc. No clamps, no magic.
+        float submergedFactor = crossflowDepthCurve.Evaluate(depthRatio);
 
         if (submergedFactor <= 0f)
             return;
@@ -508,8 +613,7 @@ public class Hydrodynamics : MonoBehaviour
 
         Vector3 dragWorld = -Mathf.Sign(vLat) * dragMag * right;
 
-        Debug.Log($"XF_HYDRO | vLat={vLat:F2} | dragMag={dragMag:F1} | submerged={submergedFactor:F2}");
-
+        // Apply crossflow drag at COM (you can later distribute across probes if you want roll from it).
         rb.AddForce(dragWorld, ForceMode.Force);
     }
 }

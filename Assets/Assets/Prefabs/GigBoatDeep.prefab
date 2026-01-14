@@ -1637,6 +1637,35 @@ MonoBehaviour:
   rudderPivot: {fileID: 1778909944695638150}
   rudderAngleDegrees: 0
   rudderForceCoefficient: 30
+  rudderRollScale: 0
+  rollAsymmetrySensitivity: 0
+  rollAsymmetryCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -30
+      value: -1
+      inSlope: 0
+      outSlope: 0.033333335
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 30
+      value: 1
+      inSlope: 0.033333335
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  lateralAsymmetryScale: 0
+  lateralForceHalfBeam: 0
+  lateralForceVerticalOffset: 0
   yawLinearDamping: 40
   yawQuadraticDamping: 200
   yawRate: 0
@@ -1644,6 +1673,31 @@ MonoBehaviour:
   rudderYawTorqueDebug: 0
   crossflowCoefficient: 1.5
   crossflowArea: 0.25
+  crossflowReferenceDepth: 1
+  crossflowDepthCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   yawAccumulatedDegrees: 0
   lastRudderSign: 0
   lateralSpeed: 0
@@ -1672,6 +1726,7 @@ MonoBehaviour:
   hydrodynamics: {fileID: 7804635203045131661}
   throttleChangeRate: 60
   neutralGate: 2
+  doubleTapWindow: 0.25
   rudderMaxStepPerSecond: 0.8
   rudderInputExponent: 2.5
   rudderAuthorityLowSpeed: 20
@@ -1824,7 +1879,7 @@ Rigidbody:
   serializedVersion: 4
   m_Mass: 1000
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0
   m_CenterOfMass: {x: 0, y: 0.35, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
