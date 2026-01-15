@@ -1567,6 +1567,11 @@ GameObject:
   - component: {fileID: 6263178763644586018}
   - component: {fileID: -143646874513710580}
   - component: {fileID: -5939297710904165419}
+  - component: {fileID: 9126587473363942451}
+  - component: {fileID: 4337108325890889067}
+  - component: {fileID: 7663862005857181451}
+  - component: {fileID: 2462431056493051408}
+  - component: {fileID: -7624675502351117667}
   m_Layer: 0
   m_Name: GigBoatDeep
   m_TagString: Untagged
@@ -1653,9 +1658,9 @@ MonoBehaviour:
   forwardQuadraticDrag: 160
   rudderPivot: {fileID: 1778909944695638150}
   rudderAngleDegrees: 0
-  rudderForceCoefficient: 30
-  rudderRollScale: 3
-  rollAsymmetrySensitivity: 1
+  rudderForceCoefficient: 0
+  rudderRollScale: 0
+  rollAsymmetrySensitivity: 0
   rollAsymmetryCurve:
     serializedVersion: 2
     m_Curve:
@@ -1680,17 +1685,17 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  lateralAsymmetryScale: 0.5
+  lateralAsymmetryScale: 0
   lateralForceHalfBeam: 1.5
   lateralForceVerticalOffset: -0.5
-  yawLinearDamping: 40
-  yawQuadraticDamping: 200
+  yawLinearDamping: 0
+  yawQuadraticDamping: 0
   yawRate: 0
   yawDampingTorque: 0
   rudderYawTorqueDebug: 0
-  crossflowCoefficient: 1.5
-  crossflowArea: 0.25
-  crossflowReferenceDepth: 1
+  crossflowCoefficient: 0
+  crossflowArea: 0
+  crossflowReferenceDepth: 0
   crossflowDepthCurve:
     serializedVersion: 2
     m_Curve:
@@ -1906,7 +1911,7 @@ Rigidbody:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_ImplicitCom: 0
+  m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -1988,6 +1993,82 @@ MonoBehaviour:
   deadZone: 0.5
   reverseCommit: -1.5
   forwardCommit: 1
+--- !u!114 &9126587473363942451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4833431607046282324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5781cc11803899c4fb082b6375876a5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comHeight: 0.35
+  neutralBandMin: 0.3
+  enableCOMOffset: 1
+  enableDebugLogs: 1
+  appliedComY: 0
+--- !u!114 &4337108325890889067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4833431607046282324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4450d242405880b41a78d7a0373821c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 6401897688909232224}
+  comIntegration: {fileID: 7663862005857181451}
+  testPointHeight: 0
+  testForce: 10000
+  applyForce: 0
+--- !u!114 &7663862005857181451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4833431607046282324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25f8c0b4280143f4989ea5171d4e647e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boatCOM: {fileID: 9126587473363942451}
+  lateralForceHeight: 0.35
+  validateForceHeight: 1
+--- !u!114 &2462431056493051408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4833431607046282324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31479d02ba722fd4babf303460442723, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boatCOM: {fileID: 9126587473363942451}
+--- !u!114 &-7624675502351117667
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4833431607046282324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64c6b611802405c458904be4148c44cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boatCOM: {fileID: 9126587473363942451}
+  lineWidth: 1
 --- !u!1 &4864625990696992598
 GameObject:
   m_ObjectHideFlags: 0

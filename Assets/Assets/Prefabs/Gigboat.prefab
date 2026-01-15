@@ -1250,6 +1250,7 @@ GameObject:
   - component: {fileID: 6341502006564020111}
   - component: {fileID: 99311730124140178}
   - component: {fileID: 6382233077284852497}
+  - component: {fileID: 1003833276145647173}
   m_Layer: 0
   m_Name: Gigboat
   m_TagString: Untagged
@@ -1568,6 +1569,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 3, y: 2, z: 4}
   m_Center: {x: 0, y: 0, z: -2}
+--- !u!114 &1003833276145647173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9024535415304638997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4450d242405880b41a78d7a0373821c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 6401897688909232224, guid: 3ac50655355bc154da75baaa96ab89c5, type: 3}
+  testPoint: {fileID: 361113420622967515, guid: 3ac50655355bc154da75baaa96ab89c5, type: 3}
+  testForce: 200
 --- !u!1001 &2856181830058577052
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -378,10 +378,10 @@ public class Hydrodynamics : MonoBehaviour
         Vector3 torque = Vector3.Cross(r, worldDragForce);
         float rollTorqueFromLateral = Vector3.Dot(torque, transform.forward);
 
-        Debug.Log(
+        /*Debug.Log(
             $"LAT ROLL TORQUE | roll={rollAngle:F1} | vLat={vLat:F2} | asym={asymmetry:F2} | " +
             $"yawRate={yawRateRad:F2} | rudder={rudderAngleDegrees:F1} | rollTorque={rollTorqueFromLateral:F1}"
-        );
+        );*/
 
         rb.AddForceAtPosition(worldDragForce, worldForcePos, ForceMode.Force);
         lateralDragForce = worldDragForce;
