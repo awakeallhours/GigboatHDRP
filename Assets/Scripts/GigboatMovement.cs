@@ -13,7 +13,6 @@ public class GigboatMovement : MonoBehaviour
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Buoyancy buoyancy;
     [SerializeField] private PropWash propWash;
-    [SerializeField] private GigboatGizmos gizmoDrawer;
     [SerializeField] private Transform cameraTarget;
     [SerializeField] private Hydrodynamics hydrodynamics;
 
@@ -101,7 +100,7 @@ public class GigboatMovement : MonoBehaviour
         UpdateDebugValues();
 
         propWash.SetThrottle(ThrottlePercent);
-        gizmoDrawer.SetThrustForce(Vector3.zero);
+        
     }
 
     // ─────────────────────────────────────────────────────────────
