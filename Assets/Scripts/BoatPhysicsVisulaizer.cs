@@ -160,6 +160,16 @@ namespace Axiom.Vessel.Diagnostics
         [Tooltip("Draw the lateral slip vector (play mode only).")]
         public bool drawSlip = true;
 
+        // GM tracking
+        private float highestGM = 0f;
+
+#if UNITY_EDITOR
+        // Overlay state
+        private float lastGM = 0f;
+        private float lastHeelDeg = 0f;
+        private float lastGZ = 0f;
+        private float lastRollRateDeg = 0f;
+#endif
 
         private void Reset()
         {
@@ -179,6 +189,54 @@ namespace Axiom.Vessel.Diagnostics
                 sampler = GetComponent<WaterProbeSampler>();
         }
 
+#if UNITY_EDITOR
+        private void OnEnable()
+        {
+            SceneView.duringSceneGui += DrawSceneOverlay;
+        }
+
+        private void OnDisable()
+        {
+            SceneView.duringSceneGui -= DrawSceneOverlay;
+
+
+        }
+
+        private void DrawSceneOverlay(SceneView sceneView)
+        {
+            if (!SceneView.currentDrawingSceneView.camera.name.Contains("Scene"))
+                return;
+
+            Handles.BeginGUI();
+
+            const float width = 260f;
+            const float height = 90f;
+            float x = (sceneView.position.width - width) * 0.5f;
+            GUILayout.BeginArea(new Rect(x, 10, width, height));
+            GUI.color = Color.yellow;
+
+            GUILayout.Label($"Heel: {lastHeelDeg:F1}°");
+
+            if (drawGM)
+            {
+                if (Mathf.Abs(lastHeelDeg) >= 5f)
+                    GUILayout.Label($"GM: {lastGM:F3} m   (max {highestGM:F3} m)");
+                else
+                    GUILayout.Label("GM: — (heel < 5°)");
+            }
+
+
+            if (drawGZ)
+                GUILayout.Label($"GZ: {lastGZ:F3} m");
+
+            if (drawRollRate && rb != null)
+                GUILayout.Label($"Roll rate: {lastRollRateDeg:F1} °/s");
+
+            GUILayout.EndArea();
+
+            Handles.EndGUI();
+        }
+#endif
 
         // ─────────────────────────────────────────────────────────────
         // GIZMO DRAWING
@@ -365,7 +423,6 @@ namespace Axiom.Vessel.Diagnostics
                     Gizmos.DrawLine(comPos, comPos + lateralWorld * 2f);
                 }
             }
-
 
             // ─────────────────────────────────────────────────────────────
             // BUOYANCY PROBE VECTORS (PLAY MODE)
@@ -555,6 +612,9 @@ namespace Axiom.Vessel.Diagnostics
             heelAngleRad *= heelSign;
 
             float heelAngleDeg = heelAngleRad * Mathf.Rad2Deg;
+#if UNITY_EDITOR
+            lastHeelDeg = heelAngleDeg;
+#endif
 
             // Lever from COM to COB
             Vector3 lever = cobPosWorld - comPos;
@@ -562,6 +622,9 @@ namespace Axiom.Vessel.Diagnostics
             // Horizontal righting arm (GZ) = projection of lever onto plane perpendicular to roll axis
             Vector3 leverPerp = Vector3.ProjectOnPlane(lever, rollAxis);
             float GZ = leverPerp.magnitude;
+#if UNITY_EDITOR
+            lastGZ = GZ;
+#endif
 
             // ─────────────────────────────────────────────────────────────
             // GZ (Righting Arm)
@@ -583,42 +646,41 @@ namespace Axiom.Vessel.Diagnostics
             }
 
             // ─────────────────────────────────────────────────────────────
-            // GM (Metacentric Height) with heel threshold
+            // GM (Metacentric Height) with meaningful heel threshold
             // ─────────────────────────────────────────────────────────────
             if (drawGM)
             {
-                const float minHeelDegForGM = 1.0f; // A: avoid near-zero heel instability
+                const float minHeelDegForGM = 5.0f;
 
-                if (Mathf.Abs(heelAngleDeg) < minHeelDegForGM)
-                {
-                    // C: do not draw GM when heel is effectively zero
-#if UNITY_EDITOR
-                    Handles.color = Color.yellow;
-                    Handles.Label(comPos + Vector3.up * 0.5f, "GM: undefined at ~0° heel");
-#endif
+                if (!Application.isPlaying)
                     return;
-                }
+
+                // Only compute GM when heel is large enough to be meaningful
+                if (Mathf.Abs(heelAngleDeg) < minHeelDegForGM)
+                    return;
 
                 float sinHeel = Mathf.Sin(heelAngleRad);
-                if (Mathf.Abs(sinHeel) > 0.0001f && GZ > 0.0001f)
-                {
-                    float GM = GZ / sinHeel;
+                if (Mathf.Abs(sinHeel) < 0.0001f || GZ <= 0.0001f)
+                    return;
 
-                    // Metacentre M lies above COM along the heel plane
-                    Vector3 heelPlaneNormal = Vector3.Cross(rollAxis, Vector3.up).normalized;
-                    if (heelPlaneNormal.sqrMagnitude < 0.0001f)
-                        heelPlaneNormal = Vector3.forward;
+                float GM = GZ / sinHeel;
 
-                    Vector3 M = comPos + heelPlaneNormal * GM;
-
-                    Gizmos.color = Color.yellow;
-                    Gizmos.DrawLine(comPos, M);
+                if (GM > highestGM)
+                    highestGM = GM;
 
 #if UNITY_EDITOR
-                    Handles.color = Color.yellow;
-                    Handles.Label(M, $"GM: {GM:F3} m");
+                lastGM = GM;
 #endif
-                }
+
+                // Draw metacentre line
+                Vector3 heelPlaneNormal = Vector3.Cross(rollAxis, Vector3.up).normalized;
+                if (heelPlaneNormal.sqrMagnitude < 0.0001f)
+                    heelPlaneNormal = Vector3.forward;
+
+                Vector3 M = comPos + heelPlaneNormal * GM;
+
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawLine(comPos, M);
             }
         }
 
@@ -627,9 +689,9 @@ namespace Axiom.Vessel.Diagnostics
         // ROLL AXIS / ROLL RATE
         // ─────────────────────────────────────────────────────────────
 
-        /// <summary>
-        /// Draws roll axis line through COM and roll‑rate arrow based on angular velocity.
-        /// </summary>
+            /// <summary>
+            /// Draws roll axis line through COM and roll‑rate arrow based on angular velocity.
+            /// </summary>
         private void DrawRollDiagnostics(Vector3 comPos)
         {
             Vector3 rollAxis = transform.right;
@@ -655,8 +717,9 @@ namespace Axiom.Vessel.Diagnostics
                 Gizmos.DrawLine(comPos, comPos + rollRateVec);
 
 #if UNITY_EDITOR
+                lastRollRateDeg = rollRate * Mathf.Rad2Deg;
                 Handles.color = Color.red;
-                Handles.Label(comPos + rollRateVec, $"Roll Rate: {rollRate * Mathf.Rad2Deg:F1} °/s");
+                Handles.Label(comPos + rollRateVec, $"Roll Rate: {lastRollRateDeg:F1} °/s");
 #endif
             }
         }

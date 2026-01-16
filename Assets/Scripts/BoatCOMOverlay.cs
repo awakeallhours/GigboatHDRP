@@ -4,17 +4,13 @@ using UnityEngine;
 
 namespace Axiom.Vessel.Diagnostics
 {
-    /// <summary>
-    /// Editor‑only overlay for displaying COM diagnostics in the Scene View.
-    /// Draws gizmos in OnDrawGizmos and IMGUI in OnGUI.
-    /// Never mixes GUILayout with Gizmos to avoid repaint/layout errors.
-    /// </summary>
     [ExecuteAlways]
     [DisallowMultipleComponent]
     public sealed class BoatCOMOverlay : MonoBehaviour
     {
-        [Tooltip("Reference to the BoatCOM authority on this vessel.")]
         public BoatCOM boatCOM;
+
+        private bool panelOpen = true;
 
         private void Reset()
         {
@@ -22,48 +18,82 @@ namespace Axiom.Vessel.Diagnostics
                 boatCOM = GetComponent<BoatCOM>();
         }
 
-        /// <summary>
-        /// Draws COM gizmos in the Scene View.
-        /// Only Handles/Gizmos are allowed here — no GUILayout.
-        /// </summary>
+        private void OnEnable()
+        {
+            SceneView.duringSceneGui += DrawSceneOverlay;
+        }
+
+        private void OnDisable()
+        {
+            SceneView.duringSceneGui -= DrawSceneOverlay;
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // COM GIZMOS (Scene View)
+        // ─────────────────────────────────────────────────────────────
         private void OnDrawGizmos()
         {
             if (boatCOM == null)
                 return;
 
-            // Draw COM marker in Scene View
             Vector3 comPos = transform.position + Vector3.up * boatCOM.comHeight;
 
             Handles.color = Color.yellow;
             Handles.DrawSolidDisc(comPos, Vector3.up, 0.05f);
 
-            // Draw neutral band line
             Vector3 neutralPos = transform.position + Vector3.up * boatCOM.NeutralBandMin;
             Handles.color = Color.cyan;
             Handles.DrawLine(neutralPos + Vector3.left * 0.5f, neutralPos + Vector3.right * 0.5f);
         }
 
-        /// <summary>
-        /// Draws the floating debug panel in the Scene View using IMGUI.
-        /// This is the correct place for GUILayout.
-        /// </summary>
-        private void OnGUI()
+        // ─────────────────────────────────────────────────────────────
+        // COM PANEL (Scene View IMGUI)
+        // ─────────────────────────────────────────────────────────────
+        private void DrawSceneOverlay(SceneView sceneView)
         {
             if (boatCOM == null)
                 return;
 
-            // Convert COM world position to GUI position
-            Vector3 screenPos = HandleUtility.WorldToGUIPoint(
-                transform.position + Vector3.up * boatCOM.comHeight
-            );
+            Handles.BeginGUI();
 
-            Rect rect = new Rect(screenPos.x + 10f, screenPos.y - 30f, 180f, 90f);
+            const float width = 260f;
+            const float height = 140f;
 
-            GUILayout.BeginArea(rect, GUI.skin.box);
+            // Position: to the RIGHT of the GM overlay
+            float x = (sceneView.position.width - width) * 0.5f + width + 20f;
+            float y = 10f;
 
-            GUILayout.Label("Boat COM Debug");
-            GUILayout.Label($"COM: {boatCOM.comHeight:F3} m");
-            GUILayout.Label($"Neutral: {boatCOM.NeutralBandMin:F3} m");
+            GUILayout.BeginArea(new Rect(x, y, width, height), GUI.skin.box);
+
+            GUIStyle header = new GUIStyle(EditorStyles.boldLabel);
+            header.normal.textColor = Color.white;
+
+            if (GUILayout.Button((panelOpen ? "▼ " : "► ") + "COM Diagnostics", header))
+            {
+                panelOpen = !panelOpen;
+            }
+
+            if (!panelOpen)
+            {
+                GUILayout.EndArea();
+                Handles.EndGUI();
+                return;
+            }
+
+            float com = boatCOM.comHeight;
+            float neutral = boatCOM.NeutralBandMin;
+
+            // Stability health colour coding
+            Color healthColor =
+                com < neutral ? Color.red :
+                com < neutral + 0.1f ? new Color(1f, 0.65f, 0f) :
+                Color.green;
+
+            GUIStyle valueStyle = new GUIStyle(EditorStyles.label);
+            valueStyle.normal.textColor = healthColor;
+
+            GUILayout.Label($"COM Height: {com:F3} m", valueStyle);
+            GUILayout.Label($"Neutral Band: {neutral:F3} m");
 
             bool newEnable = GUILayout.Toggle(boatCOM.enableCOMOffset, "Enable COM Offset");
             if (newEnable != boatCOM.enableCOMOffset)
@@ -80,6 +110,7 @@ namespace Axiom.Vessel.Diagnostics
             }
 
             GUILayout.EndArea();
+            Handles.EndGUI();
         }
     }
 }
