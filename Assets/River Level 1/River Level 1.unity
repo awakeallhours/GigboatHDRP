@@ -5198,7 +5198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 065d474041662064798bad31e2d21c88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GigboatSpawner
-  gigboatPrefab: {fileID: 4833431607046282324, guid: 3ac50655355bc154da75baaa96ab89c5, type: 3}
+  gigboatPrefab: {fileID: 4833431607046282324, guid: 0522329df717a734a8fd2e0fc0eddc2c, type: 3}
   spawnPoint: {fileID: 1478300452}
   debugUI: {fileID: 439371789}
   steeringUI: {fileID: 1760061555}

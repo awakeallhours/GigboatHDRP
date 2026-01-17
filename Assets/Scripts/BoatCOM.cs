@@ -2,55 +2,15 @@
 
 namespace Axiom.Vessel.Diagnostics
 {
-    [DisallowMultipleComponent]
-    [RequireComponent(typeof(Rigidbody))]
+    [ExecuteAlways]
     public sealed class BoatCOM : MonoBehaviour
     {
-        /*
-        -------------------------------------------------------------------------
-        CENTER OF MASS NOTES (READ THIS BEFORE TUNING)
-        -------------------------------------------------------------------------
-
-        WHY THIS SCRIPT EXISTS:
-        -----------------------
-        The boat’s roll direction during turning depends on the vertical position
-        of the Center of Mass (COM) relative to where lateral forces are applied.
-        If lateral forces are applied BELOW the COM, the boat rolls the WRONG way.
-        If lateral forces are applied ABOVE the COM, the boat rolls INTO the turn.
-
-        WHAT YOU MUST DO WHEN BUILDING A NEW BOAT:
-        ------------------------------------------
-        1. Set an initial COM height using 'comHeight' below.
-        2. Use the LateralForceDebug script to find the NEUTRAL BAND:
-            - Apply a sideways force at different heights.
-            - Find the height where roll torque ≈ 0.
-            - This is the neutral band.
-        3. Your COM should sit ABOVE the neutral band for correct turning roll.
-        4. All lateral/turning forces (rudder, crossflow, side drag) must be
-            applied AT OR ABOVE the COM height.
-
-        HOW TO USE THE LATERAL FORCE DEBUG TOOL:
-        ----------------------------------------
-        - Add the LateralForceDebug script to the boat root.
-        - Adjust 'testPointHeight' and click Apply Force.
-        - Observe roll direction:
-            * Rolls INTO force  -> test point is ABOVE COM
-            * Rolls AWAY        -> test point is BELOW COM
-            * Neutral           -> test point ≈ COM height
-        - Record the neutral band height.
-        - Set COM slightly ABOVE that value.
-
-        WHEN TO CHANGE COM:
-        --------------------
-        - Raise COM to increase roll responsiveness (more tippy).
-        - Lower COM to increase stability (less roll).
-        - ANY TIME YOU CHANGE COM, you MUST re-run the lateral-force test.
-
-        -------------------------------------------------------------------------
-        */
         [Header("Center of Mass")]
         [Tooltip("Vertical COM offset in meters. Must be ABOVE the neutral lateral-force band.")]
         public float comHeight = 0.35f;
+
+        [Tooltip("Forward (+) / Aft (-) COM offset in meters.")]
+        public float comForwardOffset = 0.0f;
 
         [Header("Neutral Band (meters)")]
         [Tooltip("Minimum acceptable COM height. COM must be ABOVE this value.")]
@@ -64,24 +24,36 @@ namespace Axiom.Vessel.Diagnostics
         [Tooltip("If enabled, COM changes and warnings will be logged to the console.")]
         public bool enableDebugLogs = true;
 
-        [SerializeField, Tooltip("Actual COM.y applied to the Rigidbody (read-only).")]
-        private float appliedComY;
+        [SerializeField, Tooltip("Actual COM applied to the Rigidbody (read-only).")]
+        private Vector3 appliedCom;
 
         private Rigidbody rb;
+        private BoatPhysicsVisualizer visualizer;
 
-        public float COMHeight => appliedComY;
+        public float COMHeight => appliedCom.y;
+        public float COMForward => appliedCom.z;
         public float NeutralBandMin => neutralBandMin;
 
         private void Awake()
         {
             rb = GetComponent<Rigidbody>();
+            visualizer = GetComponent<BoatPhysicsVisualizer>();
             ApplyCOM();
             CheckNeutralBand();
         }
 
         private void OnValidate()
         {
-            if (Application.isPlaying && rb != null)
+#if UNITY_EDITOR
+            if (UnityEditor.PrefabUtility.IsPartOfPrefabAsset(this))
+                return;
+#endif
+            if (rb == null)
+                rb = GetComponent<Rigidbody>();
+            if (visualizer == null)
+                visualizer = GetComponent<BoatPhysicsVisualizer>();
+
+            if (rb != null)
             {
                 ApplyCOM();
                 CheckNeutralBand();
@@ -90,24 +62,32 @@ namespace Axiom.Vessel.Diagnostics
 
         public void ApplyCOM()
         {
-            if (!enableCOMOffset)
+            if (!enableCOMOffset || rb == null)
             {
-                if (enableDebugLogs)
+                if (enableDebugLogs && Application.isPlaying)
                     Debug.Log("[BoatCOM] COM offset disabled — using Rigidbody default COM.");
                 return;
             }
 
+            // If visualizer exists and COM editing is locked, do NOT apply changes
+            if (visualizer != null && visualizer.ComEditingLocked)
+                return;
+
             Vector3 com = rb.centerOfMass;
+
+            // Unity default axes: Z = forward, X = right, Y = up
+            com.z = comForwardOffset;
             com.y = comHeight;
+
             rb.centerOfMass = com;
+            appliedCom = com;
 
-            appliedComY = com.y;
-
-            if (enableDebugLogs)
+            if (enableDebugLogs && Application.isPlaying)
             {
                 Debug.Log(
                     $"[BoatCOM] Applied COM offset.\n" +
-                    $"  COM.y: {appliedComY} m\n" +
+                    $"  COM.y (height): {appliedCom.y} m\n" +
+                    $"  COM.z (fore/aft): {appliedCom.z} m\n" +
                     $"  Neutral band min: {neutralBandMin} m\n" +
                     $"  Rigidbody mass: {rb.mass} kg"
                 );
@@ -136,4 +116,5 @@ namespace Axiom.Vessel.Diagnostics
         }
     }
 }
+
 

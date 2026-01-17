@@ -1,22 +1,38 @@
 ﻿using UnityEngine;
-using UnityEngine.Rendering.HighDefinition;
 using Axiom.Physics.Units;
 using Axiom.Vessel.Diagnostics;
 
 /// <summary>
 /// Hybrid buoyancy system using water probes sampled from WaterProbeSampler.
 /// Applies upward forces, heave damping, angular damping, and optional righting moment.
-/// Also computes Centre of Buoyancy (COB), total buoyancy force, and submerged volume,
+/// Computes Centre of Buoyancy (COB), total buoyancy force, and submerged volume,
 /// and reports these values to BoatCOB for diagnostics.
+/// 
+/// NEW:
+/// - Added per‑vessel BuoyancyScale (decouples draft from GM/GZ).
+/// - Removed probe sanity checks.
+/// - Fully commented and tooltipped.
+/// - Added Notes field for per‑vessel documentation.
 /// </summary>
 [DisallowMultipleComponent]
 public sealed class Buoyancy : MonoBehaviour
 {
     // ─────────────────────────────────────────────────────────────
+    // NOTES (PER‑VESSEL)
+    // ─────────────────────────────────────────────────────────────
+
+    [Header("Notes")]
+    [Tooltip("Optional per‑vessel notes. Use this to document DryMass, TargetDraft, tuning decisions, etc.")]
+    [TextArea(3, 6)]
+    [SerializeField] private string notes;
+
+
+    // ─────────────────────────────────────────────────────────────
     // REFERENCES
     // ─────────────────────────────────────────────────────────────
 
     [Header("References")]
+    [Tooltip("Rigidbody receiving buoyancy forces.")]
     [SerializeField] private Rigidbody rb;
 
     [Tooltip("Sampler providing per‑probe water height and normal.")]
@@ -27,11 +43,20 @@ public sealed class Buoyancy : MonoBehaviour
 
 
     // ─────────────────────────────────────────────────────────────
-    // SETTINGS
+    // GLOBAL BUOYANCY CONTROL
+    // ─────────────────────────────────────────────────────────────
+
+    [Header("Buoyancy Control")]
+    [Tooltip("Global multiplier for all buoyancy forces. Used to calibrate draft at DryMass.")]
+    [SerializeField] private float buoyancyScale = 1f;
+
+
+    // ─────────────────────────────────────────────────────────────
+    // BASE SETTINGS
     // ─────────────────────────────────────────────────────────────
 
     [Header("Settings")]
-    [Tooltip("Base buoyancy strength per meter of submersion depth.")]
+    [Tooltip("Base buoyancy strength per meter of submersion depth (per probe).")]
     [SerializeField] private float buoyancyStrength = 10f;
 
     [Tooltip("Linear damping applied at each probe when submerged.")]
@@ -58,10 +83,10 @@ public sealed class Buoyancy : MonoBehaviour
     [Tooltip("Water density (kg/m³).")]
     [SerializeField] private DensityValue waterDensity;
 
-    [Tooltip("Effective area represented by each probe (m²).")]
+    [Tooltip("Effective area represented by each probe (m²). Used for righting and GM/GZ shaping.")]
     [SerializeField] private AreaValue probeArea;
 
-    [Tooltip("If enabled, buoyancyStrength is auto‑computed from density × g × area.")]
+    [Tooltip("If enabled, buoyancyStrength = density × g × probeArea.")]
     [SerializeField] private bool autoComputeStrength = true;
 
     [Tooltip("Enable additional righting torque based on water normal.")]
@@ -82,13 +107,25 @@ public sealed class Buoyancy : MonoBehaviour
     [Tooltip("Reference depth for full stern immersion (m).")]
     [SerializeField] private DistanceValue sternReferenceDepth;
 
-    /// <summary>
-    /// 0–1 stern immersion ratio based on reference depth.
-    /// </summary>
+    /// <summary>0–1 stern immersion ratio based on reference depth.</summary>
     public float SternImmersion01
     {
         get; private set;
     }
+
+    // ─────────────────────────────────────────────────────────────
+    // PUBLIC ACCESSORS (EXTERNAL API)
+    // ─────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Exposes water density for external systems (e.g., Hydrodynamics).
+    /// </summary>
+    public DensityValue WaterDensity => waterDensity;
+
+    /// <summary>
+    /// Exposes the per‑probe buoyancy spring constant.
+    /// </summary>
+    public float BuoyancyStrength => buoyancyStrength;
 
 
     // ─────────────────────────────────────────────────────────────
@@ -105,25 +142,9 @@ public sealed class Buoyancy : MonoBehaviour
     // ACCUMULATORS FOR COB + BUOYANCY STATE
     // ─────────────────────────────────────────────────────────────
 
-    // Sum of (localPosition * forceMagnitude) across all submerged probes.
     private Vector3 cobSumLocal;
-
-    // Total upward buoyancy force (N) across all probes.
     private float totalBuoyancyForce;
-
-    // Total displaced volume (m³) across all probes.
     private float totalSubmergedVolume;
-
-
-    // ─────────────────────────────────────────────────────────────
-    // PUBLIC ACCESSORS (EXTERNAL API)
-    // ─────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Exposes water density for external systems (e.g., Hydrodynamics).
-    /// </summary>
-    public DensityValue WaterDensity => waterDensity;
-    public float BuoyancyStrength => buoyancyStrength;
 
 
     // ─────────────────────────────────────────────────────────────
@@ -150,20 +171,16 @@ public sealed class Buoyancy : MonoBehaviour
         if (sampler == null || rb == null)
             return;
 
-        // Pull probe data from sampler
         sampler.GetProbeData(out pointValid, out pointHeights, out pointNormals, out samplePoints);
 
-        // Reset accumulators for this frame
         cobSumLocal = Vector3.zero;
         totalBuoyancyForce = 0f;
         totalSubmergedVolume = 0f;
 
-        RunProbeSanityChecks();
         ApplyAllBuoyancyForces();
         ApplyGlobalHeaveDamping();
         UpdateSternSubmersion();
 
-        // Push buoyancy state into BoatCOB for diagnostics
         if (boatCOB != null)
         {
             if (totalBuoyancyForce > 0f)
@@ -184,7 +201,7 @@ public sealed class Buoyancy : MonoBehaviour
 
     /// <summary>
     /// Applies buoyancy, damping, and optional righting moment at a single probe.
-    /// Also accumulates force and volume contributions for COB and diagnostics.
+    /// Accumulates force and volume contributions for COB and diagnostics.
     /// </summary>
     private void ApplyBuoyancyAtPoint(int index)
     {
@@ -199,19 +216,18 @@ public sealed class Buoyancy : MonoBehaviour
 
         if (depth > 0f)
         {
-            // Upward buoyancy force at this probe
-            float forceMagnitude = depth * buoyancyStrength;
+            // Upward buoyancy force (depth × strength × global scale)
+            float forceMagnitude = depth * buoyancyStrength * buoyancyScale;
             Vector3 force = Vector3.up * forceMagnitude;
             rb.AddForceAtPosition(force, p.position, ForceMode.Force);
 
-            // Accumulate total buoyancy force (N)
             totalBuoyancyForce += forceMagnitude;
 
-            // Displaced volume for this probe: V = F / (ρ * g)
+            // Displaced volume (diagnostic only)
             float volume = forceMagnitude / (waterDensity.ValueKgPerCubicMeter * Physics.gravity.magnitude);
             totalSubmergedVolume += volume;
 
-            // Accumulate COB in LOCAL space, weighted by force
+            // COB accumulation
             Vector3 localPos = transform.InverseTransformPoint(p.position);
             cobSumLocal += localPos * forceMagnitude;
 
@@ -223,7 +239,7 @@ public sealed class Buoyancy : MonoBehaviour
             // Angular damping
             rb.AddTorque(-rb.angularVelocity * waterAngularDrag, ForceMode.Force);
 
-            // Optional righting moment based on water normal
+            // Optional righting moment
             if (enableRightingMoment)
             {
                 Vector3 tilt = Vector3.Cross(transform.up, normal);
@@ -232,9 +248,7 @@ public sealed class Buoyancy : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Applies buoyancy at all probes.
-    /// </summary>
+    /// <summary>Applies buoyancy at all probes.</summary>
     private void ApplyAllBuoyancyForces()
     {
         for (int i = 0; i < samplePoints.Length; i++)
@@ -243,47 +257,10 @@ public sealed class Buoyancy : MonoBehaviour
 
 
     // ─────────────────────────────────────────────────────────────
-    // SANITY CHECKS
-    // ─────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Validates probe positions and velocities to catch NaNs and insane values early.
-    /// </summary>
-    private void RunProbeSanityChecks()
-    {
-        for (int i = 0; i < samplePoints.Length; i++)
-        {
-            Transform p = samplePoints[i];
-
-            if (float.IsNaN(p.position.x) || float.IsNaN(p.position.y) || float.IsNaN(p.position.z))
-            {
-                Debug.LogError($"Probe {i} has NaN position: {p.position}");
-                continue;
-            }
-
-            if (p.position.sqrMagnitude > 1_000_000f)
-            {
-                Debug.LogError($"Probe {i} is in insane position: {p.position}");
-                continue;
-            }
-
-            Vector3 probeVel = rb.GetPointVelocity(p.position);
-            if (float.IsNaN(probeVel.x) || float.IsNaN(probeVel.y) || float.IsNaN(probeVel.z))
-            {
-                Debug.LogError($"Probe {i} produced NaN velocity at position {p.position}");
-                continue;
-            }
-        }
-    }
-
-
-    // ─────────────────────────────────────────────────────────────
     // HEAVE DAMPING
     // ─────────────────────────────────────────────────────────────
 
-    /// <summary>
-    /// Applies global vertical damping to reduce heave oscillations.
-    /// </summary>
+    /// <summary>Applies global vertical damping to reduce heave oscillations.</summary>
     private void ApplyGlobalHeaveDamping()
     {
         float verticalVel = Vector3.Dot(rb.linearVelocity, Vector3.up);
@@ -296,9 +273,7 @@ public sealed class Buoyancy : MonoBehaviour
     // STERN IMMERSION
     // ─────────────────────────────────────────────────────────────
 
-    /// <summary>
-    /// Updates stern immersion ratio based on a designated probe and reference depth.
-    /// </summary>
+    /// <summary>Updates stern immersion ratio based on a designated probe.</summary>
     private void UpdateSternSubmersion()
     {
         if (!pointValid[sternProbeIndex])
@@ -319,12 +294,10 @@ public sealed class Buoyancy : MonoBehaviour
     // CONFIG APPLICATION
     // ─────────────────────────────────────────────────────────────
 
-    /// <summary>
-    /// Applies a BuoyancyConfig to this instance.
-    /// Keeps behaviour config‑driven and SI‑clean.
-    /// </summary>
+    /// <summary>Applies a BuoyancyConfig to this instance.</summary>
     public void ApplyBuoyancyConfig(BuoyancyConfig cfg)
     {
+        buoyancyScale = cfg.buoyancyScale;
         buoyancyStrength = cfg.buoyancyStrength;
         waterDrag = cfg.waterDrag;
         waterAngularDrag = cfg.waterAngularDrag;
@@ -352,6 +325,7 @@ public sealed class Buoyancy : MonoBehaviour
 
     /// <summary>
     /// Recomputes buoyancyStrength from density × g × probe area.
+    /// This is the per‑probe spring constant (not total buoyancy).
     /// </summary>
     public void RecomputeBuoyancyStrength()
     {

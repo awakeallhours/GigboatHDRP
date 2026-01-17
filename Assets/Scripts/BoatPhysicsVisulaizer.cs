@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Axiom.Vessel.Diagnostics;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -7,25 +6,6 @@ using UnityEditor;
 
 namespace Axiom.Vessel.Diagnostics
 {
-    /// <summary>
-    /// Unified visualisation layer for vessel physics diagnostics.
-    /// Draws:
-    /// - Neutral band
-    /// - COM height
-    /// - COB position
-    /// - Righting moment
-    /// - Thrust point + thrust vector
-    /// - Hull bottom reference
-    /// - Forward direction (edit mode)
-    /// - Velocity + slip (play mode only)
-    /// - Per‑probe buoyancy vectors (play mode)
-    /// - Waterline plane (fitted from probes)
-    /// - GM (metacentric height) indicator
-    /// - GZ (righting arm) indicator
-    /// - Roll axis + roll‑rate arrow
-    ///
-    /// All visuals are non-intrusive and editor-only.
-    /// </summary>
     [ExecuteAlways]
     [DisallowMultipleComponent]
     public sealed class BoatPhysicsVisualizer : MonoBehaviour
@@ -43,6 +23,10 @@ namespace Axiom.Vessel.Diagnostics
         [Tooltip("Horizontal line length in meters for COM and neutral band markers.")]
         public float lineWidth = 1.0f;
 
+        // COM editing lock (per boat)
+        [SerializeField, Tooltip("When locked, COM changes are not applied to the Rigidbody.")]
+        private bool comEditingLocked = true;
+        public bool ComEditingLocked => comEditingLocked;
 
         // ─────────────────────────────────────────────────────────────
         // OPTIONAL REFERENCES FOR EXTENDED VISUALS
@@ -67,97 +51,48 @@ namespace Axiom.Vessel.Diagnostics
         [Tooltip("Draw the righting moment torque arrow (edit mode only).")]
         public bool drawRightingMoment = true;
 
-
-        /// <summary>
-        /// Allows external systems (e.g., movement controller) to feed thrust force.
-        /// </summary>
+        /// <summary>Allows external systems (e.g., movement controller) to feed thrust force.</summary>
         public void SetThrustForce(Vector3 force) => thrustForce = force;
-
 
         // ─────────────────────────────────────────────────────────────
         // BUOYANCY / WATERLINE VISUALS
         // ─────────────────────────────────────────────────────────────
 
         [Header("Buoyancy & Waterline Visuals")]
-        [Tooltip("Enable drawing of per‑probe buoyancy vectors.")]
         [SerializeField] private bool drawBuoyancyProbes = true;
-
-        [Tooltip("Enable drawing of the fitted waterline plane from probe data.")]
         [SerializeField] private bool drawWaterlinePlane = true;
-
-        [Tooltip("Buoyancy system providing density and strength.")]
         [SerializeField] private Buoyancy buoyancy;
-
-        [Tooltip("Water probe sampler providing per‑probe water data.")]
         [SerializeField] private WaterProbeSampler sampler;
-
-        [Tooltip("Color of the buoyancy force vector at each probe.")]
         [SerializeField] private Color buoyancyForceColor = Color.cyan;
-
-        [Tooltip("Scale factor for drawing buoyancy force vectors.")]
         [SerializeField] private float buoyancyForceScale = 0.001f;
-
-        [Tooltip("Color for shallow probes (small depth).")]
         [SerializeField] private Color probeDepthColorShallow = Color.blue;
-
-        [Tooltip("Color for deep probes (larger depth).")]
         [SerializeField] private Color probeDepthColorDeep = Color.red;
-
-        [Tooltip("Depth in meters mapped to 1.0 in the depth gradient.")]
         [SerializeField] private float probeDepthMaxForColor = 2f;
-
-        [Tooltip("Color of the fitted waterline plane grid.")]
         [SerializeField] private Color waterlineColor = new Color(0.2f, 0.6f, 1f, 0.6f);
-
-        [Tooltip("Half-size of the waterline plane grid in meters.")]
         [SerializeField] private float waterlineHalfSize = 3f;
-
-        [Tooltip("Number of grid lines per side for the waterline plane.")]
         [SerializeField] private int waterlineGridResolution = 4;
-
 
         // ─────────────────────────────────────────────────────────────
         // STABILITY / ROLL DIAGNOSTICS
         // ─────────────────────────────────────────────────────────────
 
         [Header("Stability & Roll Diagnostics")]
-        [Tooltip("Draw GM (metacentric height) indicator.")]
         [SerializeField] private bool drawGM = true;
-
-        [Tooltip("Draw GZ (righting arm) indicator.")]
         [SerializeField] private bool drawGZ = true;
-
-        [Tooltip("Draw the roll axis line through COM.")]
         [SerializeField] private bool drawRollAxis = true;
-
-        [Tooltip("Draw roll‑rate arrow (angular velocity around roll axis).")]
         [SerializeField] private bool drawRollRate = true;
-
-        [Tooltip("Scale factor for drawing roll‑rate arrow.")]
         [SerializeField] private float rollRateScale = 0.5f;
-
 
         // ─────────────────────────────────────────────────────────────
         // TOGGLES
         // ─────────────────────────────────────────────────────────────
 
         [Header("Gizmo Toggles")]
-        [Tooltip("Draw the thrust point marker.")]
         public bool drawThrustPoint = true;
-
-        [Tooltip("Draw the thrust vector arrow.")]
         public bool drawThrustVector = true;
-
-        [Tooltip("Draw the hull bottom reference marker.")]
         public bool drawHullBottom = true;
-
-        [Tooltip("Draw the forward direction (edit mode).")]
         public bool drawForward = true;
-
-        [Tooltip("Draw the velocity vector (play mode only).")]
         public bool drawVelocity = true;
-
-        [Tooltip("Draw the lateral slip vector (play mode only).")]
         public bool drawSlip = true;
 
         // GM tracking
@@ -169,22 +104,21 @@ namespace Axiom.Vessel.Diagnostics
         private float lastHeelDeg = 0f;
         private float lastGZ = 0f;
         private float lastRollRateDeg = 0f;
+
+        // COM diagnostics panel state
+        private bool comPanelOpen = true;
 #endif
 
         private void Reset()
         {
             if (boatCOM == null)
                 boatCOM = GetComponent<BoatCOM>();
-
             if (boatCOB == null)
                 boatCOB = GetComponent<BoatCOB>();
-
             if (rb == null)
                 rb = GetComponent<Rigidbody>();
-
             if (buoyancy == null)
                 buoyancy = GetComponent<Buoyancy>();
-
             if (sampler == null)
                 sampler = GetComponent<WaterProbeSampler>();
         }
@@ -198,21 +132,23 @@ namespace Axiom.Vessel.Diagnostics
         private void OnDisable()
         {
             SceneView.duringSceneGui -= DrawSceneOverlay;
-
-
         }
 
         private void DrawSceneOverlay(SceneView sceneView)
         {
-            if (!SceneView.currentDrawingSceneView.camera.name.Contains("Scene"))
+            if (SceneView.currentDrawingSceneView == null ||
+                !SceneView.currentDrawingSceneView.camera.name.Contains("Scene"))
                 return;
 
             Handles.BeginGUI();
 
-            const float width = 260f;
-            const float height = 90f;
-            float x = (sceneView.position.width - width) * 0.5f;
-            GUILayout.BeginArea(new Rect(x, 10, width, height));
+            const float gmWidth = 280f;
+            const float gmHeight = 120f;
+            float gmX = (sceneView.position.width - gmWidth) * 0.5f;
+            float gmY = 10f;
+
+            // GM / Stability panel (center)
+            GUILayout.BeginArea(new Rect(gmX, gmY, gmWidth, gmHeight), GUI.skin.box);
             GUI.color = Color.yellow;
 
             GUILayout.Label($"Heel: {lastHeelDeg:F1}°");
@@ -225,12 +161,93 @@ namespace Axiom.Vessel.Diagnostics
                     GUILayout.Label("GM: — (heel < 5°)");
             }
 
-
             if (drawGZ)
                 GUILayout.Label($"GZ: {lastGZ:F3} m");
 
             if (drawRollRate && rb != null)
                 GUILayout.Label($"Roll rate: {lastRollRateDeg:F1} °/s");
+
+            GUILayout.EndArea();
+
+            // COM diagnostics panel (to the right of GM panel)
+            const float comWidth = 260f;
+            const float comHeight = 160f;
+            float comX = gmX + gmWidth + 20f;
+            float comY = gmY;
+
+            GUILayout.BeginArea(new Rect(comX, comY, comWidth, comHeight), GUI.skin.box);
+
+            GUIStyle header = new GUIStyle(EditorStyles.boldLabel);
+            header.normal.textColor = Color.white;
+
+            string arrow = comPanelOpen ? "▼ " : "► ";
+            if (GUILayout.Button(arrow + "COM Diagnostics", header))
+            {
+                comPanelOpen = !comPanelOpen;
+            }
+
+            if (comPanelOpen && boatCOM != null)
+            {
+                float com = boatCOM.comHeight;
+                float neutral = boatCOM.NeutralBandMin;
+
+                // Health colour
+                Color healthColor =
+                    com < neutral ? Color.red :
+                    com < neutral + 0.1f ? new Color(1f, 0.65f, 0f) :
+                    Color.green;
+
+                GUIStyle valueStyle = new GUIStyle(EditorStyles.label);
+                valueStyle.normal.textColor = healthColor;
+
+                GUILayout.Label($"COM Height: {com:F3} m", valueStyle);
+                GUILayout.Label($"Neutral Band: {neutral:F3} m");
+
+                // Enable COM Offset toggle
+                bool newEnable = GUILayout.Toggle(boatCOM.enableCOMOffset, "Enable COM Offset");
+                if (newEnable != boatCOM.enableCOMOffset)
+                {
+                    Undo.RecordObject(boatCOM, "Toggle COM Offset");
+                    boatCOM.enableCOMOffset = newEnable;
+                    boatCOM.ApplyCOM();
+                    boatCOM.CheckNeutralBand();
+                }
+
+                // Re-test COM button
+                if (GUILayout.Button("Re-test COM"))
+                {
+                    Undo.RecordObject(boatCOM, "Re-test COM");
+                    boatCOM.ApplyCOM();
+                    boatCOM.CheckNeutralBand();
+                }
+
+                GUILayout.Space(5f);
+
+                // COM Editing Lock/Unlock button
+                Color prevColor = GUI.backgroundColor;
+                GUI.backgroundColor = comEditingLocked ? Color.green : Color.red;
+                string label = comEditingLocked ? "COM Editing Locked" : "COM Editing Unlocked";
+                if (GUILayout.Button(label))
+                {
+                    comEditingLocked = !comEditingLocked;
+
+                    // When unlocking, force BoatCOM to re-apply COM immediately
+                    if (!comEditingLocked && boatCOM != null)
+                    {
+                        boatCOM.ApplyCOM();
+                        boatCOM.CheckNeutralBand();
+                    }
+                }
+                GUI.backgroundColor = prevColor;
+
+                // Warning when locked
+                if (comEditingLocked)
+                {
+                    GUI.color = Color.red;
+                    GUILayout.Label("COM Editing Locked — inspector changes not applied.");
+                    GUI.color = Color.white;
+                }
+            }
 
             GUILayout.EndArea();
 
@@ -247,51 +264,51 @@ namespace Axiom.Vessel.Diagnostics
 #if UNITY_EDITOR
             if (boatCOM == null)
                 boatCOM = GetComponent<BoatCOM>();
-
             if (boatCOB == null)
                 boatCOB = GetComponent<BoatCOB>();
-
             if (boatCOM == null || boatCOB == null)
                 return;
 
-            // Base reference
+            if (rb == null)
+                rb = GetComponent<Rigidbody>();
+            if (rb == null)
+                return;
+
+            // Base reference (hull origin)
             Vector3 basePos = transform.position;
 
-            // COM + Neutral band heights
-            float comY = boatCOM.COMHeight != 0f ? boatCOM.COMHeight : boatCOM.comHeight;
+            // REAL COM in world space
+            Vector3 comWorld = rb.worldCenterOfMass;
+            float comY = comWorld.y;
+
+            // Neutral band height (world Y)
             float neutralY = boatCOM.NeutralBandMin;
 
+            // Positions for horizontal lines (over hull origin)
             Vector3 neutralPos = basePos + Vector3.up * neutralY;
-            Vector3 comPos = basePos + Vector3.up * comY;
+            Vector3 comHeightPos = new Vector3(basePos.x, comY, basePos.z);
 
             Vector3 left = Vector3.left * (lineWidth * 0.5f);
             Vector3 right = Vector3.right * (lineWidth * 0.5f);
 
-
-            // ─────────────────────────────────────────────────────────────
-            // NEUTRAL BAND
-            // ─────────────────────────────────────────────────────────────
-            Gizmos.color = Color.yellow;
+            // NEUTRAL BAND LINE
+            Gizmos.color = Color.cyan;
             Gizmos.DrawLine(neutralPos + left, neutralPos + right);
-
-            Handles.color = Color.yellow;
+            Handles.color = Color.cyan;
             Handles.Label(neutralPos + Vector3.right * (lineWidth * 0.6f), "Neutral Band");
 
-
-            // ─────────────────────────────────────────────────────────────
-            // COM LINE
-            // ─────────────────────────────────────────────────────────────
+            // COM HEIGHT BAND (2D band over hull origin)
             bool valid = comY >= neutralY;
             Gizmos.color = valid ? Color.green : Color.red;
-            Gizmos.DrawLine(comPos + left, comPos + right);
-
+            Gizmos.DrawLine(comHeightPos + left, comHeightPos + right);
             Handles.color = valid ? Color.green : Color.red;
-            Handles.Label(comPos + Vector3.right * (lineWidth * 0.6f), "COM");
+            Handles.Label(comHeightPos + Vector3.right * (lineWidth * 0.6f), "COM Height");
 
+            // COM DISC (at real COM)
+            Handles.color = Color.yellow;
+            Handles.DrawSolidDisc(comWorld, Vector3.up, 0.05f);
 
-            // ─────────────────────────────────────────────────────────────
             // CENTRE OF BUOYANCY (COB)
-            // ─────────────────────────────────────────────────────────────
             Vector3 cobPosWorld = boatCOB.COBWorldPosition;
 
             if (drawCOB)
@@ -300,21 +317,17 @@ namespace Axiom.Vessel.Diagnostics
                 Gizmos.DrawSphere(cobPosWorld, 0.12f);
 
                 Gizmos.color = Color.white;
-                Gizmos.DrawLine(comPos, cobPosWorld);
+                Gizmos.DrawLine(comWorld, cobPosWorld);
 
                 Handles.color = Color.blue;
                 Handles.Label(cobPosWorld + Vector3.right * 0.2f, "COB");
             }
 
-
-            // ─────────────────────────────────────────────────────────────
             // RIGHTING MOMENT (edit mode only)
-            // ─────────────────────────────────────────────────────────────
             if (drawRightingMoment)
             {
-                Vector3 leverArm = cobPosWorld - comPos;
+                Vector3 leverArm = cobPosWorld - comWorld;
                 Vector3 buoyancyDir = Vector3.up;
-
                 Vector3 rightingTorque = Vector3.Cross(leverArm, buoyancyDir);
 
                 if (rightingTorque.sqrMagnitude > 0.0001f)
@@ -322,17 +335,14 @@ namespace Axiom.Vessel.Diagnostics
                     Vector3 torqueDir = rightingTorque.normalized;
 
                     Gizmos.color = new Color(0.8f, 0.3f, 1f);
-                    Gizmos.DrawLine(comPos, comPos + torqueDir * 2f);
+                    Gizmos.DrawLine(comWorld, comWorld + torqueDir * 2f);
 
                     Handles.color = new Color(0.8f, 0.3f, 1f);
-                    Handles.Label(comPos + torqueDir * 2f, "Righting Moment");
+                    Handles.Label(comWorld + torqueDir * 2f, "Righting Moment");
                 }
             }
 
-
-            // ─────────────────────────────────────────────────────────────
             // THRUST POINT
-            // ─────────────────────────────────────────────────────────────
             if (drawThrustPoint && thrustPoint != null)
             {
                 Gizmos.color = Color.cyan;
@@ -342,16 +352,13 @@ namespace Axiom.Vessel.Diagnostics
                                 thrustPoint.position - Vector3.up * 1.5f);
 
                 Gizmos.color = Color.white;
-                Gizmos.DrawLine(thrustPoint.position, comPos);
+                Gizmos.DrawLine(thrustPoint.position, comWorld);
 
                 Handles.color = Color.cyan;
                 Handles.Label(thrustPoint.position + Vector3.right * 0.2f, "Thrust Point");
             }
 
-
-            // ─────────────────────────────────────────────────────────────
             // THRUST VECTOR
-            // ─────────────────────────────────────────────────────────────
             if (drawThrustVector && thrustPoint != null)
             {
                 Color orange = new Color(1f, 0.5f, 0f);
@@ -364,10 +371,7 @@ namespace Axiom.Vessel.Diagnostics
                 Handles.Label(thrustPoint.position + Vector3.up * 0.3f, "Thrust Vector");
             }
 
-
-            // ─────────────────────────────────────────────────────────────
             // HULL BOTTOM
-            // ─────────────────────────────────────────────────────────────
             if (drawHullBottom)
             {
                 Vector3 hullBottom = transform.TransformPoint(
@@ -377,42 +381,34 @@ namespace Axiom.Vessel.Diagnostics
                 Gizmos.color = Color.grey;
                 Gizmos.DrawCube(hullBottom, new Vector3(0.15f, 0.02f, 0.15f));
 
-                Gizmos.DrawLine(hullBottom, comPos);
+                Gizmos.DrawLine(hullBottom, comWorld);
 
                 Handles.color = Color.grey;
                 Handles.Label(hullBottom + Vector3.right * 0.2f, "Hull Bottom");
             }
 
-
-            // ─────────────────────────────────────────────────────────────
             // FORWARD DIRECTION (EDIT MODE)
-            // ─────────────────────────────────────────────────────────────
             if (drawForward)
             {
                 Gizmos.color = Color.blue;
-                Gizmos.DrawLine(comPos, comPos + transform.forward * 3f);
+                Gizmos.DrawLine(comWorld, comWorld + transform.forward * 3f);
 
                 Handles.color = Color.blue;
-                Handles.Label(comPos + transform.forward * 3f, "Forward");
+                Handles.Label(comWorld + transform.forward * 3f, "Forward");
             }
 
-
-            // ─────────────────────────────────────────────────────────────
             // VELOCITY + SLIP (PLAY MODE ONLY)
-            // ─────────────────────────────────────────────────────────────
             if (drawVelocity && rb != null && Application.isPlaying)
             {
-                Vector3 vel = rb.linearVelocity;
+                Vector3 vel = rb.linearVelocity; // your custom extension
 
-                // Velocity vector
                 if (vel.sqrMagnitude > 0.01f)
                 {
                     Color lime = new Color(0.7f, 1f, 0f);
                     Gizmos.color = lime;
-                    Gizmos.DrawLine(comPos, comPos + vel.normalized * 3f);
+                    Gizmos.DrawLine(comWorld, comWorld + vel.normalized * 3f);
                 }
 
-                // Slip vector
                 if (drawSlip && vel.sqrMagnitude > 0.01f)
                 {
                     Vector3 localVel = transform.InverseTransformDirection(vel);
@@ -420,48 +416,34 @@ namespace Axiom.Vessel.Diagnostics
                     Vector3 lateralWorld = transform.TransformDirection(lateral);
 
                     Gizmos.color = Color.magenta;
-                    Gizmos.DrawLine(comPos, comPos + lateralWorld * 2f);
+                    Gizmos.DrawLine(comWorld, comWorld + lateralWorld * 2f);
                 }
             }
 
-            // ─────────────────────────────────────────────────────────────
             // BUOYANCY PROBE VECTORS (PLAY MODE)
-            // ─────────────────────────────────────────────────────────────
             if (drawBuoyancyProbes && Application.isPlaying)
                 DrawBuoyancyProbes();
 
-
-            // ─────────────────────────────────────────────────────────────
             // WATERLINE PLANE (PLAY MODE)
-            // ─────────────────────────────────────────────────────────────
             if (drawWaterlinePlane && Application.isPlaying)
                 DrawWaterlinePlane();
 
-
-            // ─────────────────────────────────────────────────────────────
             // STABILITY & ROLL DIAGNOSTICS (PLAY MODE)
-            // ─────────────────────────────────────────────────────────────
             if (Application.isPlaying && rb != null)
             {
                 if (drawRollAxis || drawRollRate)
-                    DrawRollDiagnostics(comPos);
+                    DrawRollDiagnostics(comWorld);
 
                 if (drawGM || drawGZ)
-                    DrawStabilityDiagnostics(comPos, cobPosWorld);
+                    DrawStabilityDiagnostics(comWorld, cobPosWorld);
             }
-
 #endif
         }
-
 
         // ─────────────────────────────────────────────────────────────
         // BUOYANCY PROBE VISUALISATION
         // ─────────────────────────────────────────────────────────────
 
-        /// <summary>
-        /// Draws per‑probe buoyancy vectors and depth‑based coloring.
-        /// Purely diagnostic: reads from Buoyancy + WaterProbeSampler, applies no forces.
-        /// </summary>
         private void DrawBuoyancyProbes()
         {
             if (buoyancy == null || sampler == null)
@@ -488,35 +470,24 @@ namespace Axiom.Vessel.Diagnostics
                 if (depth <= 0f)
                     continue;
 
-                // Depth‑based color (heatmap)
                 float depth01 = probeDepthMaxForColor > 0f
                     ? Mathf.Clamp01(depth / probeDepthMaxForColor)
                     : 1f;
 
                 Color depthColor = Color.Lerp(probeDepthColorShallow, probeDepthColorDeep, depth01);
 
-                // Reconstruct force magnitude using the same linear model as Buoyancy:
-                // F = depth * buoyancyStrength
                 float forceMagnitude = depth * buoyancyStrength;
                 Vector3 forceVec = Vector3.up * forceMagnitude * buoyancyForceScale;
 
-                // Draw probe marker
                 Debug.DrawLine(p.position, p.position + Vector3.up * 0.05f, depthColor);
-
-                // Draw buoyancy force vector
                 Debug.DrawLine(p.position, p.position + forceVec, buoyancyForceColor);
             }
         }
-
 
         // ─────────────────────────────────────────────────────────────
         // WATERLINE PLANE (FITTED FROM PROBES)
         // ─────────────────────────────────────────────────────────────
 
-        /// <summary>
-        /// Draws a fitted waterline plane using three valid probes.
-        /// Uses probe positions and water heights to define a plane, then draws a grid.
-        /// </summary>
         private void DrawWaterlinePlane()
         {
             if (sampler == null)
@@ -527,7 +498,6 @@ namespace Axiom.Vessel.Diagnostics
             if (valid == null || heights == null || points == null)
                 return;
 
-            // Collect up to three valid water points
             Vector3[] waterPoints = new Vector3[3];
             int count = 0;
 
@@ -557,7 +527,6 @@ namespace Axiom.Vessel.Diagnostics
             if (normal.sqrMagnitude < 0.0001f)
                 return;
 
-            // Build a local basis for the plane (right/forward on the plane)
             Vector3 planeRight = Vector3.Cross(Vector3.up, normal).normalized;
             if (planeRight.sqrMagnitude < 0.0001f)
                 planeRight = Vector3.right;
@@ -569,7 +538,6 @@ namespace Axiom.Vessel.Diagnostics
             int steps = Mathf.Max(1, waterlineGridResolution);
             float step = waterlineHalfSize * 2f / steps;
 
-            // Draw grid lines on the plane
             for (int i = 0; i <= steps; i++)
             {
                 float offset = -waterlineHalfSize + i * step;
@@ -590,22 +558,14 @@ namespace Axiom.Vessel.Diagnostics
 #endif
         }
 
-
         // ─────────────────────────────────────────────────────────────
         // STABILITY DIAGNOSTICS (GM / GZ)
         // ─────────────────────────────────────────────────────────────
 
-        /// <summary>
-        /// Draws GM (metacentric height) and GZ (righting arm) indicators.
-        /// Uses COM, COB, and hull orientation to approximate small-angle stability.
-        /// GM is only computed when heel angle is sufficiently non-zero.
-        /// </summary>
-        private void DrawStabilityDiagnostics(Vector3 comPos, Vector3 cobPosWorld)
+        private void DrawStabilityDiagnostics(Vector3 comWorld, Vector3 cobPosWorld)
         {
-            // Roll axis is local X in world space
             Vector3 rollAxis = transform.right;
 
-            // Heel angle: angle between vessel up and world up, around roll axis
             Vector3 up = transform.up;
             float heelSign = Mathf.Sign(Vector3.Dot(Vector3.Cross(Vector3.up, up), rollAxis));
             float heelAngleRad = Mathf.Acos(Mathf.Clamp(Vector3.Dot(Vector3.up, up), -1f, 1f));
@@ -616,38 +576,26 @@ namespace Axiom.Vessel.Diagnostics
             lastHeelDeg = heelAngleDeg;
 #endif
 
-            // Lever from COM to COB
-            Vector3 lever = cobPosWorld - comPos;
-
-            // Horizontal righting arm (GZ) = projection of lever onto plane perpendicular to roll axis
+            Vector3 lever = cobPosWorld - comWorld;
             Vector3 leverPerp = Vector3.ProjectOnPlane(lever, rollAxis);
             float GZ = leverPerp.magnitude;
 #if UNITY_EDITOR
             lastGZ = GZ;
 #endif
 
-            // ─────────────────────────────────────────────────────────────
-            // GZ (Righting Arm)
-            // ─────────────────────────────────────────────────────────────
-            if (drawGZ)
+            if (drawGZ && GZ > 0.0001f)
             {
-                if (GZ > 0.0001f)
-                {
-                    Vector3 gzDir = leverPerp.normalized;
+                Vector3 gzDir = leverPerp.normalized;
 
-                    Gizmos.color = Color.green;
-                    Gizmos.DrawLine(comPos, comPos + gzDir * GZ);
+                Gizmos.color = Color.green;
+                Gizmos.DrawLine(comWorld, comWorld + gzDir * GZ);
 
 #if UNITY_EDITOR
-                    Handles.color = Color.green;
-                    Handles.Label(comPos + gzDir * GZ, $"GZ: {GZ:F3} m");
+                Handles.color = Color.green;
+                Handles.Label(comWorld + gzDir * GZ, $"GZ: {GZ:F3} m");
 #endif
-                }
             }
 
-            // ─────────────────────────────────────────────────────────────
-            // GM (Metacentric Height) with meaningful heel threshold
-            // ─────────────────────────────────────────────────────────────
             if (drawGM)
             {
                 const float minHeelDegForGM = 5.0f;
@@ -655,7 +603,6 @@ namespace Axiom.Vessel.Diagnostics
                 if (!Application.isPlaying)
                     return;
 
-                // Only compute GM when heel is large enough to be meaningful
                 if (Mathf.Abs(heelAngleDeg) < minHeelDegForGM)
                     return;
 
@@ -672,54 +619,48 @@ namespace Axiom.Vessel.Diagnostics
                 lastGM = GM;
 #endif
 
-                // Draw metacentre line
                 Vector3 heelPlaneNormal = Vector3.Cross(rollAxis, Vector3.up).normalized;
                 if (heelPlaneNormal.sqrMagnitude < 0.0001f)
                     heelPlaneNormal = Vector3.forward;
 
-                Vector3 M = comPos + heelPlaneNormal * GM;
+                Vector3 M = comWorld + heelPlaneNormal * GM;
 
                 Gizmos.color = Color.yellow;
-                Gizmos.DrawLine(comPos, M);
+                Gizmos.DrawLine(comWorld, M);
             }
         }
-
 
         // ─────────────────────────────────────────────────────────────
         // ROLL AXIS / ROLL RATE
         // ─────────────────────────────────────────────────────────────
 
-            /// <summary>
-            /// Draws roll axis line through COM and roll‑rate arrow based on angular velocity.
-            /// </summary>
-        private void DrawRollDiagnostics(Vector3 comPos)
+        private void DrawRollDiagnostics(Vector3 comWorld)
         {
             Vector3 rollAxis = transform.right;
 
             if (drawRollAxis)
             {
                 Gizmos.color = Color.white;
-                Gizmos.DrawLine(comPos - rollAxis * 2f, comPos + rollAxis * 2f);
+                Gizmos.DrawLine(comWorld - rollAxis * 2f, comWorld + rollAxis * 2f);
 
 #if UNITY_EDITOR
                 Handles.color = Color.white;
-                Handles.Label(comPos + rollAxis * 2f, "Roll Axis");
+                Handles.Label(comWorld + rollAxis * 2f, "Roll Axis");
 #endif
             }
 
             if (drawRollRate && rb != null)
             {
-                // Project angular velocity onto roll axis
-                float rollRate = Vector3.Dot(rb.angularVelocity, rollAxis); // rad/s
+                float rollRate = Vector3.Dot(rb.angularVelocity, rollAxis);
                 Vector3 rollRateVec = rollAxis * rollRate * rollRateScale;
 
                 Gizmos.color = Color.red;
-                Gizmos.DrawLine(comPos, comPos + rollRateVec);
+                Gizmos.DrawLine(comWorld, comWorld + rollRateVec);
 
 #if UNITY_EDITOR
                 lastRollRateDeg = rollRate * Mathf.Rad2Deg;
                 Handles.color = Color.red;
-                Handles.Label(comPos + rollRateVec, $"Roll Rate: {lastRollRateDeg:F1} °/s");
+                Handles.Label(comWorld + rollRateVec, $"Roll Rate: {lastRollRateDeg:F1} °/s");
 #endif
             }
         }

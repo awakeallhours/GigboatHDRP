@@ -11,6 +11,9 @@ public class BoatConfig : ScriptableObject
 [System.Serializable]
 public struct BuoyancyConfig
 {
+    [Tooltip("Global multiplier for all buoyancy forces. Used to calibrate draft at DryMass.")]
+    public float buoyancyScale;
+
     public float buoyancyStrength;
     public float waterDrag;
     public float waterAngularDrag;
