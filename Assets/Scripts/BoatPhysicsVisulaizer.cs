@@ -213,10 +213,10 @@ namespace Axiom.Vessel.Diagnostics
                     boatCOM.CheckNeutralBand();
                 }
 
-                // Re-test COM button
-                if (GUILayout.Button("Re-test COM"))
+                // Apply COM button
+                if (GUILayout.Button("Apply COM"))
                 {
-                    Undo.RecordObject(boatCOM, "Re-test COM");
+                    Undo.RecordObject(boatCOM, "Apply COM");
                     boatCOM.ApplyCOM();
                     boatCOM.CheckNeutralBand();
                 }

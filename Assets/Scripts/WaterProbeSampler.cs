@@ -8,7 +8,6 @@ public class WaterProbeSampler : MonoBehaviour
 
     private WaterSurface water;
 
-    // Probe data
     private float[] pointHeights;
     private Vector3[] pointNormals;
     private bool[] pointValid;
@@ -29,11 +28,6 @@ public class WaterProbeSampler : MonoBehaviour
         if (water == null)
             return;
 
-        SampleAllProbes();
-    }
-
-    private void SampleAllProbes()
-    {
         for (int i = 0; i < samplePoints.Length; i++)
             SampleProbe(i);
     }
@@ -60,7 +54,6 @@ public class WaterProbeSampler : MonoBehaviour
         pointNormals[index] = wr.normalWS;
     }
 
-    // Buoyancy + Hydrodynamics read probe data through this
     public void GetProbeData(out bool[] valid, out float[] heights, out Vector3[] normals, out Transform[] points)
     {
         valid = pointValid;

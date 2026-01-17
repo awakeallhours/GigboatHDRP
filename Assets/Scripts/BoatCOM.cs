@@ -48,10 +48,15 @@ namespace Axiom.Vessel.Diagnostics
             if (UnityEditor.PrefabUtility.IsPartOfPrefabAsset(this))
                 return;
 #endif
+
             if (rb == null)
                 rb = GetComponent<Rigidbody>();
             if (visualizer == null)
                 visualizer = GetComponent<BoatPhysicsVisualizer>();
+
+            // NEW: Do not apply COM when editing is locked
+            if (visualizer != null && visualizer.ComEditingLocked)
+                return;
 
             if (rb != null)
             {
@@ -68,10 +73,6 @@ namespace Axiom.Vessel.Diagnostics
                     Debug.Log("[BoatCOM] COM offset disabled — using Rigidbody default COM.");
                 return;
             }
-
-            // If visualizer exists and COM editing is locked, do NOT apply changes
-            if (visualizer != null && visualizer.ComEditingLocked)
-                return;
 
             Vector3 com = rb.centerOfMass;
 
@@ -96,6 +97,10 @@ namespace Axiom.Vessel.Diagnostics
 
         public void CheckNeutralBand()
         {
+            // Do NOT warn if COM editing is locked — the real COM hasn't changed.
+            if (visualizer != null && visualizer.ComEditingLocked)
+                return;
+
             if (comHeight < neutralBandMin)
             {
                 Debug.LogWarning(
@@ -105,14 +110,14 @@ namespace Axiom.Vessel.Diagnostics
             }
         }
 
-        [ContextMenu("Re-test COM")]
-        private void RetestCOM()
+        [ContextMenu("Apply COM")]
+        private void ApplyCOM_ContextMenu()
         {
             ApplyCOM();
             CheckNeutralBand();
 
             if (enableDebugLogs)
-                Debug.Log("[BoatCOM] Re-tested COM and neutral band.");
+                Debug.Log("[BoatCOM] Applied COM and checked neutral band.");
         }
     }
 }
