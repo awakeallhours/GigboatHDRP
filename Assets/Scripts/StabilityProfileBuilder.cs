@@ -1,5 +1,7 @@
+using Axiom.Vessel.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public static class StabilityProfileBuilder
 {
@@ -11,8 +13,8 @@ public static class StabilityProfileBuilder
     {
         // --- 1. Initial GM (smallest heel above threshold) ---
         var initial = samples
-            .OrderBy(s => s.Heel)
-            .First(s => s.Heel >= 5f);   // You can expose this threshold if needed
+            .OrderBy(s => s.HeelDeg)
+            .First(s => s.HeelDeg >= 5f);   // You can expose this threshold if needed
 
         // --- 2. GM Peak ---
         var gmPeak = samples
@@ -35,10 +37,10 @@ public static class StabilityProfileBuilder
         {
             GM_Initial = initial.GM,
             GM_Peak = gmPeak.GM,
-            GM_PeakAngle = gmPeak.Heel,
+            GM_PeakAngle = gmPeak.HeelDeg,
 
             GZ_Peak = gzPeak.GZ,
-            GZ_PeakAngle = gzPeak.Heel,
+            GZ_PeakAngle = gzPeak.HeelDeg,
             GZ_ZeroAngle = zeroAngle,
 
             COM_SafeMin = comSafeMin,
@@ -61,11 +63,11 @@ public static class StabilityProfileBuilder
             {
                 // Linear interpolation (no magic numbers)
                 float t = prev.GZ / (prev.GZ - curr.GZ);
-                return Mathf.Lerp(prev.Heel, curr.Heel, t);
+                return Mathf.Lerp(prev.HeelDeg, curr.HeelDeg, t);
             }
         }
 
         // If never crosses zero, return last heel angle
-        return samples.Last().Heel;
+        return samples.Last().HeelDeg;
     }
 }
