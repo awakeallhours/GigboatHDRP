@@ -33,6 +33,8 @@ namespace Axiom.Vessel.Diagnostics
             {
                 // Apply heel
                 boat.localRotation = Quaternion.Euler(0f, 0f, angle);
+                rb.rotation = boat.rotation;
+                rb.angularVelocity = Vector3.zero;
 
                 // Let buoyancy settle
                 yield return new WaitForSeconds(settleTime);

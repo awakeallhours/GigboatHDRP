@@ -1,0 +1,63 @@
+Stability Tools Description
+
+⚓ 1. StabilitySample
+Purpose:
+Represents one row of raw stability data collected at a specific heel angle.
+What it contains:
+- Heel angle (deg)
+- GM at that angle
+- GZ at that angle
+Why it exists:
+The scanner produces many samples — one per heel step.
+This struct is the atomic unit of the stability dataset.
+Analogy:
+Think of it as a CSV row in a stability test log.
+
+⚓ 2. StabilityProfile
+Purpose:
+A summary of the entire stability scan.
+What it contains:
+- GM at small heel (GM_initial)
+- Maximum GM and the angle it occurs
+- Maximum GZ and the angle it occurs
+- Angle of vanishing stability (GZ crosses zero)
+- COM safe band (min/max)
+- Positive stability range
+- Notes
+Why it exists:
+This is the final “report” you care about — the thing you can save, compare, export, or show in UI.
+Analogy:
+If StabilitySample is the raw data, StabilityProfile is the executive summary.
+
+⚓ 3. StabilityProfileBuilder
+Purpose:
+Turns raw samples → final profile.
+What it does:
+- Sorts samples by heel
+- Finds the first valid GM (initial GM)
+- Finds the peak GM
+- Finds the peak GZ
+- Detects where GZ crosses zero (angle of vanishing stability)
+- Computes positive stability range
+- Packs everything into a StabilityProfile
+Why it exists:
+You don’t want analysis logic inside the scanner or the visualiser.
+This keeps the pipeline clean and modular.
+Analogy:
+It’s the “post‑processing” step — like Unity’s lightmapper taking raw bounces and producing a final lightmap.
+
+⚓ 4. GMGZStabilityScanner
+Purpose:
+Performs the actual physical scan in‑scene.
+What it does:
+- Rotates the boat from startAngle → endAngle
+- Waits for buoyancy to settle at each step
+- Computes heel, GM, and GZ
+- Stores each result as a StabilitySample
+- Passes the full list to StabilityProfileBuilder
+- Returns a StabilityProfile via callback
+Why it exists:
+This is the runtime “experiment runner.”
+It interacts with the real physics system, not just math.
+Analogy:
+It’s the machine that runs the test — like a tilt table in a shipyard.
