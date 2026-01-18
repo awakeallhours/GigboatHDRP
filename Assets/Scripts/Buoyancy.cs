@@ -29,12 +29,23 @@ public sealed class Buoyancy : MonoBehaviour
     [Tooltip("Probe sampler providing probe positions, heights, normals, validity.")]
     [SerializeField] private WaterProbeSampler probeSampler;
 
+
+
+
+
     // ─────────────────────────────────────────────────────────────
     // GLOBAL BUOYANCY CONTROL
     // ─────────────────────────────────────────────────────────────
-    [Header("Buoyancy Control")]
-    [Tooltip("Global multiplier for all buoyancy forces. Used to calibrate draft at DryMass.")]
+    [Header("Probe Type Scaling")]
     [SerializeField] private float buoyancyScale = 1f;
+
+
+    [SerializeField] private float keelBuoyancyScale = 1f;
+    [SerializeField] private float sideBuoyancyScale = 0.4f;
+
+    [SerializeField] private float keelRightingScale = 1f;
+    [SerializeField] private float sideRightingScale = 0.2f;
+
 
     // ─────────────────────────────────────────────────────────────
     // BASE SETTINGS
@@ -96,6 +107,20 @@ public sealed class Buoyancy : MonoBehaviour
     public DensityValue WaterDensity => waterDensity;
     public float BuoyancyStrength => buoyancyStrength;
 
+    public Transform[] SamplePoints => samplePoints;
+    public float[] PointHeights => pointHeights;
+    public bool[] PointValid => pointValid;
+    public ProbeType[] ProbeTypes => probeTypes;
+
+    public float TotalBuoyancyForce => totalBuoyancyForce;
+
+    // probeArea must be writable
+    public AreaValue ProbeArea
+    {
+        get => probeArea;
+        set => probeArea = value;
+    }
+
     // ─────────────────────────────────────────────────────────────
     // INTERNAL PROBE DATA (from sampler)
     // ─────────────────────────────────────────────────────────────
@@ -103,6 +128,7 @@ public sealed class Buoyancy : MonoBehaviour
     private float[] pointHeights;
     private Vector3[] pointNormals;
     private Transform[] samplePoints;
+    private ProbeType[] probeTypes;
 
     // ─────────────────────────────────────────────────────────────
     // ACCUMULATORS FOR COB + BUOYANCY STATE
@@ -110,6 +136,8 @@ public sealed class Buoyancy : MonoBehaviour
     private Vector3 cobSumLocal;
     private float totalBuoyancyForce;
     private float totalSubmergedVolume;
+
+    public bool debugBuoyancy = false;
 
     // ─────────────────────────────────────────────────────────────
     // UNITY EVENTS
@@ -152,11 +180,11 @@ public sealed class Buoyancy : MonoBehaviour
 
         // Pull probe data from sampler (arrays allocated in sampler.Awake)
         probeSampler.GetProbeData(
-            out pointValid,
-            out pointHeights,
-            out pointNormals,
-            out samplePoints
-        );
+        out pointValid,
+        out pointHeights,
+        out pointNormals,
+        out samplePoints,
+        out probeTypes);
 
         if (autoComputeStrength)
             RecomputeBuoyancyStrength();
@@ -174,6 +202,17 @@ public sealed class Buoyancy : MonoBehaviour
         ApplyAllBuoyancyForces();
         ApplyGlobalHeaveDamping();
         UpdateSternSubmersion();
+
+        // ─────────────────────────────────────────────
+        // DEBUG: Buoyancy vs Weight
+        // ─────────────────────────────────────────────
+        if (debugBuoyancy)
+        {
+            float weight = rb.mass * Physics.gravity.magnitude;
+            float diff = totalBuoyancyForce - weight;
+
+            Debug.Log($"[Buoyancy Debug] totalBuoyancyForce={totalBuoyancyForce:F2}, weight={weight:F2}, diff={diff:F2}");
+        }
 
         if (boatCOB != null)
         {
@@ -196,6 +235,13 @@ public sealed class Buoyancy : MonoBehaviour
         if (!pointValid[index])
             return;
 
+        // NEW: read probe classification
+        ProbeType type = probeTypes[index];
+
+        // Deck probes produce no buoyancy at all
+        if (type == ProbeType.Deck)
+            return;
+
         Transform p = samplePoints[index];
         float waterY = pointHeights[index];
         Vector3 normal = pointNormals[index];
@@ -204,17 +250,34 @@ public sealed class Buoyancy : MonoBehaviour
 
         if (depth > 0f)
         {
-            float forceMagnitude = depth * buoyancyStrength * buoyancyScale;
-            Vector3 force = Vector3.up * forceMagnitude;
+            float baseMagnitude = depth * buoyancyStrength * buoyancyScale;
+            Vector3 force;
+            float effectiveMagnitude;
+
+            switch (type)
+            {
+                case ProbeType.Keel:
+                    force = Vector3.up * (baseMagnitude * keelBuoyancyScale);
+                    effectiveMagnitude = baseMagnitude * keelBuoyancyScale;
+                    break;
+
+                case ProbeType.Side:
+                    force = normal * (baseMagnitude * sideBuoyancyScale);
+                    effectiveMagnitude = baseMagnitude * sideBuoyancyScale;
+                    break;
+
+                default:
+                    return;
+            }
+
             rb.AddForceAtPosition(force, p.position, ForceMode.Force);
+            totalBuoyancyForce += effectiveMagnitude;
 
-            totalBuoyancyForce += forceMagnitude;
-
-            float volume = forceMagnitude / (waterDensity.ValueKgPerCubicMeter * Physics.gravity.magnitude);
+            float volume = effectiveMagnitude / (waterDensity.ValueKgPerCubicMeter * Physics.gravity.magnitude);
             totalSubmergedVolume += volume;
 
             Vector3 localPos = transform.InverseTransformPoint(p.position);
-            cobSumLocal += localPos * forceMagnitude;
+            cobSumLocal += localPos * effectiveMagnitude;
 
             float verticalVel = Vector3.Dot(rb.GetPointVelocity(p.position), Vector3.up);
             Vector3 damping = -verticalVel * Vector3.up * waterDrag;
@@ -222,10 +285,21 @@ public sealed class Buoyancy : MonoBehaviour
 
             rb.AddTorque(-rb.angularVelocity * waterAngularDrag, ForceMode.Force);
 
+            // Righting moment depends on probe type
             if (enableRightingMoment)
             {
                 Vector3 tilt = Vector3.Cross(transform.up, normal);
-                rb.AddTorque(tilt * rightingStrength, ForceMode.Force);
+
+                switch (type)
+                {
+                    case ProbeType.Keel:
+                        rb.AddTorque(tilt * (rightingStrength * keelRightingScale), ForceMode.Force);
+                        break;
+
+                    case ProbeType.Side:
+                        rb.AddTorque(tilt * (rightingStrength * sideRightingScale), ForceMode.Force);
+                        break;
+                }
             }
         }
     }

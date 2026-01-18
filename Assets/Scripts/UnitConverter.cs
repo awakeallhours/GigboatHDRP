@@ -1,8 +1,13 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace Axiom.Physics.Units
 {
+    // ─────────────────────────────────────────────
+    //  CONVERSIONS
+    // ─────────────────────────────────────────────
+
+
     public static class UnitsConverter
     {
         // Power
@@ -196,11 +201,53 @@ namespace Axiom.Physics.Units
             return poundsPerCubicFoot * (poundsToKg / cubicFeetToCubicMeters);
         }
 
+        // Litres → Cubic Meters
+        public static float LitresToCubicMeters(float litres)
+        {
+            return litres / 1000f;
+        }
+
+        // Cubic Meters → Litres
+        public static float CubicMetersToLitres(float cubicMeters)
+        {
+            return cubicMeters * 1000f;
+        }
+
+        // Cubic Feet → Cubic Meters
+        public static float CubicFeetToCubicMeters(float cubicFeet)
+        {
+            return cubicFeet * 0.0283168f;
+        }
+
+        // Cubic Meters → Cubic Feet
+        public static float CubicMetersToCubicFeet(float cubicMeters)
+        {
+            return cubicMeters / 0.0283168f;
+        }
+
+        //Torque Per Angle
+
+        // Newton‑meters per degree → Newton‑meters per radian
+        public static float NewtonMetersPerDegreeToNewtonMetersPerRadian(float nmPerDeg)
+        {
+            return nmPerDeg * Mathf.Deg2Rad;
+        }
+
+        // Newton‑meters per radian → Newton‑meters per degree
+        public static float NewtonMetersPerRadianToNewtonMetersPerDegree(float nmPerRad)
+        {
+            return nmPerRad * Mathf.Rad2Deg;
+        }
+
+
 
 
     }
 
-    // Enums
+    // ─────────────────────────────────────────────
+    // ENUMS
+    // ─────────────────────────────────────────────
+
 
     //Future use case could use smaller measurements for toy size vehicles, I am very amused by centimeters per second as a speed value for instance 
     public enum PowerUnit
@@ -221,6 +268,27 @@ namespace Axiom.Physics.Units
     public enum ForceUnit
     {
         Newtons
+    }
+
+    public enum ForcePerMeterUnit
+    {
+        NewtonsPerMeter
+    }
+
+    public enum DampingUnit
+    {
+        NewtonSecondsPerMeter
+    }
+
+    public enum AngularDampingUnit
+    {
+        NewtonMeterSecondsPerRadian
+    }
+
+    public enum TorquePerAngleUnit
+    {
+        NewtonMetersPerRadian,
+        NewtonMetersPerDegree
     }
 
     public enum SpeedUnit
@@ -269,6 +337,11 @@ namespace Axiom.Physics.Units
         Freshwater,
         Saltwater,
         Custom
+    }
+
+    public enum VolumeUnit
+    {
+        Litres, CubicMeters, CubicFeet,
     }
 
 
@@ -565,11 +638,11 @@ namespace Axiom.Physics.Units
                 switch (waterType)
                 {
                     case WaterType.Freshwater:
-                        baseValue = 1000f; // kg/m�
+                        baseValue = 1000f; // kg/m³
                         break;
 
                     case WaterType.Saltwater:
-                        baseValue = 1025f; // kg/m�
+                        baseValue = 1025f; // kg/m³
                         break;
 
                     default:
@@ -586,6 +659,115 @@ namespace Axiom.Physics.Units
                     default:
                     case DensityUnit.KgPerCubicMeter:
                         return baseValue;
+                }
+            }
+        }
+    }
+
+    [System.Serializable]
+    public class ForcePerMeterValue
+    {
+        public float inputValue;
+        public ForcePerMeterUnit unit;
+
+        public float ValueNewtonsPerMeter
+        {
+            get
+            {
+                switch (unit)
+                {
+                    default:
+                    case ForcePerMeterUnit.NewtonsPerMeter:
+                        return inputValue;
+                }
+            }
+        }
+    }
+
+    [System.Serializable]
+    public class DampingValue
+    {
+        public float inputValue;
+        public DampingUnit unit;
+
+        public float ValueNewtonSecondsPerMeter
+        {
+            get
+            {
+                switch (unit)
+                {
+                    default:
+                    case DampingUnit.NewtonSecondsPerMeter:
+                        return inputValue;
+                }
+            }
+        }
+    }
+
+    [System.Serializable]
+    public class AngularDampingValue
+    {
+        public float inputValue;
+        public AngularDampingUnit unit;
+
+        public float ValueNewtonMeterSecondsPerRadian
+        {
+            get
+            {
+                switch (unit)
+                {
+                    default:
+                    case AngularDampingUnit.NewtonMeterSecondsPerRadian:
+                        return inputValue;
+                }
+            }
+        }
+    }
+
+    [System.Serializable]
+    public class TorquePerAngleValue
+    {
+        public float inputValue;
+        public TorquePerAngleUnit unit;
+
+        public float ValueNewtonMetersPerRadian
+        {
+            get
+            {
+                switch (unit)
+                {
+                    case TorquePerAngleUnit.NewtonMetersPerDegree:
+                        return inputValue * Mathf.Deg2Rad;
+
+                    default:
+                    case TorquePerAngleUnit.NewtonMetersPerRadian:
+                        return inputValue;
+                }
+            }
+        }
+    }
+
+    [System.Serializable]
+    public class VolumeValue
+    {
+        public float inputValue;
+        public VolumeUnit unit;
+
+        public float ValueCubicMeters
+        {
+            get
+            {
+                switch (unit)
+                {
+                    case VolumeUnit.Litres:
+                        return inputValue / 1000f;
+
+                    case VolumeUnit.CubicFeet:
+                        return inputValue * 0.0283168f;
+
+                    default:
+                    case VolumeUnit.CubicMeters:
+                        return inputValue;
                 }
             }
         }

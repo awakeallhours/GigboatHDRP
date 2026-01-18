@@ -1771,12 +1771,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1017d3b051cac642b25847ad9960687, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  notes: 
+  notes: "Current setup com -.5 Stable -.4 Verge of stability -.35 unstable\n\nGM/GZ\n-
+    GM_initial: ~0.6 m\r\n- GM_peak: ~2.1 m @ ~35\xB0\r\n- GZ_max: ~1.2 m @ ~35\xB0\r\n-
+    Angle_of_max_GZ: ~35\xB0\r\n- Positive_stability_range: 0\xB0 \u2192 ~50\u201360\xB0
+    (estimate from trend)\r\n"
   rb: {fileID: 6401897688909232224}
-  boatCOB: {fileID: -4567935784882914520}
   waterSurfaceSource: {fileID: 0}
+  boatCOB: {fileID: -4567935784882914520}
   probeSampler: {fileID: -143646874513710580}
   buoyancyScale: 1
+  keelBuoyancyScale: 1
+  sideBuoyancyScale: 1
+  keelRightingScale: 1
+  sideRightingScale: 0.2
   buoyancyStrength: 1000
   waterDrag: 1.2
   waterAngularDrag: 0.5
@@ -1786,7 +1793,7 @@ MonoBehaviour:
     inputValue: 1025
     unit: 0
   probeArea:
-    inputValue: 0.35
+    inputValue: 0.341466
     unit: 0
   autoComputeStrength: 1
   enableRightingMoment: 0
@@ -1795,6 +1802,7 @@ MonoBehaviour:
   sternReferenceDepth:
     inputValue: 0.4
     unit: 0
+  debugBuoyancy: 0
 --- !u!114 &723849269608935986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1956,15 +1964,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   samplePoints:
-  - {fileID: 5998854642304655755}
   - {fileID: 3129992416833491610}
-  - {fileID: 6728273268906666960}
+  - {fileID: 5998854642304655755}
   - {fileID: 4267753403338524935}
-  - {fileID: 4436612481927714831}
+  - {fileID: 6728273268906666960}
   - {fileID: 1407071608131589043}
+  - {fileID: 4436612481927714831}
   - {fileID: 8106226593832977797}
   - {fileID: 5728641551181461686}
   - {fileID: 4411290532301870726}
+  probeTypes: 010000000100000001000000010000000100000001000000000000000000000000000000
+  testProbe: 0
 --- !u!114 &-5939297710904165419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1997,7 +2007,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5781cc11803899c4fb082b6375876a5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  comHeight: 0.35
+  comHeight: -0.5
   comForwardOffset: -0.2
   neutralBandMin: 0.3
   enableCOMOffset: 1
@@ -2015,10 +2025,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4450d242405880b41a78d7a0373821c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rb: {fileID: 6401897688909232224}
-  comIntegration: {fileID: 7663862005857181451}
+  rb: {fileID: 0}
+  comIntegration: {fileID: 0}
   testPointHeight: 0
-  testForce: 10000
+  testForce: 5000
   applyForce: 0
 --- !u!114 &7663862005857181451
 MonoBehaviour:
@@ -2066,6 +2076,7 @@ MonoBehaviour:
   boatCOB: {fileID: -4567935784882914520}
   lineWidth: 1
   comEditingLocked: 0
+  probeSampler: {fileID: -143646874513710580}
   rb: {fileID: 6401897688909232224}
   thrustPoint: {fileID: 7717750645490284848}
   thrustForce: {x: 0, y: 0, z: 0}
@@ -2084,15 +2095,15 @@ MonoBehaviour:
   waterlineColor: {r: 0.2, g: 0.6, b: 1, a: 0.6}
   waterlineHalfSize: 3
   waterlineGridResolution: 4
-  drawGM: 0
-  drawGZ: 0
-  drawRollAxis: 0
-  drawRollRate: 0
+  drawGM: 1
+  drawGZ: 1
+  drawRollAxis: 1
+  drawRollRate: 1
   rollRateScale: 0.5
-  drawThrustPoint: 0
-  drawThrustVector: 0
-  drawHullBottom: 0
-  drawForward: 0
+  drawThrustPoint: 1
+  drawThrustVector: 1
+  drawHullBottom: 1
+  drawForward: 1
   drawVelocity: 1
   drawSlip: 1
 --- !u!1 &4864625990696992598
@@ -2516,7 +2527,7 @@ Transform:
   m_GameObject: {fileID: 5465619575727556808}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.435, z: 2.5939147}
+  m_LocalPosition: {x: 0, y: -0.6, z: 2.036}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4089,7 +4100,7 @@ Transform:
   m_GameObject: {fileID: 9007909271406656412}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.896, z: -2.9200852}
+  m_LocalPosition: {x: 0, y: -0.896, z: -2.194}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

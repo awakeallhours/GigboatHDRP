@@ -1,0 +1,123 @@
+   ┌──────────────────────────────┐
+   │   0. HULL + PROBES READY?    │
+   └──────────────┬───────────────┘
+                  │
+                  ▼
+   ┌──────────────────────────────┐
+   │  1. BUOYANCY CALIBRATION     │  ← Buoyancy Calibrator Tool
+   └──────────────┬───────────────┘
+                  │
+                  ▼
+   ┌──────────────────────────────┐
+   │  2. GM/GZ STABILITY SCAN     │  ← Stability Scanner
+   └──────────────┬───────────────┘
+                  │
+                  ▼
+   ┌──────────────────────────────┐
+   │  3. COM TUNING (VERTICAL)    │  ← COM Visualiser
+   └──────────────┬───────────────┘
+                  │
+                  ▼
+   ┌──────────────────────────────┐
+   │  4. STABILITY BAND CREATION  │  ← Derived from GM/GZ
+   └──────────────┬───────────────┘
+                  │
+                  ▼
+   ┌──────────────────────────────┐
+   │  5. ROLL FEEL / HYDRODAMPING │  ← Runtime tuning
+   └──────────────────────────────┘
+
+   🔵 1. Buoyancy Calibration (Your Buoyancy Calibrator Tool)
+This is always Step 1 because it establishes the static equilibrium of the vessel.
+What you do:
+- Set target displacement
+- Adjust mass until the boat floats at the correct draft
+- Validate probe contributions
+- Confirm waterplane area looks sane
+- Ensure no probe is dominating or dead
+What this gives you:
+- Correct draft
+- Correct displacement
+- Correct waterplane
+- Correct initial hydrostatics
+This is the foundation of everything else.
+
+
+🔵 2. GM/GZ Stability Scan (Your Stability Scanner)
+This is Step 2 — before COM tuning — because GM/GZ tells you whether the hull itself is stable.
+What you do:
+- Heel the boat through 0–45°
+- Capture GM and GZ at key angles
+- Identify:
+- GM_initial
+- GM_peak
+- GZ_peak
+- Angle_of_max_GZ
+- Positive_stability_range
+What this gives you:
+- The hull’s natural stability curve
+- The hull’s righting behaviour
+- The hull’s safe operating envelope
+- A baseline to compare COM adjustments against
+This step tells you what the hull wants to do.
+
+
+🔵 3. COM Tuning (Vertical COM Adjustment)
+Only after GM/GZ is validated do you tune COM.
+Why?
+Because COM tuning changes GM/GZ.
+You need the baseline first.
+What you do:
+- Move COM up/down
+- Watch GM_initial change
+- Watch GZ_peak change
+- Watch angle_of_max_GZ shift
+- Find the “comfort zone” where:
+- GM_initial is not too low
+- GM_initial is not too high
+- GZ_peak is healthy
+- Roll behaviour feels correct
+What this gives you:
+- A safe COM band
+- A recommended COM height
+- A tuned roll feel
+- A predictable stability profile
+This is where you shape the boat’s personality.
+
+🔵 4. Stability Band Creation (Diagnostic Output)
+Now that GM/GZ and COM are tuned, you formalise the results.
+What you record:
+- GM_initial
+- GM_peak
+- GZ_peak
+- Angle_of_max_GZ
+- Angle_of_vanishing_stability (estimated)
+- COM_safe_zone (min/max)
+- Stability rating (optional)
+What this gives you:
+- A permanent stability profile
+- A reference for future tuning
+- A sanity check for future hull edits
+- A user‑facing diagnostic for your framework
+This is the “blueprint” of the vessel’s stability.
+
+
+🔵 5. Roll Feel / Hydrodamping (Runtime Tuning)
+This is the last step because it depends on:
+- Correct buoyancy
+- Correct GM/GZ
+- Correct COM
+What you tune:
+- Roll damping
+- Roll spring
+- Added mass
+- Viscous drag
+- Wave‑induced roll response
+What this gives you:
+- The final “feel” of the vessel
+- Smooth, believable roll
+- No snappiness
+- No sluggishness
+This is where the boat becomes alive.
+
+

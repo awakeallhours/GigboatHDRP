@@ -28,6 +28,14 @@ namespace Axiom.Vessel.Diagnostics
         private bool comEditingLocked = true;
         public bool ComEditingLocked => comEditingLocked;
 
+        [SerializeField] private WaterProbeSampler probeSampler;
+
+        private bool[] valid;
+        private float[] heights;
+        private Vector3[] normals;
+        private Transform[] points;
+        private ProbeType[] types;
+
         // ─────────────────────────────────────────────────────────────
         // OPTIONAL REFERENCES FOR EXTENDED VISUALS
         // ─────────────────────────────────────────────────────────────
@@ -449,7 +457,7 @@ namespace Axiom.Vessel.Diagnostics
             if (buoyancy == null || sampler == null)
                 return;
 
-            sampler.GetProbeData(out bool[] valid, out float[] heights, out Vector3[] normals, out Transform[] points);
+            probeSampler.GetProbeData(out valid, out heights, out normals, out points, out types);
 
             if (valid == null || heights == null || normals == null || points == null)
                 return;
@@ -493,7 +501,7 @@ namespace Axiom.Vessel.Diagnostics
             if (sampler == null)
                 return;
 
-            sampler.GetProbeData(out bool[] valid, out float[] heights, out Vector3[] normals, out Transform[] points);
+            probeSampler.GetProbeData(out valid, out heights, out normals, out points, out types);
 
             if (valid == null || heights == null || points == null)
                 return;

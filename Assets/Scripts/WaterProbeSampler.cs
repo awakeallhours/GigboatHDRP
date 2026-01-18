@@ -5,7 +5,10 @@ public class WaterProbeSampler : MonoBehaviour
 {
     [Header("Probe Points")]
     [SerializeField] private Transform[] samplePoints;
+    [SerializeField] private ProbeType[] probeTypes;
+    [SerializeField] private ProbeType testProbe;
 
+    [Tooltip ("Assigned at runtime")]
     private WaterSurface water;
 
     private float[] pointHeights;
@@ -16,6 +19,7 @@ public class WaterProbeSampler : MonoBehaviour
 
     private void Awake()
     {
+        
         water = FindFirstObjectByType<WaterSurface>();
 
         pointHeights = new float[samplePoints.Length];
@@ -54,11 +58,14 @@ public class WaterProbeSampler : MonoBehaviour
         pointNormals[index] = wr.normalWS;
     }
 
-    public void GetProbeData(out bool[] valid, out float[] heights, out Vector3[] normals, out Transform[] points)
+    public void GetProbeData(out bool[] valid, out float[] heights, out Vector3[] normals, out Transform[] points, out ProbeType[] types)
+
     {
         valid = pointValid;
         heights = pointHeights;
         normals = pointNormals;
         points = samplePoints;
+        types = probeTypes;
     }
+
 }

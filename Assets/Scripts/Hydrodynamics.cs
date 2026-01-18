@@ -30,7 +30,11 @@ public class Hydrodynamics : MonoBehaviour
     [SerializeField] private WaterProbeSampler probeSampler;
     [SerializeField] private Buoyancy buoyancy;
 
-
+    private bool[] valid;
+    private float[] heights;
+    private Vector3[] normals;
+    private Transform[] points;
+    private ProbeType[] types;
     // ─────────────────────────────────────────────────────────────
     // LATERAL DRAG (SIDEWAYS SKID RESISTANCE)
     // ─────────────────────────────────────────────────────────────
@@ -557,7 +561,7 @@ public class Hydrodynamics : MonoBehaviour
         if (Mathf.Abs(vLat) < 0.1f)
             return;
 
-        probeSampler.GetProbeData(out bool[] valid, out float[] heights, out Vector3[] normals, out Transform[] points);
+        probeSampler.GetProbeData(out valid, out heights, out normals, out points, out types);
 
         float totalDepth = 0f;
         int validCount = 0;
