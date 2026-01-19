@@ -1,48 +1,116 @@
-﻿public struct StabilityProfile
+﻿/// <summary>
+/// Represents the interpreted results of a GM/GZ stability scan.
+/// 
+/// This struct contains:
+/// - GM characteristics (initial stability, peak stability)
+/// - GZ characteristics (righting‑arm peak, vanishing‑stability angle)
+/// - COM safety guidance
+/// - Metadata describing the scan
+/// 
+/// All fields are populated by <see cref="StabilityProfileBuilder"/>.
+/// The scanner itself only produces raw samples.
+/// </summary>
+public struct StabilityProfile
 {
-    // --- GM (Metacentric Height) ---
-    public float GM_Initial;              // GM at small heel (≈ 5–10°)
-                                          // Plain: "Initial stability when the boat first starts to lean"
+    // --------------------------------------------------------------------
+    // GM (Metacentric Height)
+    // --------------------------------------------------------------------
 
-    public bool GM_Initial_Valid;         // Whether GM_Initial is a real computed value
-                                          // Plain: "Did we actually measure this, or is it a placeholder?"
+    /// <summary>
+    /// GM at small heel (typically the first heel ≥ 5°).
+    /// Represents the vessel's initial stability when it first begins to lean.
+    /// </summary>
+    public float GM_Initial;
 
-    public float GM_Peak;                 // Maximum GM observed during scan
-                                          // Plain: "Strongest overall stability the boat showed"
+    /// <summary>
+    /// True if <see cref="GM_Initial"/> is a real computed value.
+    /// False if no suitable sample existed (e.g., insufficient heel range).
+    /// </summary>
+    public bool GM_Initial_Valid;
 
-    public float GM_PeakAngle;            // Heel angle where GM_Peak occurs
-                                          // Plain: "How far the boat was leaning when stability was strongest"
+    /// <summary>
+    /// Maximum GM observed during the scan.
+    /// Represents the strongest overall stability the vessel demonstrated.
+    /// </summary>
+    public float GM_Peak;
 
-    public bool GM_Peak_Valid;            // Whether GM_Peak is a real computed value
-                                          // Plain: "Did we find a real stability peak?"
+    /// <summary>
+    /// Heel angle (in degrees) at which <see cref="GM_Peak"/> occurred.
+    /// </summary>
+    public float GM_PeakAngle;
 
-    // --- GZ (Righting Arm Curve) ---
-    public float GZ_Peak;                 // Maximum righting arm
-                                          // Plain: "Strongest righting force pushing the boat upright"
+    /// <summary>
+    /// True if <see cref="GM_Peak"/> is a real computed value.
+    /// False if GM never became positive.
+    /// </summary>
+    public bool GM_Peak_Valid;
 
-    public float GZ_PeakAngle;            // Heel angle where GZ_Peak occurs
-                                          // Plain: "How far the boat was leaning when righting force was strongest"
 
-    public bool GZ_Peak_Valid;            // Whether GZ_Peak is a real computed value
-                                          // Plain: "Did we find a real righting‑force peak?"
+    // --------------------------------------------------------------------
+    // GZ (Righting Arm Curve)
+    // --------------------------------------------------------------------
 
-    public float GZ_ZeroAngle;            // Estimated angle of vanishing stability
-                                          // Plain: "The angle where the boat stops being able to right itself"
+    /// <summary>
+    /// Maximum righting arm (GZ) observed during the scan.
+    /// Represents the strongest righting force pushing the vessel upright.
+    /// </summary>
+    public float GZ_Peak;
 
-    public bool GZ_ZeroAngle_Valid;       // Whether zero-crossing was successfully estimated
-                                          // Plain: "Did we actually detect the point where stability disappears?"
+    /// <summary>
+    /// Heel angle (in degrees) at which <see cref="GZ_Peak"/> occurred.
+    /// </summary>
+    public float GZ_PeakAngle;
 
-    // --- COM Guidance ---
-    public float COM_SafeMin;             // Lowest recommended COM (vertical)
-                                          // Plain: "Lowest safe centre‑of‑mass height"
+    /// <summary>
+    /// True if <see cref="GZ_Peak"/> is a real computed value.
+    /// False if GZ never became positive.
+    /// </summary>
+    public bool GZ_Peak_Valid;
 
-    public float COM_SafeMax;             // Highest recommended COM (vertical)
-                                          // Plain: "Highest safe centre‑of‑mass height"
+    /// <summary>
+    /// Estimated angle (in degrees) where GZ crosses zero.
+    /// Represents the angle of vanishing stability — beyond this, the vessel
+    /// can no longer right itself.
+    /// </summary>
+    public float GZ_ZeroAngle;
 
-    // --- Metadata ---
-    public float PositiveStabilityRange;  // Degrees of heel where GZ > 0
-                                          // Plain: "How far the boat can lean while still being stable"
+    /// <summary>
+    /// True if a zero‑crossing was successfully detected.
+    /// False if GZ never crossed zero within the scanned range.
+    /// </summary>
+    public bool GZ_ZeroAngle_Valid;
 
-    public string Notes;                  // Optional: human-readable summary
-                                          // Plain: "Extra info about the scan"
+
+    // --------------------------------------------------------------------
+    // COM Guidance
+    // --------------------------------------------------------------------
+
+    /// <summary>
+    /// Lowest recommended safe centre‑of‑mass height for this vessel.
+    /// Provided by the COM subsystem.
+    /// </summary>
+    public float COM_SafeMin;
+
+    /// <summary>
+    /// Highest recommended safe centre‑of‑mass height for this vessel.
+    /// Provided by the COM subsystem.
+    /// </summary>
+    public float COM_SafeMax;
+
+
+    // --------------------------------------------------------------------
+    // Metadata
+    // --------------------------------------------------------------------
+
+    /// <summary>
+    /// Range of heel angles (in degrees) where GZ remains positive.
+    /// Represents how far the vessel can lean while still being self‑righting.
+    /// </summary>
+    public float PositiveStabilityRange;
+
+    /// <summary>
+    /// Optional human‑readable notes describing the scan.
+    /// Useful for UI, debugging, or automated reporting.
+    /// </summary>
+    public string Notes;
 }

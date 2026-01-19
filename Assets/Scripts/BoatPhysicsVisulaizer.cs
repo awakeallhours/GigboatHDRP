@@ -38,6 +38,8 @@ namespace Axiom.Vessel.Diagnostics
         private Transform[] points;
         private ProbeType[] types;
 
+        private VesselBootstrap bootstrap;
+
         // ─────────────────────────────────────────────────────────────
         // OPTIONAL REFERENCES FOR EXTENDED VISUALS
         // ─────────────────────────────────────────────────────────────
@@ -122,6 +124,12 @@ namespace Axiom.Vessel.Diagnostics
         private StabilityProfile lastStabilityProfile;
 
 #endif
+
+        private void Awake()
+        {
+            bootstrap = GetComponentInParent<VesselBootstrap>();
+        }
+
 
         private void Reset()
         {
@@ -350,19 +358,26 @@ namespace Axiom.Vessel.Diagnostics
             // RIGHTING MOMENT (edit mode only)
             if (drawRightingMoment)
             {
-                Vector3 leverArm = cobPosWorld - comWorld;
-                Vector3 buoyancyDir = Vector3.up;
-                Vector3 rightingTorque = Vector3.Cross(leverArm, buoyancyDir);
+                Vector3 rollAxis = bootstrap.Orientation.RollAxis;
 
-                if (rightingTorque.sqrMagnitude > 0.0001f)
+                // Lever arm from COM to COB
+                Vector3 lever = cobPosWorld - comWorld;
+
+                // Remove any component along the roll axis
+                Vector3 leverPerp = Vector3.ProjectOnPlane(lever, rollAxis);
+
+                if (leverPerp.sqrMagnitude > 0.0001f)
                 {
-                    Vector3 torqueDir = rightingTorque.normalized;
+                    // Righting moment direction
+                    Vector3 torqueDir = Vector3.Cross(leverPerp, rollAxis).normalized;
 
                     Gizmos.color = new Color(0.8f, 0.3f, 1f);
                     Gizmos.DrawLine(comWorld, comWorld + torqueDir * 2f);
 
+#if UNITY_EDITOR
                     Handles.color = new Color(0.8f, 0.3f, 1f);
                     Handles.Label(comWorld + torqueDir * 2f, "Righting Moment");
+#endif
                 }
             }
 
@@ -588,7 +603,7 @@ namespace Axiom.Vessel.Diagnostics
 
         private void DrawStabilityDiagnostics(Vector3 comWorld, Vector3 cobPosWorld)
         {
-            Vector3 rollAxis = transform.right;
+            Vector3 rollAxis = bootstrap.Orientation.RollAxis;
 
             Vector3 up = transform.up;
             float heelSign = Mathf.Sign(Vector3.Dot(Vector3.Cross(Vector3.up, up), rollAxis));
@@ -660,7 +675,7 @@ namespace Axiom.Vessel.Diagnostics
 
         private void DrawRollDiagnostics(Vector3 comWorld)
         {
-            Vector3 rollAxis = transform.right;
+            Vector3 rollAxis = bootstrap.Orientation.RollAxis;
 
             if (drawRollAxis)
             {
@@ -695,7 +710,8 @@ namespace Axiom.Vessel.Diagnostics
             if (boatCOM == null || boatCOB == null || rb == null)
                 yield break;
 
-            var scanner = new GMGZStabilityScanner(transform, rb, boatCOB, boatCOM);
+            var scanner = new GMGZStabilityScanner(bootstrap, transform, rb, boatCOB,boatCOM);
+
 
             yield return scanner.RunScan(
                 startAngle: 0f,

@@ -1574,6 +1574,7 @@ GameObject:
   - component: {fileID: 7663862005857181451}
   - component: {fileID: -4567935784882914520}
   - component: {fileID: -1572053931990226420}
+  - component: {fileID: -8638164970245442137}
   m_Layer: 0
   m_Name: MatchedBoat
   m_TagString: Untagged
@@ -2106,6 +2107,21 @@ MonoBehaviour:
   drawForward: 1
   drawVelocity: 1
   drawSlip: 1
+--- !u!114 &-8638164970245442137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4833431607046282324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc5892af645ae494cabd3171e7f92a0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boatRoot: {fileID: 361113420622967515}
+  rb: {fileID: 6401897688909232224}
+  cob: {fileID: -4567935784882914520}
 --- !u!1 &4864625990696992598
 GameObject:
   m_ObjectHideFlags: 0
