@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-public class VesselSetupWizard : MonoBehaviour
+public class VesselWizardTest: MonoBehaviour
 {
     public enum VesselType
     {
