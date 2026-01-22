@@ -2,12 +2,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-/// <summary>
-/// Editor menu utilities for generating buoyancy probes for a selected vessel.
-/// This class invokes
-/// <see cref="AxiomAutoBuoyancyProbeGenerator.GenerateBoundingBox(Bounds, AxiomAutoBuoyancyProbeGenerator.BoundingBoxSettings)"/>
-/// and instantiates probe GameObjects under the vessel's probe hierarchy.
-/// </summary>
 public static class AxiomBuoyancyProbeMenu
 {
     [MenuItem("Axiom/Generate Probes (Bounding Box)")]
@@ -49,9 +43,9 @@ public static class AxiomBuoyancyProbeMenu
         }
 
         // ------------------------------------------------------------
-        // Generate probe positions
+        // Generate structured probe positions
         // ------------------------------------------------------------
-        var positions = AxiomAutoBuoyancyProbeGenerator.GenerateBoundingBox(bounds, settings);
+        var result = AxiomAutoBuoyancyProbeGenerator.GenerateBoundingBox(bounds, settings);
 
         // ------------------------------------------------------------
         // Clear old probes + rebuild hierarchy
@@ -62,36 +56,53 @@ public static class AxiomBuoyancyProbeMenu
         var probeObjects = new List<Transform>();
 
         // ------------------------------------------------------------
-        // Instantiate probe GameObjects
+        // Helper: instantiate a probe
         // ------------------------------------------------------------
-        foreach (var pos in positions)
+        Transform CreateProbe(Vector3 pos, Transform parent)
         {
-            // Decide parent based on Y height
-            Transform parent =
-                Mathf.Approximately(pos.y, bounds.min.y)
-                ? vessel.KeelProbeRoot
-                : vessel.SideProbeRoot;
-
             var probeGO = new GameObject("Probe");
             probeGO.transform.SetParent(parent, false);
             probeGO.transform.position = pos;
 
-            // Add tiny trigger collider for Scene selection
             var col = probeGO.AddComponent<SphereCollider>();
             col.radius = 0.05f;
             col.isTrigger = true;
 
-            // Put on Ignore Raycast layer to avoid gameplay interference
             probeGO.layer = LayerMask.NameToLayer("Ignore Raycast");
 
             probeObjects.Add(probeGO.transform);
+            return probeGO.transform;
         }
+
+        // ------------------------------------------------------------
+        // Instantiate keel probes
+        // ------------------------------------------------------------
+        foreach (var pos in result.keelProbes)
+            CreateProbe(pos, vessel.KeelProbeRoot);
+
+        // ------------------------------------------------------------
+        // Instantiate side probes
+        // ------------------------------------------------------------
+        foreach (var pos in result.sideProbes)
+            CreateProbe(pos, vessel.SideProbeRoot);
+
+        // ------------------------------------------------------------
+        // Instantiate deck probes (if any)
+        // ------------------------------------------------------------
+        foreach (var pos in result.deckProbes)
+            CreateProbe(pos, vessel.DeckProbeRoot);
 
         // ------------------------------------------------------------
         // Assign probes to vessel
         // ------------------------------------------------------------
         vessel.SetProbeObjects(probeObjects);
 
-        Debug.Log($"Axiom: Generated {probeObjects.Count} probe objects for vessel '{vessel.name}'.");
+        Debug.Log(
+            $"Axiom: Generated {probeObjects.Count} probes for vessel '{vessel.name}' " +
+            $"(Keel: {result.keelProbes.Count}, Side: {result.sideProbes.Count}, Deck: {result.deckProbes.Count})."
+        );
+
+        // Mark scene dirty so Unity saves the probe list
+        EditorUtility.SetDirty(vessel);
     }
 }

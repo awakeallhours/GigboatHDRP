@@ -358,6 +358,15 @@ namespace Axiom.Vessel.Diagnostics
             // RIGHTING MOMENT (edit mode only)
             if (drawRightingMoment)
             {
+                //new section to stop null
+                if (!Application.isPlaying)
+                    return;
+
+                if (bootstrap == null || bootstrap.Orientation.RollAxis == null)
+                    return;
+
+                // end of new section
+
                 Vector3 rollAxis = bootstrap.Orientation.RollAxis;
 
                 // Lever arm from COM to COB
@@ -459,9 +468,9 @@ namespace Axiom.Vessel.Diagnostics
                 }
             }
 
-            // BUOYANCY PROBE VECTORS (PLAY MODE)
+            /*// BUOYANCY PROBE VECTORS (PLAY MODE)
             if (drawBuoyancyProbes && Application.isPlaying)
-                DrawBuoyancyProbes();
+                DrawBuoyancyProbes();*/
 
             // WATERLINE PLANE (PLAY MODE)
             if (drawWaterlinePlane && Application.isPlaying)
@@ -478,7 +487,7 @@ namespace Axiom.Vessel.Diagnostics
             }
 #endif
         }
-
+        /*
         // ─────────────────────────────────────────────────────────────
         // BUOYANCY PROBE VISUALISATION
         // ─────────────────────────────────────────────────────────────
@@ -522,6 +531,7 @@ namespace Axiom.Vessel.Diagnostics
                 Debug.DrawLine(p.position, p.position + forceVec, buoyancyForceColor);
             }
         }
+        */
 
         // ─────────────────────────────────────────────────────────────
         // WATERLINE PLANE (FITTED FROM PROBES)
@@ -710,7 +720,7 @@ namespace Axiom.Vessel.Diagnostics
             if (boatCOM == null || boatCOB == null || rb == null)
                 yield break;
 
-            var scanner = new GMGZStabilityScanner(bootstrap, transform, rb, boatCOB,boatCOM);
+            var scanner = new GMGZStabilityScanner(bootstrap, bootstrap.transform, rb, boatCOB, boatCOM);
 
 
             yield return scanner.RunScan(

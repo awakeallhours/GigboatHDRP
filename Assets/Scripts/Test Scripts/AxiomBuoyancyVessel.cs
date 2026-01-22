@@ -45,27 +45,27 @@ public class AxiomBuoyancyVessel : MonoBehaviour
     [SerializeField] private Transform probeRoot;
     [SerializeField] private Transform keelProbeRoot;
     [SerializeField] private Transform sideProbeRoot;
+    [SerializeField] private Transform deckProbeRoot;
 
-    /// <summary>
-    /// Root transform under which all probe objects are placed.
-    /// </summary>
+    /// <summary>Root transform under which all probe objects are placed.</summary>
     public Transform ProbeRoot => probeRoot;
 
-    /// <summary>
-    /// Parent transform for keel‑layer probes.
-    /// </summary>
+    /// <summary>Parent transform for keel‑layer probes.</summary>
     public Transform KeelProbeRoot => keelProbeRoot;
 
-    /// <summary>
-    /// Parent transform for side‑layer probes.
-    /// </summary>
+    /// <summary>Parent transform for side‑layer probes.</summary>
     public Transform SideProbeRoot => sideProbeRoot;
+
+    /// <summary>Parent transform for deck‑layer probes.</summary>
+    public Transform DeckProbeRoot => deckProbeRoot;
 
     /// <summary>
     /// Read‑only list of all probe object transforms.
     /// </summary>
     public IReadOnlyList<Transform> ProbeObjects => probeObjects;
-    [SerializeField]private List<Transform> probeObjects = new List<Transform>();
+
+    [SerializeField]
+    private List<Transform> probeObjects = new List<Transform>();
 
     // ---------------------------------------------------------------------
     // Hull Bounds
@@ -114,6 +114,12 @@ public class AxiomBuoyancyVessel : MonoBehaviour
             sideProbeRoot = new GameObject("SideProbes").transform;
             sideProbeRoot.SetParent(probeRoot, false);
         }
+
+        if (deckProbeRoot == null)
+        {
+            deckProbeRoot = new GameObject("DeckProbes").transform;
+            deckProbeRoot.SetParent(probeRoot, false);
+        }
     }
 
     /// <summary>
@@ -129,6 +135,7 @@ public class AxiomBuoyancyVessel : MonoBehaviour
         probeRoot = null;
         keelProbeRoot = null;
         sideProbeRoot = null;
+        deckProbeRoot = null;
     }
 
     /// <summary>

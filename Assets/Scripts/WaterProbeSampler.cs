@@ -3,33 +3,60 @@ using UnityEngine.Rendering.HighDefinition;
 
 public class WaterProbeSampler : MonoBehaviour
 {
-    [Header("Probe Points")]
-    [SerializeField] private Transform[] samplePoints;
-    [SerializeField] private ProbeType[] probeTypes;
-    [SerializeField] private ProbeType testProbe;
+    [Header("References")]
+    [SerializeField] private AxiomBuoyancyVessel vessel;
 
-    [Tooltip ("Assigned at runtime")]
+    [Tooltip("Assigned at runtime")]
     private WaterSurface water;
+
+    private Transform[] samplePoints;
+    private ProbeType[] probeTypes;
 
     private float[] pointHeights;
     private Vector3[] pointNormals;
     private bool[] pointValid;
 
-    public int ProbeCount => samplePoints.Length;
+    public int ProbeCount => samplePoints?.Length ?? 0;
 
     private void Awake()
     {
-        
         water = FindFirstObjectByType<WaterSurface>();
 
-        pointHeights = new float[samplePoints.Length];
-        pointNormals = new Vector3[samplePoints.Length];
-        pointValid = new bool[samplePoints.Length];
+        if (vessel == null)
+        {
+            Debug.LogError("WaterProbeSampler: No vessel assigned.");
+            return;
+        }
+
+        // Pull probes from vessel
+        var probes = vessel.ProbeObjects;
+        int count = probes.Count;
+
+        samplePoints = new Transform[count];
+        probeTypes = new ProbeType[count];
+
+        for (int i = 0; i < count; i++)
+        {
+            samplePoints[i] = probes[i];
+
+            // Determine probe type based on parent
+            if (probes[i].parent == vessel.KeelProbeRoot)
+                probeTypes[i] = ProbeType.Keel;
+            else if (probes[i].parent == vessel.SideProbeRoot)
+                probeTypes[i] = ProbeType.Side;
+            else
+                probeTypes[i] = ProbeType.Deck; // fallback
+        }
+
+        // Allocate arrays
+        pointHeights = new float[count];
+        pointNormals = new Vector3[count];
+        pointValid = new bool[count];
     }
 
     private void FixedUpdate()
     {
-        if (water == null)
+        if (water == null || samplePoints == null)
             return;
 
         for (int i = 0; i < samplePoints.Length; i++)
@@ -58,8 +85,12 @@ public class WaterProbeSampler : MonoBehaviour
         pointNormals[index] = wr.normalWS;
     }
 
-    public void GetProbeData(out bool[] valid, out float[] heights, out Vector3[] normals, out Transform[] points, out ProbeType[] types)
-
+    public void GetProbeData(
+        out bool[] valid,
+        out float[] heights,
+        out Vector3[] normals,
+        out Transform[] points,
+        out ProbeType[] types)
     {
         valid = pointValid;
         heights = pointHeights;
@@ -67,5 +98,4 @@ public class WaterProbeSampler : MonoBehaviour
         points = samplePoints;
         types = probeTypes;
     }
-
 }

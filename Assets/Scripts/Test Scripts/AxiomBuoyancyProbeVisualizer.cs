@@ -24,16 +24,25 @@ public class AxiomBuoyancyProbeVisualizer : MonoBehaviour
         var probeObjects = vessel.ProbeObjects;
         var settings = vessel.ProbeSettings;
 
-        // Added guard: prevents rare null-ref if probes are cleared in edit mode
         if (probeObjects == null || probeObjects.Count == 0)
             return;
 
-        Gizmos.color = Color.cyan;
-
         foreach (var probe in probeObjects)
         {
-            if (probe != null)
-                Gizmos.DrawSphere(probe.position, settings.radius);
+            if (probe == null)
+                continue;
+
+            // Determine colour based on parent transform
+            if (probe.parent == vessel.KeelProbeRoot)
+                Gizmos.color = Color.blue;      // Keel probes
+            else if (probe.parent == vessel.SideProbeRoot)
+                Gizmos.color = Color.green;     // Side probes
+            else if (probe.parent == vessel.DeckProbeRoot)
+                Gizmos.color = Color.yellow;    // Deck probes
+            else
+                Gizmos.color = Color.magenta;   // Unclassified / unexpected
+
+            Gizmos.DrawSphere(probe.position, settings.radius);
         }
     }
 }

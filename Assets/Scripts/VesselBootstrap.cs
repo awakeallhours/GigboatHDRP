@@ -82,7 +82,7 @@ public class VesselBootstrap : MonoBehaviour
     private IEnumerator Start()
     {
         // ------------------------------------------------------------
-        // 1. Resolve references if not assigned in inspector
+        // 1. Resolve references
         // ------------------------------------------------------------
         if (boatRoot == null)
             boatRoot = transform;
@@ -93,14 +93,36 @@ public class VesselBootstrap : MonoBehaviour
         if (cob == null)
             cob = boatRoot.GetComponent<BoatCOB>();
 
+
         // ------------------------------------------------------------
-        // 2. Construct the orientation detector
+        // 2. NORMALISE TRANSFORM HIERARCHY (from TestBootstrap_Debug)
+        //    Bake the hull's world rotation into the root.
+        // ------------------------------------------------------------
+
+        // Capture world rotation
+        Quaternion worldRot = boatRoot.rotation;
+
+        // Zero local rotation (bakes artist rotation into root)
+        boatRoot.localRotation = Quaternion.identity;
+
+        // Reapply world rotation to root
+        boatRoot.rotation = worldRot;
+
+        // If the hull mesh is a child, ensure it is identity
+        if (cob != null)
+        {
+            Transform hull = cob.transform;
+            hull.localRotation = Quaternion.identity;
+        }
+
+
+        // ------------------------------------------------------------
+        // 3. Construct the orientation detector
         // ------------------------------------------------------------
         detector = new VesselOrientationDetector(boatRoot, rb, cob);
 
         // ------------------------------------------------------------
-        // 3. Run the detection coroutine
-        //    This yields until the vessel's orientation profile is fully resolved.
+        // 4. Run orientation detection
         // ------------------------------------------------------------
         yield return StartCoroutine(detector.DetectOrientation(OnOrientationDetected));
 

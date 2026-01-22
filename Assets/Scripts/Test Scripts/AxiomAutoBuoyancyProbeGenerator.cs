@@ -1,17 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-/// <summary>
-/// Pure utility class responsible for generating buoyancy probe positions
-/// from a vessel's bounding box. Produces a deterministic 3D probe lattice:
-///
-/// • Keel layer      – baseline buoyancy sampling
-/// • Side layer      – vertical offset up the hull
-/// • Beam‑offset     – horizontal offset toward port/starboard
-///
-/// This class contains no Unity scene dependencies and performs no allocation
-/// outside the returned list. All behaviour is explicit and parameter‑driven.
-/// </summary>
 public static class AxiomAutoBuoyancyProbeGenerator
 {
     [System.Serializable]
@@ -24,12 +13,24 @@ public static class AxiomAutoBuoyancyProbeGenerator
         public float sideBeamFraction;
     }
 
-    public static List<Vector3> GenerateBoundingBox(Bounds bounds, BoundingBoxSettings settings)
+    public struct ProbeGenerationResult
     {
-        var probes = new List<Vector3>();
+        public List<Vector3> keelProbes;
+        public List<Vector3> sideProbes;
+        public List<Vector3> deckProbes; // optional, currently unused
+    }
+
+    public static ProbeGenerationResult GenerateBoundingBox(Bounds bounds, BoundingBoxSettings settings)
+    {
+        var result = new ProbeGenerationResult
+        {
+            keelProbes = new List<Vector3>(),
+            sideProbes = new List<Vector3>(),
+            deckProbes = new List<Vector3>() // reserved for future use
+        };
 
         if (settings.beamCount < 1 || settings.lengthCount < 1)
-            return probes;
+            return result;
 
         float beamSpacing = bounds.size.x / (settings.beamCount + 1);
         float lengthSpacing = bounds.size.z / (settings.lengthCount + 1);
@@ -45,7 +46,7 @@ public static class AxiomAutoBuoyancyProbeGenerator
         float centerX = bounds.center.x;
 
         // ------------------------------------------------------------
-        // Keel layer (baseline)
+        // Keel layer
         // ------------------------------------------------------------
         for (int bx = 1; bx <= settings.beamCount; bx++)
         {
@@ -54,12 +55,12 @@ public static class AxiomAutoBuoyancyProbeGenerator
             for (int lz = 1; lz <= settings.lengthCount; lz++)
             {
                 float z = bounds.min.z + lengthSpacing * lz;
-                probes.Add(new Vector3(x, keelY, z));
+                result.keelProbes.Add(new Vector3(x, keelY, z));
             }
         }
 
         // ------------------------------------------------------------
-        // Vertical side layer (same X/Z grid, raised Y)
+        // Vertical side layer
         // ------------------------------------------------------------
         for (int bx = 1; bx <= settings.beamCount; bx++)
         {
@@ -68,22 +69,21 @@ public static class AxiomAutoBuoyancyProbeGenerator
             for (int lz = 1; lz <= settings.lengthCount; lz++)
             {
                 float z = bounds.min.z + lengthSpacing * lz;
-                probes.Add(new Vector3(x, sideY, z));
+                result.sideProbes.Add(new Vector3(x, sideY, z));
             }
         }
 
         // ------------------------------------------------------------
         // Horizontal beam‑offset layer (port + starboard)
-        // NOW MOVED UP TO sideY
         // ------------------------------------------------------------
         for (int lz = 1; lz <= settings.lengthCount; lz++)
         {
             float z = bounds.min.z + lengthSpacing * lz;
 
-            probes.Add(new Vector3(centerX - sideXOffset, sideY, z)); // moved up
-            probes.Add(new Vector3(centerX + sideXOffset, sideY, z)); // moved up
+            result.sideProbes.Add(new Vector3(centerX - sideXOffset, sideY, z));
+            result.sideProbes.Add(new Vector3(centerX + sideXOffset, sideY, z));
         }
 
-        return probes;
+        return result;
     }
 }

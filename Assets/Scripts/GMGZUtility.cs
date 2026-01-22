@@ -22,7 +22,7 @@ namespace Axiom.Vessel.Diagnostics
         /// 
         /// This uses:
         /// - The vessel's current up vector (boat.up)
-        /// - The vessel's local roll axis (boat.right)
+        /// - The vessel's local roll axis (rollAxisWorld)
         /// - A cross‑product test to determine heel direction
         /// 
         /// Positive/negative sign indicates heel direction relative to the
@@ -31,24 +31,17 @@ namespace Axiom.Vessel.Diagnostics
         /// </summary>
         /// <param name="boat">The vessel transform whose orientation is sampled.</param>
         /// <returns>Signed heel angle in degrees.</returns>
-        public static float ComputeHeelAngle(Transform boat)
+        public static float ComputeHeelAngle(Transform boat, Vector3 rollAxisWorld)
         {
-            // Vessel's current up direction in world space
             Vector3 up = boat.up;
 
-            // Local roll axis (right vector) determines heel direction
-            Vector3 rollAxis = boat.right;
-
-            // Determine sign of heel using cross‑product orientation test
             float heelSign = Mathf.Sign(Vector3.Dot(
                 Vector3.Cross(Vector3.up, up),
-                rollAxis));
+                rollAxisWorld));
 
-            // Compute unsigned heel angle via dot product
             float heelAngleRad = Mathf.Acos(
                 Mathf.Clamp(Vector3.Dot(Vector3.up, up), -1f, 1f));
 
-            // Apply sign to produce signed heel angle
             heelAngleRad *= heelSign;
 
             return heelAngleRad * Mathf.Rad2Deg;
