@@ -685,7 +685,7 @@ namespace Axiom.Vessel.Diagnostics
 
         private void DrawRollDiagnostics(Vector3 comWorld)
         {
-            Vector3 rollAxis = bootstrap.Orientation.RollAxis;
+            Vector3 rollAxis = bootstrap.Orientation.RollAxis * bootstrap.Orientation.RollDirection;
 
             if (drawRollAxis)
             {

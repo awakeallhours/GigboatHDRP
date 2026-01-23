@@ -1,54 +1,116 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Axiom.Vessel.Diagnostics
 {
     /// <summary>
-    /// Detects the vessel's canonical orientation profile using geometry
-    /// (up from gravity, forward from hull extent) and then refines sign
-    /// using buoyancy response. This avoids misclassifying pitch as roll.
+    /// Determines the vessel's canonical orientation axes (roll, pitch, yaw)
+    /// using geometry and physics-based sign detection.
+    /// 
+    /// Standalone class — not a MonoBehaviour.
+    /// Called by VesselBootstrap or the setup wizard.
     /// </summary>
     public sealed class VesselOrientationDetector
     {
-        // --------------------------------------------------------------------
-        // Dependencies
-        // --------------------------------------------------------------------
+        private readonly Transform boat;
+        private readonly Rigidbody rb;
 
-        private readonly Transform boat;   // Vessel root transform
-        private readonly Rigidbody rb;     // Rigidbody used for angular velocity sampling
-        private readonly BoatCOB cob;      // Centre-of-buoyancy provider (for hull reference)
+        private readonly List<string> warnings = new List<string>();
 
-        public VesselOrientationDetector(Transform boat, Rigidbody rb, BoatCOB cob)
+        private void Warn(string message)
         {
-            this.boat = boat;
-            this.rb = rb;
-            this.cob = cob;
+            warnings.Add(message);
+            Debug.LogWarning($"[VesselOrientation] {message}");
         }
 
-        // --------------------------------------------------------------------
-        // Orientation Detection
-        // --------------------------------------------------------------------
 
+        public VesselOrientationDetector(Transform boatRoot, Rigidbody rigidbody)
+        {
+            boat = boatRoot;
+            rb = rigidbody;
+        }
+
+        /// <summary>
+        /// Runs the full orientation detection pipeline.
+        /// </summary>
         public IEnumerator DetectOrientation(System.Action<VesselOrientationProfile> onComplete)
         {
-            const float testAngleDeg = 10f;
-            const int settleFrames = 5;
-
-            // ------------------------------------------------------------
-            // 1. Cache original state
-            // ------------------------------------------------------------
-            Quaternion originalRot = boat.localRotation;
+            // Cache original state
+            Quaternion originalLocalRotation = boat.localRotation;
             Vector3 originalAngVel = rb.angularVelocity;
 
-            // ------------------------------------------------------------
-            // 2. Determine canonical axes geometrically
-            // ------------------------------------------------------------
+            // 1. Detect UP
+            Vector3 upAxisLocal = DetectUpAxisLocal();
 
-            // 2.1 UP axis: align with world up in local space
+            // 2. Detect FORWARD
+            Vector3 forwardAxisLocal = DetectForwardAxisLocal(upAxisLocal);
+
+            // 3. Derive BEAM
+            Vector3 beamAxisLocal = DeriveBeamAxisLocal(upAxisLocal, forwardAxisLocal);
+
+            // 4. Assign canonical axes
+            Vector3 rollAxisLocal = forwardAxisLocal.normalized;
+            Vector3 pitchAxisLocal = beamAxisLocal.normalized;
+            Vector3 yawAxisLocal = upAxisLocal.normalized;
+
+            // 5. Detect signs
+            float rollSign = 1f;
+            float pitchSign = 1f;
+            float yawSign = 1f;
+
+            if (rb == null)
+            {
+                Warn("Rigidbody missing — roll sign detection skipped, using +1.");
+            }
+            else
+            {
+                yield return DetectRollSign(rollAxisLocal, originalLocalRotation, s => rollSign = s);
+            }
+
+            // Placeholders for now
+            yield return DetectPitchSign(pitchAxisLocal, originalLocalRotation, s => pitchSign = s);
+            yield return DetectYawSign(yawAxisLocal, originalLocalRotation, s => yawSign = s);
+
+            // 6. Restore original state
+            boat.localRotation = originalLocalRotation;
+            rb.angularVelocity = originalAngVel;
+            UnityEngine.Physics.SyncTransforms();
+
+            // 7. Build profile
+            var profile = new VesselOrientationProfile
+            {
+                RollAxis = rollAxisLocal,
+                RollDirection = rollSign,
+
+                PitchAxis = pitchAxisLocal,
+                PitchDirection = pitchSign,
+
+                YawAxis = yawAxisLocal,
+                YawDirection = yawSign,
+
+                IsMirrored = false, // future extension
+                IsValid = true,
+                Warnings = warnings.ToArray()
+            };
+
+            onComplete?.Invoke(profile);
+        }
+
+        private Vector3 DetectUpAxisLocal()
+        {
+            // World up expressed in boat local space
             Vector3 localUp = boat.InverseTransformDirection(Vector3.up);
-            Vector3 absUp = new Vector3(Mathf.Abs(localUp.x), Mathf.Abs(localUp.y), Mathf.Abs(localUp.z));
+
+            // Take absolute values to find dominant axis
+            Vector3 absUp = new Vector3(
+                Mathf.Abs(localUp.x),
+                Mathf.Abs(localUp.y),
+                Mathf.Abs(localUp.z)
+            );
 
             Vector3 upAxisLocal;
+
             if (absUp.x >= absUp.y && absUp.x >= absUp.z)
                 upAxisLocal = new Vector3(Mathf.Sign(localUp.x), 0f, 0f);
             else if (absUp.y >= absUp.x && absUp.y >= absUp.z)
@@ -56,13 +118,13 @@ namespace Axiom.Vessel.Diagnostics
             else
                 upAxisLocal = new Vector3(0f, 0f, Mathf.Sign(localUp.z));
 
-            // 2.2 FORWARD axis: longest hull extent in local space
-            // Fallback: use boat's forward if no COB/hull available
-            Vector3 forwardAxisLocal = Vector3.forward;
+            return upAxisLocal.normalized;
+        }
 
-            // Try to find the hull mesh anywhere under the boat root
+        private Vector3 DetectForwardAxisLocal(Vector3 upAxisLocal)
+        {
+            // Find the mesh with the largest bounds volume
             MeshFilter[] filters = boat.GetComponentsInChildren<MeshFilter>();
-
             MeshFilter largest = null;
             float largestVolume = 0f;
 
@@ -81,118 +143,115 @@ namespace Axiom.Vessel.Diagnostics
                 }
             }
 
-            if (largest != null)
+            // Fallback if no mesh found
+            if (largest == null)
+                return Vector3.forward;
+
+            // Get the mesh bounds
+            Bounds bounds = largest.sharedMesh.bounds;
+            Vector3 size = bounds.size;
+
+            // Zero out the axis that matches UP (we only want horizontal)
+            Vector3 horizontalSize = new Vector3(
+                Mathf.Abs(size.x) * (Mathf.Abs(upAxisLocal.x) < 0.9f ? 1f : 0f),
+                Mathf.Abs(size.y) * (Mathf.Abs(upAxisLocal.y) < 0.9f ? 1f : 0f),
+                Mathf.Abs(size.z) * (Mathf.Abs(upAxisLocal.z) < 0.9f ? 1f : 0f)
+            );
+
+            // Choose the longest horizontal axis
+            Vector3 forwardLocal;
+
+            if (horizontalSize.x >= horizontalSize.z)
+                forwardLocal = new Vector3(1f, 0f, 0f);
+            else
+                forwardLocal = new Vector3(0f, 0f, 1f);
+
+            // Ensure orthogonality with UP
+            forwardLocal = Vector3.ProjectOnPlane(forwardLocal, upAxisLocal).normalized;
+
+            // Fallback if projection collapses
+            if (forwardLocal.sqrMagnitude < 0.5f)
+                forwardLocal = Vector3.forward;
+
+            return forwardLocal.normalized;
+        }
+
+        private Vector3 DeriveBeamAxisLocal(Vector3 upAxisLocal, Vector3 forwardAxisLocal)
+        {
+            // Beam = cross(UP, FORWARD)
+            Vector3 beam = Vector3.Cross(upAxisLocal, forwardAxisLocal).normalized;
+
+            // Fallback if something went wrong
+            if (beam.sqrMagnitude < 0.5f)
             {
-                Bounds b = largest.sharedMesh.bounds;
-                Vector3 size = b.size;
-
-                // Ignore vertical component when choosing forward
-                size = new Vector3(
-                    Mathf.Abs(size.x) * (Mathf.Abs(upAxisLocal.x) < 0.9f ? 1f : 0f),
-                    Mathf.Abs(size.y) * (Mathf.Abs(upAxisLocal.y) < 0.9f ? 1f : 0f),
-                    Mathf.Abs(size.z) * (Mathf.Abs(upAxisLocal.z) < 0.9f ? 1f : 0f)
-                );
-
-                if (size.x >= size.z)
-                    forwardAxisLocal = new Vector3(1f, 0f, 0f);
-                else
-                    forwardAxisLocal = new Vector3(0f, 0f, 1f);
+                Warn("Beam axis degenerate — check UP and FORWARD axes.");
+                // Try the opposite cross just in case
+                beam = Vector3.Cross(forwardAxisLocal, upAxisLocal).normalized;
             }
 
-            // Ensure forward is orthogonal to up
-            forwardAxisLocal = Vector3.ProjectOnPlane(forwardAxisLocal, upAxisLocal).normalized;
-            if (forwardAxisLocal.sqrMagnitude < 0.5f)
-                forwardAxisLocal = Vector3.forward; // fallback
+            return beam;
+        }
 
-            // 2.3 ROLL axis = forward
-            Vector3 rollAxisLocal = forwardAxisLocal.normalized;
+        private IEnumerator DetectRollSign(Vector3 rollAxisLocal, Quaternion originalLocalRotation, System.Action<float> onSign)
+        {
+            const float testAngleDeg = 10f;
+            const int settleFrames = 5;
 
-            // 2.4 PITCH axis = beam = cross(up, roll)
-            Vector3 pitchAxisLocal = Vector3.Cross(upAxisLocal, rollAxisLocal).normalized;
+            float posMag = 0f;
+            float negMag = 0f;
 
-            // 2.5 YAW axis = up
-            Vector3 yawAxisLocal = upAxisLocal.normalized;
-
-            // ------------------------------------------------------------
-            // Local helper: test sign for a given axis
-            // ------------------------------------------------------------
-            IEnumerator TestAxisSign(Vector3 localAxis, System.Action<float> onSign)
+            IEnumerator TestOnce(float angleDeg, System.Action<float> onMeasured)
             {
-                float posMag = 0f;
-                float negMag = 0f;
+                Quaternion delta = Quaternion.AngleAxis(angleDeg, rollAxisLocal);
+                boat.localRotation = originalLocalRotation * delta;
 
-                IEnumerator TestOnce(float angleDeg, System.Action<float> onMeasured)
-                {
-                    Quaternion delta = Quaternion.AngleAxis(angleDeg, localAxis);
-                    boat.localRotation = originalRot * delta;
+                rb.rotation = boat.rotation;
+                rb.angularVelocity = Vector3.zero;
+                UnityEngine.Physics.SyncTransforms();
 
-                    rb.rotation = boat.rotation;
-                    rb.angularVelocity = Vector3.zero;
-                    UnityEngine.Physics.SyncTransforms();
+                for (int i = 0; i < settleFrames; i++)
+                    yield return new WaitForFixedUpdate();
 
-                    for (int i = 0; i < settleFrames; i++)
-                        yield return new WaitForFixedUpdate();
+                float mag = rb.angularVelocity.magnitude;
 
-                    float mag = rb.angularVelocity.magnitude;
+                boat.localRotation = originalLocalRotation;
+                rb.rotation = boat.rotation;
+                rb.angularVelocity = Vector3.zero;
+                UnityEngine.Physics.SyncTransforms();
 
-                    boat.localRotation = originalRot;
-                    rb.rotation = boat.rotation;
-                    rb.angularVelocity = Vector3.zero;
-                    UnityEngine.Physics.SyncTransforms();
-
-                    onMeasured?.Invoke(mag);
-                }
-
-                yield return TestOnce(+testAngleDeg, m => posMag = m);
-                yield return TestOnce(-testAngleDeg, m => negMag = m);
-
-                float sign = posMag >= negMag ? 1f : -1f;
-                onSign?.Invoke(sign);
+                onMeasured?.Invoke(mag);
             }
 
-            // ------------------------------------------------------------
-            // 3. Determine directions (+1 / -1) using buoyancy response
-            // ------------------------------------------------------------
-            float rollDirection = 1f;
-            float pitchDirection = 1f;
-            float yawDirection = 1f;
+            yield return TestOnce(+testAngleDeg, m => posMag = m);
+            yield return TestOnce(-testAngleDeg, m => negMag = m);
 
-            // Roll direction
-            yield return TestAxisSign(rollAxisLocal, s => rollDirection = s);
+            float sign = 1f;
 
-            // (Optional) pitch/yaw direction detection – keep +1 for now
-            // yield return TestAxisSign(pitchAxisLocal, s => pitchDirection = s);
-            // yield return TestAxisSign(yawAxisLocal, s => yawDirection = s);
-
-            bool isMirrored = false; // future extension
-
-            // ------------------------------------------------------------
-            // 4. Restore original state
-            // ------------------------------------------------------------
-            boat.localRotation = originalRot;
-            rb.rotation = boat.rotation;
-            rb.angularVelocity = originalAngVel;
-            UnityEngine.Physics.SyncTransforms();
-
-            // ------------------------------------------------------------
-            // 5. Build profile
-            // ------------------------------------------------------------
-            var profile = new VesselOrientationProfile
+            if (Mathf.Approximately(posMag, negMag))
             {
-                RollAxis = rollAxisLocal,
-                RollDirection = rollDirection,
+                Warn("Roll sign detection inconclusive — using +1. Check Rigidbody and buoyancy setup.");
+                sign = 1f;
+            }
+            else
+            {
+                sign = posMag >= negMag ? 1f : -1f;
+            }
 
-                PitchAxis = pitchAxisLocal,
-                PitchDirection = pitchDirection,
+            onSign?.Invoke(sign);
+        }
 
-                YawAxis = yawAxisLocal,
-                YawDirection = yawDirection,
+        private IEnumerator DetectPitchSign(Vector3 pitchAxisLocal, Quaternion originalLocalRotation, System.Action<float> onSign)
+        {
+            // Placeholder — always +1 for now
+            onSign?.Invoke(1f);
+            yield break;
+        }
 
-                IsMirrored = isMirrored,
-                IsValid = true
-            };
-
-            onComplete?.Invoke(profile);
+        private IEnumerator DetectYawSign(Vector3 yawAxisLocal, Quaternion originalLocalRotation, System.Action<float> onSign)
+        {
+            // Placeholder — always +1 for now
+            onSign?.Invoke(1f);
+            yield break;
         }
     }
 }

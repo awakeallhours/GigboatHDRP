@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Axiom.Vessel
 {
@@ -110,5 +112,10 @@ namespace Axiom.Vessel
         /// may be incorrect or unstable.
         /// </summary>
         public bool IsValid;
+
+        public string[] Warnings;
+
+
+
     }
 }
