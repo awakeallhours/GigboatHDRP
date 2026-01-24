@@ -16,6 +16,14 @@ public class WaterProbeSampler : MonoBehaviour
     private Vector3[] pointNormals;
     private bool[] pointValid;
 
+    //Public Acessors
+    public bool[] PointValid => pointValid;
+    public float[] PointHeights => pointHeights;
+    public Vector3[] PointNormals => pointNormals;
+    public Transform[] SamplePoints => samplePoints;
+    public ProbeType[] ProbeTypes => probeTypes;
+
+
     public int ProbeCount => samplePoints?.Length ?? 0;
 
     private void Awake()
