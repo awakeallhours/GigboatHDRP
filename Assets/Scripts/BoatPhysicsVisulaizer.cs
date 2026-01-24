@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -51,23 +50,11 @@ namespace Axiom.Vessel.Diagnostics
         [Tooltip("Rigidbody used for velocity, slip, and roll diagnostics.")]
         [SerializeField] private Rigidbody rb;
 
-        [Tooltip("Transform representing the thrust application point.")]
-        [SerializeField] private Transform thrustPoint;
-
-        [Tooltip("Current thrust force applied at the thrust point.")]
-        [SerializeField] private Vector3 thrustForce;
-
-        [Tooltip("Local Y offset of the hull bottom reference point.")]
-        [SerializeField] private float hullBottomLocalY = 0f;
-
         [Tooltip("Draw the Centre of Buoyancy marker.")]
         public bool drawCOB = true;
 
         [Tooltip("Draw the righting moment torque arrow (edit mode only).")]
         public bool drawRightingMoment = true;
-
-        /// <summary>Allows external systems (e.g., movement controller) to feed thrust force.</summary>
-        public void SetThrustForce(Vector3 force) => thrustForce = force;
 
         // ─────────────────────────────────────────────────────────────
         // BUOYANCY / WATERLINE VISUALS
@@ -98,18 +85,6 @@ namespace Axiom.Vessel.Diagnostics
         [SerializeField] private bool drawRollRate = true;
         [SerializeField] private float rollRateScale = 0.5f;
 
-        // ─────────────────────────────────────────────────────────────
-        // TOGGLES
-        // ─────────────────────────────────────────────────────────────
-
-        [Header("Gizmo Toggles")]
-        public bool drawThrustPoint = true;
-        public bool drawThrustVector = true;
-        public bool drawHullBottom = true;
-        public bool drawForward = true;
-        public bool drawVelocity = true;
-        public bool drawSlip = true;
-
         // GM tracking
         private float highestGM = 0f;
 
@@ -129,8 +104,6 @@ namespace Axiom.Vessel.Diagnostics
         {
             bootstrap = GetComponentInParent<VesselBootstrap>();
         }
-
-
         private void Reset()
         {
             if (boatCOM == null)
@@ -357,84 +330,6 @@ namespace Axiom.Vessel.Diagnostics
                     Handles.color = new Color(0.8f, 0.3f, 1f);
                     Handles.Label(comWorld + torqueDir * 2f, "Righting Moment");
 #endif
-                }
-            }
-
-            // THRUST POINT
-            if (drawThrustPoint && thrustPoint != null)
-            {
-                Gizmos.color = Color.cyan;
-                Gizmos.DrawSphere(thrustPoint.position, 0.12f);
-
-                Gizmos.DrawLine(thrustPoint.position + Vector3.up * 1.5f,
-                                thrustPoint.position - Vector3.up * 1.5f);
-
-                Gizmos.color = Color.white;
-                Gizmos.DrawLine(thrustPoint.position, comWorld);
-
-                Handles.color = Color.cyan;
-                Handles.Label(thrustPoint.position + Vector3.right * 0.2f, "Thrust Point");
-            }
-
-            // THRUST VECTOR
-            if (drawThrustVector && thrustPoint != null)
-            {
-                Color orange = new Color(1f, 0.5f, 0f);
-                Gizmos.color = orange;
-
-                Gizmos.DrawLine(thrustPoint.position,
-                                thrustPoint.position + thrustForce * 0.01f);
-
-                Handles.color = orange;
-                Handles.Label(thrustPoint.position + Vector3.up * 0.3f, "Thrust Vector");
-            }
-
-            // HULL BOTTOM
-            if (drawHullBottom)
-            {
-                Vector3 hullBottom = transform.TransformPoint(
-                    new Vector3(0f, hullBottomLocalY, 0f)
-                );
-
-                Gizmos.color = Color.grey;
-                Gizmos.DrawCube(hullBottom, new Vector3(0.15f, 0.02f, 0.15f));
-
-                Gizmos.DrawLine(hullBottom, comWorld);
-
-                Handles.color = Color.grey;
-                Handles.Label(hullBottom + Vector3.right * 0.2f, "Hull Bottom");
-            }
-
-            // FORWARD DIRECTION (EDIT MODE)
-            if (drawForward)
-            {
-                Gizmos.color = Color.blue;
-                Gizmos.DrawLine(comWorld, comWorld + transform.forward * 3f);
-
-                Handles.color = Color.blue;
-                Handles.Label(comWorld + transform.forward * 3f, "Forward");
-            }
-
-            // VELOCITY + SLIP (PLAY MODE ONLY)
-            if (drawVelocity && rb != null && Application.isPlaying)
-            {
-                Vector3 vel = rb.linearVelocity; // your custom extension
-
-                if (vel.sqrMagnitude > 0.01f)
-                {
-                    Color lime = new Color(0.7f, 1f, 0f);
-                    Gizmos.color = lime;
-                    Gizmos.DrawLine(comWorld, comWorld + vel.normalized * 3f);
-                }
-
-                if (drawSlip && vel.sqrMagnitude > 0.01f)
-                {
-                    Vector3 localVel = transform.InverseTransformDirection(vel);
-                    Vector3 lateral = new Vector3(localVel.x, 0f, 0f);
-                    Vector3 lateralWorld = transform.TransformDirection(lateral);
-
-                    Gizmos.color = Color.magenta;
-                    Gizmos.DrawLine(comWorld, comWorld + lateralWorld * 2f);
                 }
             }
 

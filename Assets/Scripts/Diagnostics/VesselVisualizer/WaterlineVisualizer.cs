@@ -11,6 +11,7 @@ namespace Axiom.Diagnostics.Visualization
         [Header("References")]
         public VesselBootstrap bootstrap;
         public BoatCOB boatCOB;
+        public VelocityProvider velocityProvider;
 
         [Header("PLACEHOLDER Waterplane")]
         [Tooltip("TEMPORARY: Visual-only waterplane height. Real waterplane will come from hydrostatics.")]
@@ -31,6 +32,14 @@ namespace Axiom.Diagnostics.Visualization
         public float waterplaneRadius = 3f;
         public Color waterplaneColor = Color.cyan;
         public Color draftColor = Color.blue;
+
+        [Header("Hull Bottom")]
+        public bool drawHullBottom = true;
+
+        [Tooltip("Local Y position of the hull bottom relative to the boat root.")]
+        public float hullBottomLocalY = -0.5f;
+
+        public Color hullBottomColor = Color.green;
 
         public void Draw()
         {
@@ -104,6 +113,32 @@ namespace Axiom.Diagnostics.Visualization
                     keelPos + verticalOffset * 0.5f,
                     $"Draft (placeholder): {draft:F2} m"
                 );
+            }
+
+            // ─────────────────────────────────────────────
+            // HULL BOTTOM MARKER
+            // ─────────────────────────────────────────────
+            if (drawHullBottom)
+            {
+                // Hull bottom in world space
+                Vector3 hullBottom = bootstrap.transform.TransformPoint(
+                    new Vector3(0f, hullBottomLocalY, 0f)
+                );
+
+                // Draw cube marker
+                Gizmos.color = hullBottomColor;
+                Gizmos.DrawCube(hullBottom, Vector3.one * 0.1f);
+
+                // Draw line from COM → hull bottom
+                Vector3 comWorld = velocityProvider.Rigidbody.worldCenterOfMass;
+                Gizmos.DrawLine(comWorld, hullBottom);
+
+#if UNITY_EDITOR
+                Handles.Label(
+                    hullBottom + Vector3.up * 0.1f,
+                    "Hull Bottom"
+                );
+#endif
             }
 #endif
         }

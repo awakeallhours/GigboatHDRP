@@ -2668,10 +2668,10 @@ PrefabInstance:
       addedObject: {fileID: 690923701}
     - targetCorrespondingSourceObject: {fileID: 9041536320988194492, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 690923702}
+      addedObject: {fileID: 690923703}
     - targetCorrespondingSourceObject: {fileID: 9041536320988194492, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 690923703}
+      addedObject: {fileID: 690923704}
   m_SourcePrefab: {fileID: 100100000, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
 --- !u!1 &690923684 stripped
 GameObject:
@@ -2721,10 +2721,9 @@ MonoBehaviour:
   comVisualizer: {fileID: 690923686}
   cobVisualizer: {fileID: 690923700}
   probeVisualizer: {fileID: 0}
-  stabilityVisualizer: {fileID: 690923702}
   orientationVisualizer: {fileID: 690923701}
   waterlineVisualizer: {fileID: 690923703}
-  forceVisualizer: {fileID: 0}
+  forcesAndStabilityVisualizer: {fileID: 690923704}
   scanVisualizer: {fileID: 0}
 --- !u!114 &690923689 stripped
 MonoBehaviour:
@@ -2799,27 +2798,6 @@ MonoBehaviour:
   drawRollRate: 0
   rollAxisHalfLength: 2
   rollRateScale: 0.5
---- !u!114 &690923702
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 690923684}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cf73199afadac9459d5d73d0536fda3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bootstrap: {fileID: 690923689}
-  boatCOB: {fileID: 690923693}
-  boatCOM: {fileID: 690923692}
-  rb: {fileID: 690923696}
-  drawGZ: 0
-  drawGM: 0
-  vectorScale: 1
-  gzColor: {r: 1, g: 0, b: 1, a: 1}
-  gmColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!114 &690923703
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2837,11 +2815,45 @@ MonoBehaviour:
   useCOBHeight: 1
   manualWaterHeight: 0
   keelReference: {fileID: 0}
-  drawWaterplane: 1
-  drawDraft: 1
+  drawWaterplane: 0
+  drawDraft: 0
   waterplaneRadius: 3
   waterplaneColor: {r: 0, g: 1, b: 1, a: 1}
   draftColor: {r: 0, g: 0, b: 1, a: 1}
+  drawHullBottom: 1
+  hullBottomLocalY: -0.5
+  hullBottomColor: {r: 0, g: 1, b: 0, a: 1}
+--- !u!114 &690923704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690923684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98cdf90e923f75946a30dedba9654c59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bootstrap: {fileID: 690923689}
+  boatCOB: {fileID: 690923693}
+  boatCOM: {fileID: 690923692}
+  rb: {fileID: 690923696}
+  forceProviders: []
+  thrustPoint: {fileID: 0}
+  thrustForce: {x: 0, y: 0, z: 0}
+  drawThrustPoint: 1
+  drawThrustVector: 1
+  drawForward: 1
+  thrustColor: {r: 1, g: 0, b: 0, a: 1}
+  drawGZ: 1
+  drawGM: 1
+  vectorScale: 1
+  gzColor: {r: 0, g: 1, b: 0, a: 1}
+  gmColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  forceScale: 1
+  forceColor: {r: 1, g: 0.015686274, b: 0.9300376, a: 1}
+  drawForceLabels: 1
 --- !u!1 &735691351
 GameObject:
   m_ObjectHideFlags: 0

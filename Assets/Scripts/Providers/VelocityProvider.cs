@@ -15,4 +15,6 @@ public sealed class VelocityProvider
         rb.transform.InverseTransformDirection(rb.linearVelocity);
 
     public Vector3 AngularVelocity => rb.angularVelocity;
+
+    public Rigidbody Rigidbody => rb;
 }
