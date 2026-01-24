@@ -313,6 +313,8 @@ namespace Axiom.Vessel.Diagnostics
             Vector3 comWorld = rb.worldCenterOfMass;
             float comY = comWorld.y;
 
+            Vector3 cobPosWorld = boatCOB.COBWorldPosition;
+
             // Neutral band height (world Y)
             float neutralY = boatCOM.NeutralBandMin;
 
@@ -322,38 +324,6 @@ namespace Axiom.Vessel.Diagnostics
 
             Vector3 left = Vector3.left * (lineWidth * 0.5f);
             Vector3 right = Vector3.right * (lineWidth * 0.5f);
-
-            // NEUTRAL BAND LINE
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawLine(neutralPos + left, neutralPos + right);
-            Handles.color = Color.cyan;
-            Handles.Label(neutralPos + Vector3.right * (lineWidth * 0.6f), "Neutral Band");
-
-            // COM HEIGHT BAND (2D band over hull origin)
-            bool valid = comY >= neutralY;
-            Gizmos.color = valid ? Color.green : Color.red;
-            Gizmos.DrawLine(comHeightPos + left, comHeightPos + right);
-            Handles.color = valid ? Color.green : Color.red;
-            Handles.Label(comHeightPos + Vector3.right * (lineWidth * 0.6f), "COM Height");
-
-            // COM DISC (at real COM)
-            Handles.color = Color.yellow;
-            Handles.DrawSolidDisc(comWorld, Vector3.up, 0.05f);
-
-            // CENTRE OF BUOYANCY (COB)
-            Vector3 cobPosWorld = boatCOB.COBWorldPosition;
-
-            if (drawCOB)
-            {
-                Gizmos.color = Color.blue;
-                Gizmos.DrawSphere(cobPosWorld, 0.12f);
-
-                Gizmos.color = Color.white;
-                Gizmos.DrawLine(comWorld, cobPosWorld);
-
-                Handles.color = Color.blue;
-                Handles.Label(cobPosWorld + Vector3.right * 0.2f, "COB");
-            }
 
             // RIGHTING MOMENT (edit mode only)
             if (drawRightingMoment)
@@ -471,20 +441,6 @@ namespace Axiom.Vessel.Diagnostics
             /*// BUOYANCY PROBE VECTORS (PLAY MODE)
             if (drawBuoyancyProbes && Application.isPlaying)
                 DrawBuoyancyProbes();*/
-
-            // WATERLINE PLANE (PLAY MODE)
-            if (drawWaterlinePlane && Application.isPlaying)
-                DrawWaterlinePlane();
-
-            // STABILITY & ROLL DIAGNOSTICS (PLAY MODE)
-            if (Application.isPlaying && rb != null)
-            {
-                if (drawRollAxis || drawRollRate)
-                    DrawRollDiagnostics(comWorld);
-
-                if (drawGM || drawGZ)
-                    DrawStabilityDiagnostics(comWorld, cobPosWorld);
-            }
 #endif
         }
         /*
@@ -532,187 +488,6 @@ namespace Axiom.Vessel.Diagnostics
             }
         }
         */
-
-        // ─────────────────────────────────────────────────────────────
-        // WATERLINE PLANE (FITTED FROM PROBES)
-        // ─────────────────────────────────────────────────────────────
-
-        private void DrawWaterlinePlane()
-        {
-            if (sampler == null)
-                return;
-
-            probeSampler.GetProbeData(out valid, out heights, out normals, out points, out types);
-
-            if (valid == null || heights == null || points == null)
-                return;
-
-            Vector3[] waterPoints = new Vector3[3];
-            int count = 0;
-
-            for (int i = 0; i < points.Length && count < 3; i++)
-            {
-                if (!valid[i])
-                    continue;
-
-                Transform p = points[i];
-                float waterY = heights[i];
-
-                waterPoints[count] = new Vector3(p.position.x, waterY, p.position.z);
-                count++;
-            }
-
-            if (count < 3)
-                return;
-
-            Vector3 p0 = waterPoints[0];
-            Vector3 p1 = waterPoints[1];
-            Vector3 p2 = waterPoints[2];
-
-            Vector3 v1 = p1 - p0;
-            Vector3 v2 = p2 - p0;
-            Vector3 normal = Vector3.Cross(v1, v2).normalized;
-
-            if (normal.sqrMagnitude < 0.0001f)
-                return;
-
-            Vector3 planeRight = Vector3.Cross(Vector3.up, normal).normalized;
-            if (planeRight.sqrMagnitude < 0.0001f)
-                planeRight = Vector3.right;
-
-            Vector3 planeForward = Vector3.Cross(normal, planeRight).normalized;
-
-            Gizmos.color = waterlineColor;
-
-            int steps = Mathf.Max(1, waterlineGridResolution);
-            float step = waterlineHalfSize * 2f / steps;
-
-            for (int i = 0; i <= steps; i++)
-            {
-                float offset = -waterlineHalfSize + i * step;
-
-                Vector3 start1 = p0 + planeRight * -waterlineHalfSize + planeForward * offset;
-                Vector3 end1 = p0 + planeRight * waterlineHalfSize + planeForward * offset;
-
-                Vector3 start2 = p0 + planeForward * -waterlineHalfSize + planeRight * offset;
-                Vector3 end2 = p0 + planeForward * waterlineHalfSize + planeRight * offset;
-
-                Gizmos.DrawLine(start1, end1);
-                Gizmos.DrawLine(start2, end2);
-            }
-
-#if UNITY_EDITOR
-            Handles.color = waterlineColor;
-            Handles.Label(p0 + normal * 0.2f, "Waterline Plane");
-#endif
-        }
-
-        // ─────────────────────────────────────────────────────────────
-        // STABILITY DIAGNOSTICS (GM / GZ)
-        // ─────────────────────────────────────────────────────────────
-
-        private void DrawStabilityDiagnostics(Vector3 comWorld, Vector3 cobPosWorld)
-        {
-            Vector3 rollAxis = bootstrap.Orientation.RollAxis;
-
-            Vector3 up = transform.up;
-            float heelSign = Mathf.Sign(Vector3.Dot(Vector3.Cross(Vector3.up, up), rollAxis));
-            float heelAngleRad = Mathf.Acos(Mathf.Clamp(Vector3.Dot(Vector3.up, up), -1f, 1f));
-            heelAngleRad *= heelSign;
-
-            float heelAngleDeg = heelAngleRad * Mathf.Rad2Deg;
-#if UNITY_EDITOR
-            lastHeelDeg = heelAngleDeg;
-#endif
-
-            Vector3 lever = cobPosWorld - comWorld;
-            Vector3 leverPerp = Vector3.ProjectOnPlane(lever, rollAxis);
-            float GZ = leverPerp.magnitude;
-#if UNITY_EDITOR
-            lastGZ = GZ;
-#endif
-
-            if (drawGZ && GZ > 0.0001f)
-            {
-                Vector3 gzDir = leverPerp.normalized;
-
-                Gizmos.color = Color.green;
-                Gizmos.DrawLine(comWorld, comWorld + gzDir * GZ);
-
-#if UNITY_EDITOR
-                Handles.color = Color.green;
-                Handles.Label(comWorld + gzDir * GZ, $"GZ: {GZ:F3} m");
-#endif
-            }
-
-            if (drawGM)
-            {
-                const float minHeelDegForGM = 5.0f;
-
-                if (!Application.isPlaying)
-                    return;
-
-                if (Mathf.Abs(heelAngleDeg) < minHeelDegForGM)
-                    return;
-
-                float sinHeel = Mathf.Sin(heelAngleRad);
-                if (Mathf.Abs(sinHeel) < 0.0001f || GZ <= 0.0001f)
-                    return;
-
-                float GM = GZ / sinHeel;
-
-                if (GM > highestGM)
-                    highestGM = GM;
-
-#if UNITY_EDITOR
-                lastGM = GM;
-#endif
-
-                Vector3 heelPlaneNormal = Vector3.Cross(rollAxis, Vector3.up).normalized;
-                if (heelPlaneNormal.sqrMagnitude < 0.0001f)
-                    heelPlaneNormal = Vector3.forward;
-
-                Vector3 M = comWorld + heelPlaneNormal * GM;
-
-                Gizmos.color = Color.yellow;
-                Gizmos.DrawLine(comWorld, M);
-            }
-        }
-
-        // ─────────────────────────────────────────────────────────────
-        // ROLL AXIS / ROLL RATE
-        // ─────────────────────────────────────────────────────────────
-
-        private void DrawRollDiagnostics(Vector3 comWorld)
-        {
-            Vector3 rollAxis = bootstrap.Orientation.RollAxis * bootstrap.Orientation.RollDirection;
-
-            if (drawRollAxis)
-            {
-                Gizmos.color = Color.white;
-                Gizmos.DrawLine(comWorld - rollAxis * 2f, comWorld + rollAxis * 2f);
-
-#if UNITY_EDITOR
-                Handles.color = Color.white;
-                Handles.Label(comWorld + rollAxis * 2f, "Roll Axis");
-#endif
-            }
-
-            if (drawRollRate && rb != null)
-            {
-                float rollRate = Vector3.Dot(rb.angularVelocity, rollAxis);
-                Vector3 rollRateVec = rollAxis * rollRate * rollRateScale;
-
-                Gizmos.color = Color.red;
-                Gizmos.DrawLine(comWorld, comWorld + rollRateVec);
-
-#if UNITY_EDITOR
-                lastRollRateDeg = rollRate * Mathf.Rad2Deg;
-                Handles.color = Color.red;
-                Handles.Label(comWorld + rollRateVec, $"Roll Rate: {lastRollRateDeg:F1} °/s");
-#endif
-            }
-        }
 
 #if UNITY_EDITOR
         private IEnumerator RunGMGZScan()

@@ -2575,6 +2575,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5015716958285506413, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+      propertyPath: drawCOB
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5015716958285506413, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5015716958285506413, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+      propertyPath: drawRollAxis
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5015716958285506413, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+      propertyPath: drawRollRate
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5015716958285506413, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+      propertyPath: drawHullBottom
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5015716958285506413, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+      propertyPath: drawWaterlinePlane
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6206978230462177718, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
       propertyPath: stabilityProfileComponent
       value: 
@@ -2589,7 +2613,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8516920206604073990, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -17.39
+      value: -26
       objectReference: {fileID: 0}
     - target: {fileID: 8516920206604073990, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2630,6 +2654,24 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 9041536320988194492, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
       insertIndex: -1
       addedObject: {fileID: 690923685}
+    - targetCorrespondingSourceObject: {fileID: 9041536320988194492, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 690923687}
+    - targetCorrespondingSourceObject: {fileID: 9041536320988194492, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 690923686}
+    - targetCorrespondingSourceObject: {fileID: 9041536320988194492, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 690923700}
+    - targetCorrespondingSourceObject: {fileID: 9041536320988194492, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 690923701}
+    - targetCorrespondingSourceObject: {fileID: 9041536320988194492, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 690923702}
+    - targetCorrespondingSourceObject: {fileID: 9041536320988194492, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 690923703}
   m_SourcePrefab: {fileID: 100100000, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
 --- !u!1 &690923684 stripped
 GameObject:
@@ -2648,6 +2690,158 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f8a5a3308c55134187d2fb8ffcf4afc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &690923686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690923684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54ae97707717666458241ee195fd282d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boatCOM: {fileID: 690923692}
+  rb: {fileID: 690923696}
+  lineWidth: 3
+  comDiscRadius: 0.15
+--- !u!114 &690923687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690923684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95c4d7913c04bbe48bcba6f6d88d11d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comVisualizer: {fileID: 690923686}
+  cobVisualizer: {fileID: 690923700}
+  probeVisualizer: {fileID: 0}
+  stabilityVisualizer: {fileID: 690923702}
+  orientationVisualizer: {fileID: 690923701}
+  waterlineVisualizer: {fileID: 690923703}
+  forceVisualizer: {fileID: 0}
+  scanVisualizer: {fileID: 0}
+--- !u!114 &690923689 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6206978230462177718, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+  m_PrefabInstance: {fileID: 690923683}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690923684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc5892af645ae494cabd3171e7f92a0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &690923692 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1011552218065183295, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+  m_PrefabInstance: {fileID: 690923683}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690923684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5781cc11803899c4fb082b6375876a5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &690923693 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7288142404961940605, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+  m_PrefabInstance: {fileID: 690923683}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690923684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd3cf7f89c1c1d84cb3ff0a865d36b38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!54 &690923696 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 7264272414633882622, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+  m_PrefabInstance: {fileID: 690923683}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &690923700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690923684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9e4be4da4bafbc43920882e40abd2fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boatCOB: {fileID: 690923693}
+  boatCOM: {fileID: 690923692}
+  rb: {fileID: 690923696}
+  cobSphereRadius: 0.15
+  drawCOB: 1
+--- !u!114 &690923701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690923684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1df3d9cbf46141647b98d0922b9a6da3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bootstrap: {fileID: 690923689}
+  rb: {fileID: 690923696}
+  drawRollAxis: 0
+  drawRollRate: 0
+  rollAxisHalfLength: 2
+  rollRateScale: 0.5
+--- !u!114 &690923702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690923684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cf73199afadac9459d5d73d0536fda3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bootstrap: {fileID: 690923689}
+  boatCOB: {fileID: 690923693}
+  boatCOM: {fileID: 690923692}
+  rb: {fileID: 690923696}
+  drawGZ: 0
+  drawGM: 0
+  vectorScale: 1
+  gzColor: {r: 1, g: 0, b: 1, a: 1}
+  gmColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+--- !u!114 &690923703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690923684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6b921bdd167eac4981d1f40f8a3c04c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bootstrap: {fileID: 690923689}
+  boatCOB: {fileID: 690923693}
+  useCOBHeight: 1
+  manualWaterHeight: 0
+  keelReference: {fileID: 0}
+  drawWaterplane: 1
+  drawDraft: 1
+  waterplaneRadius: 3
+  waterplaneColor: {r: 0, g: 1, b: 1, a: 1}
+  draftColor: {r: 0, g: 0, b: 1, a: 1}
 --- !u!1 &735691351
 GameObject:
   m_ObjectHideFlags: 0
@@ -5173,7 +5367,7 @@ Transform:
   m_GameObject: {fileID: 1404091960}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -10, z: 0}
+  m_LocalPosition: {x: 0, y: -20, z: 0}
   m_LocalScale: {x: 200, y: 1, z: 200}
   m_ConstrainProportionsScale: 0
   m_Children: []
