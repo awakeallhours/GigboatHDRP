@@ -7,11 +7,11 @@ namespace Axiom.Diagnostics.Visualization
     {
         public COMVisualizer comVisualizer;
         public COBVisualizer cobVisualizer;
-        public ProbeVisualizer probeVisualizer;
         public OrientationVisualizer orientationVisualizer;
         public WaterlineVisualizer waterlineVisualizer;
         public ForcesAndStabilityVisualizer forcesAndStabilityVisualizer;
         public RightingMomentVisualizer RightingMomentVisualizer;
+        public BuoyancyProbeForceVisualizer buoyancyForceVisualizer;
 
         private void OnDrawGizmos()
         {
@@ -30,12 +30,12 @@ namespace Axiom.Diagnostics.Visualization
             // Draw modules
             comVisualizer?.Draw();
             cobVisualizer?.Draw();
-            probeVisualizer?.Draw();
             orientationVisualizer?.Draw(comWorld);
             waterlineVisualizer?.Draw();
             forcesAndStabilityVisualizer?.Draw();
             RightingMomentVisualizer?.Draw();
-           
+            buoyancyForceVisualizer?.Draw();
+
         }
     }
 }

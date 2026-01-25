@@ -42,7 +42,12 @@ public class AxiomBuoyancyProbeVisualizer : MonoBehaviour
             else
                 Gizmos.color = Color.magenta;   // Unclassified / unexpected
 
-            Gizmos.DrawSphere(probe.position, settings.radius);
+            float scale = probe.lossyScale.x;
+            float radius = settings.radius / (scale == 0 ? 1 : scale);
+
+
+
+            Gizmos.DrawSphere(probe.position, radius);
         }
     }
 }

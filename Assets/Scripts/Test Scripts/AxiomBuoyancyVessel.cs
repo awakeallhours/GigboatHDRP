@@ -23,6 +23,8 @@ public class AxiomBuoyancyVessel : MonoBehaviour
         "Assign the main hull mesh here. Required for probe placement."
     )]
     [SerializeField] private MeshRenderer hullRenderer;
+    public MeshRenderer HullRenderer => hullRenderer;
+
 
     // ---------------------------------------------------------------------
     // Probe Generation Settings
@@ -101,24 +103,28 @@ public class AxiomBuoyancyVessel : MonoBehaviour
         {
             probeRoot = new GameObject("BuoyancyProbes").transform;
             probeRoot.SetParent(transform, false);
+            probeRoot.localScale = Vector3.one;
         }
 
         if (keelProbeRoot == null)
         {
             keelProbeRoot = new GameObject("KeelProbes").transform;
             keelProbeRoot.SetParent(probeRoot, false);
+            keelProbeRoot.localScale = Vector3.one;
         }
 
         if (sideProbeRoot == null)
         {
             sideProbeRoot = new GameObject("SideProbes").transform;
             sideProbeRoot.SetParent(probeRoot, false);
+            sideProbeRoot.localScale = Vector3.one;
         }
 
         if (deckProbeRoot == null)
         {
             deckProbeRoot = new GameObject("DeckProbes").transform;
             deckProbeRoot.SetParent(probeRoot, false);
+            deckProbeRoot.localScale = Vector3.one;
         }
     }
 
