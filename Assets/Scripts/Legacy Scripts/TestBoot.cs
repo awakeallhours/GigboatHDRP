@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 using UnityEditor;
 
 public class VesselWizardTest: MonoBehaviour
@@ -72,4 +72,4 @@ public class VesselWizardTest: MonoBehaviour
 // Placeholder components so the hierarchy shows intent
 public class VesselRootPlaceholder : MonoBehaviour
 {
-}
+}*/

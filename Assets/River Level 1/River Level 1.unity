@@ -714,7 +714,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e54d120c2f4efcf4496fbf93f2d22c5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hullRenderer: {fileID: 0}
+  hullRenderer: {fileID: 264633234}
   probeSettings:
     beamCount: 3
     lengthCount: 10
@@ -739,6 +739,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vessel: {fileID: 264633232}
+--- !u!23 &264633234 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 36f04ce8bd557f343924f70f103bb791, type: 3}
+  m_PrefabInstance: {fileID: 1219032002}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &291098544
 GameObject:
   m_ObjectHideFlags: 0
@@ -2575,6 +2580,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1011552218065183295, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+      propertyPath: comHeight
+      value: 0.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 1011552218065183295, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+      propertyPath: appliedCom.y
+      value: 0.35
+      objectReference: {fileID: 0}
     - target: {fileID: 5015716958285506413, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
       propertyPath: drawCOB
       value: 0
@@ -2597,12 +2610,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5015716958285506413, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
       propertyPath: drawWaterlinePlane
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6206978230462177718, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
       propertyPath: stabilityProfileComponent
       value: 
       objectReference: {fileID: 690923685}
+    - target: {fileID: 7264272414633882622, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+      propertyPath: m_CenterOfMass.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8516920206604073990, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
       propertyPath: m_LocalPosition.x
       value: 20.06
@@ -2647,7 +2664,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: TESTYACHT
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5015716958285506413, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -2668,10 +2686,16 @@ PrefabInstance:
       addedObject: {fileID: 690923701}
     - targetCorrespondingSourceObject: {fileID: 9041536320988194492, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 690923703}
+      addedObject: {fileID: 690923704}
     - targetCorrespondingSourceObject: {fileID: 9041536320988194492, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 690923704}
+      addedObject: {fileID: 690923714}
+    - targetCorrespondingSourceObject: {fileID: 9041536320988194492, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 690923713}
+    - targetCorrespondingSourceObject: {fileID: 9041536320988194492, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 690923715}
   m_SourcePrefab: {fileID: 100100000, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
 --- !u!1 &690923684 stripped
 GameObject:
@@ -2722,9 +2746,9 @@ MonoBehaviour:
   cobVisualizer: {fileID: 690923700}
   probeVisualizer: {fileID: 0}
   orientationVisualizer: {fileID: 690923701}
-  waterlineVisualizer: {fileID: 690923703}
+  waterlineVisualizer: {fileID: 690923715}
   forcesAndStabilityVisualizer: {fileID: 690923704}
-  scanVisualizer: {fileID: 0}
+  RightingMomentVisualizer: {fileID: 690923714}
 --- !u!114 &690923689 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6206978230462177718, guid: 2c3305921d4cf9a4398d60dbc12be044, type: 3}
@@ -2798,31 +2822,6 @@ MonoBehaviour:
   drawRollRate: 0
   rollAxisHalfLength: 2
   rollRateScale: 0.5
---- !u!114 &690923703
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 690923684}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6b921bdd167eac4981d1f40f8a3c04c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bootstrap: {fileID: 690923689}
-  boatCOB: {fileID: 690923693}
-  useCOBHeight: 1
-  manualWaterHeight: 0
-  keelReference: {fileID: 0}
-  drawWaterplane: 0
-  drawDraft: 0
-  waterplaneRadius: 3
-  waterplaneColor: {r: 0, g: 1, b: 1, a: 1}
-  draftColor: {r: 0, g: 0, b: 1, a: 1}
-  drawHullBottom: 1
-  hullBottomLocalY: -0.5
-  hullBottomColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!114 &690923704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2839,21 +2838,75 @@ MonoBehaviour:
   boatCOB: {fileID: 690923693}
   boatCOM: {fileID: 690923692}
   rb: {fileID: 690923696}
+  stabilityProfileComponent: {fileID: 690923685}
   forceProviders: []
   thrustPoint: {fileID: 0}
   thrustForce: {x: 0, y: 0, z: 0}
-  drawThrustPoint: 1
-  drawThrustVector: 1
-  drawForward: 1
+  drawThrustPoint: 0
+  drawThrustVector: 0
+  drawForward: 0
   thrustColor: {r: 1, g: 0, b: 0, a: 1}
-  drawGZ: 1
-  drawGM: 1
+  drawGZ: 0
+  drawGM: 0
   vectorScale: 1
   gzColor: {r: 0, g: 1, b: 0, a: 1}
   gmColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   forceScale: 1
   forceColor: {r: 1, g: 0.015686274, b: 0.9300376, a: 1}
   drawForceLabels: 1
+--- !u!114 &690923713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690923684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5a672d0e2dbb114ebd6bbce0cbf8ad2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &690923714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690923684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6fa9e37ace722e498bab3c979c9f75f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bootstrap: {fileID: 690923689}
+  boatCOB: {fileID: 690923693}
+  rb: {fileID: 690923696}
+  drawRightingMoment: 1
+--- !u!114 &690923715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690923684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6b921bdd167eac4981d1f40f8a3c04c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bootstrap: {fileID: 690923689}
+  boatCOB: {fileID: 690923693}
+  useCOBHeight: 1
+  manualWaterHeight: 0
+  keelReference: {fileID: 0}
+  drawWaterplane: 1
+  drawDraft: 1
+  waterplaneRadius: 3
+  waterplaneColor: {r: 0, g: 1, b: 1, a: 1}
+  draftColor: {r: 0, g: 0, b: 1, a: 1}
+  drawHullBottom: 1
+  hullBottomLocalY: -0.5
+  hullBottomColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &735691351
 GameObject:
   m_ObjectHideFlags: 0
@@ -5379,7 +5432,7 @@ Transform:
   m_GameObject: {fileID: 1404091960}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -20, z: 0}
+  m_LocalPosition: {x: 0, y: -30, z: 0}
   m_LocalScale: {x: 200, y: 1, z: 200}
   m_ConstrainProportionsScale: 0
   m_Children: []

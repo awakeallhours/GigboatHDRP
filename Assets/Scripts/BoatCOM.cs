@@ -28,7 +28,6 @@ namespace Axiom.Vessel.Diagnostics
         private Vector3 appliedCom;
 
         private Rigidbody rb;
-        private BoatPhysicsVisualizer visualizer;
 
         public float COMHeight => appliedCom.y;
         public float COMForward => appliedCom.z;
@@ -37,7 +36,6 @@ namespace Axiom.Vessel.Diagnostics
         private void Awake()
         {
             rb = GetComponent<Rigidbody>();
-            visualizer = GetComponent<BoatPhysicsVisualizer>();
             ApplyCOM();
             CheckNeutralBand();
         }
@@ -51,12 +49,6 @@ namespace Axiom.Vessel.Diagnostics
 
             if (rb == null)
                 rb = GetComponent<Rigidbody>();
-            if (visualizer == null)
-                visualizer = GetComponent<BoatPhysicsVisualizer>();
-
-            // NEW: Do not apply COM when editing is locked
-            if (visualizer != null && visualizer.ComEditingLocked)
-                return;
 
             if (rb != null)
             {
@@ -97,10 +89,6 @@ namespace Axiom.Vessel.Diagnostics
 
         public void CheckNeutralBand()
         {
-            // Do NOT warn if COM editing is locked — the real COM hasn't changed.
-            if (visualizer != null && visualizer.ComEditingLocked)
-                return;
-
             if (comHeight < neutralBandMin)
             {
                 Debug.LogWarning(
@@ -121,5 +109,3 @@ namespace Axiom.Vessel.Diagnostics
         }
     }
 }
-
-

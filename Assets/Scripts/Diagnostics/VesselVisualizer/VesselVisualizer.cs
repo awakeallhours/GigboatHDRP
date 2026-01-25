@@ -11,7 +11,7 @@ namespace Axiom.Diagnostics.Visualization
         public OrientationVisualizer orientationVisualizer;
         public WaterlineVisualizer waterlineVisualizer;
         public ForcesAndStabilityVisualizer forcesAndStabilityVisualizer;
-        public ScanVisualizer scanVisualizer;
+        public RightingMomentVisualizer RightingMomentVisualizer;
 
         private void OnDrawGizmos()
         {
@@ -34,7 +34,8 @@ namespace Axiom.Diagnostics.Visualization
             orientationVisualizer?.Draw(comWorld);
             waterlineVisualizer?.Draw();
             forcesAndStabilityVisualizer?.Draw();
-            scanVisualizer?.Draw();
+            RightingMomentVisualizer?.Draw();
+           
         }
     }
 }

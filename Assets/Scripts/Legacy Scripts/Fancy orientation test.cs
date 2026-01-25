@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿/*using UnityEngine;
 
 [ExecuteInEditMode]
 public class HullOrientationDiagnostic : MonoBehaviour
@@ -98,4 +98,4 @@ public class HullOrientationDiagnostic : MonoBehaviour
         }
         return v;
     }
-}
+}*/

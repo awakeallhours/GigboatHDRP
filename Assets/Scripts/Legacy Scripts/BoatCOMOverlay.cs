@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+﻿/*#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
@@ -114,4 +114,4 @@ namespace Axiom.Vessel.Diagnostics
         }
     }
 }
-#endif
+#endif*/

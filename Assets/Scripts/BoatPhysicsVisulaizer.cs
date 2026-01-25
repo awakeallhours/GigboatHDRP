@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Axiom.Vessel.Stability.Editor;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -27,11 +29,6 @@ namespace Axiom.Vessel.Diagnostics
         [Tooltip("Horizontal line length in meters for COM and neutral band markers.")]
         public float lineWidth = 1.0f;
 
-        // COM editing lock (per boat)
-        [SerializeField, Tooltip("When locked, COM changes are not applied to the Rigidbody.")]
-        private bool comEditingLocked = true;
-        public bool ComEditingLocked => comEditingLocked;
-
         [SerializeField] private WaterProbeSampler probeSampler;
 
         private bool[] valid;
@@ -49,9 +46,6 @@ namespace Axiom.Vessel.Diagnostics
         [Header("Optional References")]
         [Tooltip("Rigidbody used for velocity, slip, and roll diagnostics.")]
         [SerializeField] private Rigidbody rb;
-
-        [Tooltip("Draw the Centre of Buoyancy marker.")]
-        public bool drawCOB = true;
 
         [Tooltip("Draw the righting moment torque arrow (edit mode only).")]
         public bool drawRightingMoment = true;
@@ -85,20 +79,6 @@ namespace Axiom.Vessel.Diagnostics
         [SerializeField] private bool drawRollRate = true;
         [SerializeField] private float rollRateScale = 0.5f;
 
-        // GM tracking
-        private float highestGM = 0f;
-
-#if UNITY_EDITOR
-        // Overlay state
-        private float lastGM = 0f;
-        private float lastHeelDeg = 0f;
-        private float lastGZ = 0f;
-        private float lastRollRateDeg = 0f;
-
-        // COM diagnostics panel state
-        private bool comPanelOpen = true;
-
-#endif
 
         private void Awake()
         {
@@ -117,148 +97,6 @@ namespace Axiom.Vessel.Diagnostics
             if (sampler == null)
                 sampler = GetComponent<WaterProbeSampler>();
         }
-
-#if UNITY_EDITOR
-        private void OnEnable()
-        {
-            SceneView.duringSceneGui += DrawSceneOverlay;
-        }
-
-        private void OnDisable()
-        {
-            SceneView.duringSceneGui -= DrawSceneOverlay;
-        }
-
-        private void DrawSceneOverlay(SceneView sceneView)
-        {
-            if (SceneView.currentDrawingSceneView == null ||
-                !SceneView.currentDrawingSceneView.camera.name.Contains("Scene"))
-                return;
-
-            Handles.BeginGUI();
-
-            const float gmWidth = 280f;
-            const float gmHeight = 120f;
-            float gmX = (sceneView.position.width - gmWidth) * 0.5f;
-            float gmY = 10f;
-
-            // GM / Stability panel (center)
-            GUILayout.BeginArea(new Rect(gmX, gmY, gmWidth, gmHeight), GUI.skin.box);
-            GUI.color = Color.yellow;
-
-            GUILayout.Label($"Heel: {lastHeelDeg:F1}°");
-
-            if (drawGM)
-            {
-                if (Mathf.Abs(lastHeelDeg) >= 5f)
-                    GUILayout.Label($"GM: {lastGM:F3} m   (max {highestGM:F3} m)");
-                else
-                    GUILayout.Label("GM: — (heel < 5°)");
-            }
-
-            if (drawGZ)
-                GUILayout.Label($"GZ: {lastGZ:F3} m");
-
-            if (drawRollRate && rb != null)
-                GUILayout.Label($"Roll rate: {lastRollRateDeg:F1} °/s");
-
-            GUILayout.Space(5f);
-
-            // Run GM/GZ Scan button
-            GUI.enabled = Application.isPlaying && boatCOM != null && boatCOB != null && rb != null;
-            if (GUILayout.Button("Run GM/GZ Stability Scan"))
-            {
-                StartCoroutine(RunGMGZScan());
-            }
-            GUI.enabled = true;
-
-            GUILayout.EndArea();
-
-            // COM diagnostics panel (to the right of GM panel)
-            const float comWidth = 260f;
-            const float comHeight = 160f;
-            float comX = gmX + gmWidth + 20f;
-            float comY = gmY;
-
-            GUILayout.BeginArea(new Rect(comX, comY, comWidth, comHeight), GUI.skin.box);
-
-            GUIStyle header = new GUIStyle(EditorStyles.boldLabel);
-            header.normal.textColor = Color.white;
-
-            string arrow = comPanelOpen ? "▼ " : "► ";
-            if (GUILayout.Button(arrow + "COM Diagnostics", header))
-            {
-                comPanelOpen = !comPanelOpen;
-            }
-
-            if (comPanelOpen && boatCOM != null)
-            {
-                float com = boatCOM.comHeight;
-                float neutral = boatCOM.NeutralBandMin;
-
-                // Health colour
-                Color healthColor =
-                    com < neutral ? Color.red :
-                    com < neutral + 0.1f ? new Color(1f, 0.65f, 0f) :
-                    Color.green;
-
-                GUIStyle valueStyle = new GUIStyle(EditorStyles.label);
-                valueStyle.normal.textColor = healthColor;
-
-                GUILayout.Label($"COM Height: {com:F3} m", valueStyle);
-                GUILayout.Label($"Neutral Band: {neutral:F3} m");
-
-                // Enable COM Offset toggle
-                bool newEnable = GUILayout.Toggle(boatCOM.enableCOMOffset, "Enable COM Offset");
-                if (newEnable != boatCOM.enableCOMOffset)
-                {
-                    Undo.RecordObject(boatCOM, "Toggle COM Offset");
-                    boatCOM.enableCOMOffset = newEnable;
-                    boatCOM.ApplyCOM();
-                    boatCOM.CheckNeutralBand();
-                }
-
-                // Apply COM button
-                if (GUILayout.Button("Apply COM"))
-                {
-                    Undo.RecordObject(boatCOM, "Apply COM");
-                    boatCOM.ApplyCOM();
-                    boatCOM.CheckNeutralBand();
-                }
-
-                GUILayout.Space(5f);
-
-                // COM Editing Lock/Unlock button
-                Color prevColor = GUI.backgroundColor;
-                GUI.backgroundColor = comEditingLocked ? Color.green : Color.red;
-                string label = comEditingLocked ? "COM Editing Locked" : "COM Editing Unlocked";
-                if (GUILayout.Button(label))
-                {
-                    comEditingLocked = !comEditingLocked;
-
-                    // When unlocking, force BoatCOM to re-apply COM immediately
-                    if (!comEditingLocked && boatCOM != null)
-                    {
-                        boatCOM.ApplyCOM();
-                        boatCOM.CheckNeutralBand();
-                    }
-                }
-                GUI.backgroundColor = prevColor;
-
-                // Warning when locked
-                if (comEditingLocked)
-                {
-                    GUI.color = Color.red;
-                    GUILayout.Label("COM Editing Locked — inspector changes not applied.");
-                    GUI.color = Color.white;
-                }
-            }
-
-            GUILayout.EndArea();
-
-            Handles.EndGUI();
-        }
-#endif
 
         // ─────────────────────────────────────────────────────────────
         // GIZMO DRAWING
@@ -297,7 +135,7 @@ namespace Axiom.Vessel.Diagnostics
 
             Vector3 left = Vector3.left * (lineWidth * 0.5f);
             Vector3 right = Vector3.right * (lineWidth * 0.5f);
-
+            /*
             // RIGHTING MOMENT (edit mode only)
             if (drawRightingMoment)
             {
@@ -331,7 +169,7 @@ namespace Axiom.Vessel.Diagnostics
                     Handles.Label(comWorld + torqueDir * 2f, "Righting Moment");
 #endif
                 }
-            }
+            }*/
 
             /*// BUOYANCY PROBE VECTORS (PLAY MODE)
             if (drawBuoyancyProbes && Application.isPlaying)
@@ -383,53 +221,5 @@ namespace Axiom.Vessel.Diagnostics
             }
         }
         */
-
-#if UNITY_EDITOR
-        private IEnumerator RunGMGZScan()
-        {
-            if (boatCOM == null || boatCOB == null || rb == null)
-                yield break;
-
-            var scanner = new GMGZStabilityScanner(bootstrap, bootstrap.transform, rb, boatCOB, boatCOM);
-
-
-            yield return scanner.RunScan(
-        startAngle: 0f,
-        endAngle: 45f,
-        step: 1f,
-        settleTime: 0.25f,
-        onComplete: profile =>
-        {
-            stabilityProfileComponent.SetProfile(profile);
-
-            Debug.Log(
-            "<b>[GM/GZ Stability Scan Results]</b>\n" +
-            "\n" +
-            $"<b>Initial Stability (GM_Initial):</b> {profile.GM_Initial:F3} m   " +
-            $"Valid={profile.GM_Initial_Valid}\n" +
-            "Plain: Stability when the boat first starts to lean.\n" +
-            "\n" +
-            $"<b>Strongest Stability (GM_Peak):</b> {profile.GM_Peak:F3} m @ {profile.GM_PeakAngle:F1}°   " +
-            $"Valid={profile.GM_Peak_Valid}\n" +
-            "Plain: The strongest overall stability the boat showed.\n" +
-            "\n" +
-            $"<b>Strongest Righting Force (GZ_Peak):</b> {profile.GZ_Peak:F3} m @ {profile.GZ_PeakAngle:F1}°   " +
-            $"Valid={profile.GZ_Peak_Valid}\n" +
-            "Plain: The strongest force pushing the boat upright.\n" +
-            "\n" +
-            $"<b>Vanishing Stability Angle (GZ_ZeroAngle):</b> {profile.GZ_ZeroAngle:F1}°   " +
-            $"Valid={profile.GZ_ZeroAngle_Valid}\n" +
-            "Plain: The angle where the boat stops being able to right itself.\n" +
-            "\n" +
-            $"<b>Positive Stability Range:</b> {profile.PositiveStabilityRange:F1}°\n" +
-            "Plain: How far the boat can lean while still being stable.\n" +
-            "\n" +
-            $"<b>COM Safe Range:</b> {profile.COM_SafeMin:F3} m → {profile.COM_SafeMax:F3} m\n" +
-            "Plain: Lowest and highest safe centre‑of‑mass height.\n" +
-            "\n" +
-            $"<b>Notes:</b> {profile.Notes}");
-        });
-        }
-#endif
     }
 }

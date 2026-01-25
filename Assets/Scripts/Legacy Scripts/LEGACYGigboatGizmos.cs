@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿/*using UnityEngine;
 
 /// <summary>
 /// Draws editor‑only gizmos for the gig boat:
@@ -118,4 +118,4 @@ public class GigboatGizmos : MonoBehaviour
             }
         }
     }
-}
+}*/

@@ -3,32 +3,28 @@
   "WorkspaceRootPath": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|c:\\users\\awake\\desktop\\unity projects\\gigboathdrp\\assets\\scripts\\diagnostics\\vesselvisualizer\\rightingmomentviszualizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\diagnostics\\vesselvisualizer\\rightingmomentviszualizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\boatphysicsvisulaizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\boatphysicsvisulaizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|c:\\users\\awake\\desktop\\unity projects\\gigboathdrp\\assets\\scripts\\diagnostics\\vesselvisualizer\\forcesandstabilityvisualizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\diagnostics\\vesselvisualizer\\forcesandstabilityvisualizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|c:\\users\\awake\\desktop\\unity projects\\gigboathdrp\\assets\\scripts\\diagnostics\\vesselvisualizer\\waterlinevisualizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\diagnostics\\vesselvisualizer\\waterlinevisualizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\diagnostics\\vesselvisualizer\\probevisualizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\diagnostics\\vesselvisualizer\\probevisualizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\test scripts\\axiombuoyancyprobevisualizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\test scripts\\axiombuoyancyprobevisualizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|c:\\users\\awake\\desktop\\unity projects\\gigboathdrp\\assets\\scripts\\diagnostics\\vesselvisualizer\\vesselvisualizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\diagnostics\\vesselvisualizer\\vesselvisualizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\diagnostics\\vesselvisualizer\\vesselvisualizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\diagnostics\\utilities\\gizmodraw.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\diagnostics\\utilities\\gizmodraw.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\diagnostics\\vesselvisualizer\\gmgzscanvisualizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\diagnostics\\vesselvisualizer\\gmgzscanvisualizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\diagnostics\\vesselvisualizer\\gmgzscanrunner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\diagnostics\\vesselvisualizer\\gmgzscanrunner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\diagnostics\\vesselvisualizer\\forcesandstabilityvisualizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\diagnostics\\vesselvisualizer\\forcesandstabilityvisualizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -38,97 +34,80 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "ForcesAndStabilityVisualizer.cs",
-              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\VesselVisualizer\\ForcesAndStabilityVisualizer.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\ForcesAndStabilityVisualizer.cs",
-              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\VesselVisualizer\\ForcesAndStabilityVisualizer.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\ForcesAndStabilityVisualizer.cs",
-              "ViewState": "AgIAAMQAAAAAAAAAAAAkwOoAAAABAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "RightingMomentViszualizer.cs",
+              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\VesselVisualizer\\RightingMomentViszualizer.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\RightingMomentViszualizer.cs",
+              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\VesselVisualizer\\RightingMomentViszualizer.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\RightingMomentViszualizer.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAADEAAAAGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T23:12:10.663Z",
+              "WhenOpened": "2026-01-25T16:50:13.628Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "GMGZScanVisualizer.cs",
+              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\VesselVisualizer\\GMGZScanVisualizer.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\GMGZScanVisualizer.cs",
+              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\VesselVisualizer\\GMGZScanVisualizer.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\GMGZScanVisualizer.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAAUwD4AAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-25T15:13:46.036Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "WaterlineVisualizer.cs",
-              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\VesselVisualizer\\WaterlineVisualizer.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\WaterlineVisualizer.cs",
-              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\VesselVisualizer\\WaterlineVisualizer.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\WaterlineVisualizer.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAApAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T23:11:12.186Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "BoatPhysicsVisulaizer.cs",
-              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\BoatPhysicsVisulaizer.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\BoatPhysicsVisulaizer.cs",
-              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\BoatPhysicsVisulaizer.cs",
-              "RelativeToolTip": "Assets\\Scripts\\BoatPhysicsVisulaizer.cs",
-              "ViewState": "AgIAAFkBAAAAAAAAAAAkwH8BAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-23T00:20:47.546Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
               "Title": "VesselVisualizer.cs",
               "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\VesselVisualizer\\VesselVisualizer.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\VesselVisualizer.cs",
               "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\VesselVisualizer\\VesselVisualizer.cs",
               "RelativeToolTip": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\VesselVisualizer.cs",
-              "ViewState": "AgIAAAEAAAAAAAAAAAAkwCcAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAYwCQAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T14:54:01.511Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-25T15:11:53.529Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "AxiomBuoyancyProbeVisualizer.cs",
-              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Test Scripts\\AxiomBuoyancyProbeVisualizer.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Test Scripts\\AxiomBuoyancyProbeVisualizer.cs",
-              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Test Scripts\\AxiomBuoyancyProbeVisualizer.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Test Scripts\\AxiomBuoyancyProbeVisualizer.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAASAAAAAAAAAA==",
+              "Title": "GMGZScanRunner.cs",
+              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\VesselVisualizer\\GMGZScanRunner.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\GMGZScanRunner.cs",
+              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\VesselVisualizer\\GMGZScanRunner.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\GMGZScanRunner.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T15:00:18.385Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-25T14:35:20.337Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "GizmoDraw.cs",
-              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\Utilities\\GizmoDraw.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Diagnostics\\Utilities\\GizmoDraw.cs",
-              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\Utilities\\GizmoDraw.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Diagnostics\\Utilities\\GizmoDraw.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAABAAAAAAAAAA==",
+              "DocumentIndex": 5,
+              "Title": "ForcesAndStabilityVisualizer.cs",
+              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\VesselVisualizer\\ForcesAndStabilityVisualizer.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\ForcesAndStabilityVisualizer.cs",
+              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\VesselVisualizer\\ForcesAndStabilityVisualizer.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\ForcesAndStabilityVisualizer.cs",
+              "ViewState": "AgIAAEYAAAAAAAAAAAAAwEgAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T14:54:42.822Z"
+              "WhenOpened": "2026-01-24T23:12:10.663Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "ProbeVisualizer.cs",
-              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\VesselVisualizer\\ProbeVisualizer.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\ProbeVisualizer.cs",
-              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\VesselVisualizer\\ProbeVisualizer.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\ProbeVisualizer.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "BoatPhysicsVisulaizer.cs",
+              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\BoatPhysicsVisulaizer.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\BoatPhysicsVisulaizer.cs",
+              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\BoatPhysicsVisulaizer.cs",
+              "RelativeToolTip": "Assets\\Scripts\\BoatPhysicsVisulaizer.cs",
+              "ViewState": "AgIAAEEAAAAAAAAAAAAowFEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T14:49:34.724Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-23T00:20:47.546Z"
             }
           ]
         }

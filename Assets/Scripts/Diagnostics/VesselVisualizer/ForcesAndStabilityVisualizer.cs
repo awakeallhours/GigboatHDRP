@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using Axiom.Vessel.Stability.Editor;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -16,6 +18,7 @@ namespace Axiom.Diagnostics.Visualization
         public BoatCOB boatCOB;
         public BoatCOM boatCOM;
         public Rigidbody rb;
+        public StabilityProfileComponent stabilityProfileComponent;
 
         // TEMPORARY: force providers (drag, lift, etc.)
         public MonoBehaviour[] forceProviders;
@@ -55,12 +58,32 @@ namespace Axiom.Diagnostics.Visualization
         public Color gzColor = Color.green;
         public Color gmColor = Color.yellow;
 
+        //Public Accessors
+        public float LastHeelDeg => lastHeelDeg;
+        public float LastGM => lastGM;
+        public float LastGZ => lastGZ;
+        public float HighestGM => highestGM;
+        public float LastRollRateDeg => lastRollRateDeg;
+
 #if UNITY_EDITOR
         private float lastHeelDeg;
         private float lastGZ;
         private float lastGM;
         private float highestGM;
+        private float lastRollRateDeg = 0f;
 #endif
+
+        public void StartGMGZScan()
+        {
+#if UNITY_EDITOR
+            StartCoroutine(GMGZScanRunner.RunScan(
+                bootstrap,
+                rb,
+                boatCOB,
+                boatCOM,
+                stabilityProfileComponent));
+#endif
+        }
 
         // ─────────────────────────────────────────────────────────────
         // FORCE PROVIDERS (drag, lift, etc.)
