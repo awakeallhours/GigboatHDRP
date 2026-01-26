@@ -29,7 +29,7 @@ public sealed class Buoyancy : MonoBehaviour
     [Tooltip("Probe sampler providing probe positions, heights, normals, validity.")]
     [SerializeField] private WaterProbeSampler probeSampler;
 
-
+    [SerializeField] private WaterplaneEstimator waterplaneEstimator;
 
 
 
@@ -139,6 +139,12 @@ public sealed class Buoyancy : MonoBehaviour
 
     public bool debugBuoyancy = false;
 
+    // NEW HULL Z SLICE VARIABLES
+    private int[] sliceCounts;
+    private int[] sliceIndices;
+    private float minZ, maxZ;
+    private int sliceCount; // = LengthCount from vessel, but we’ll infer it
+
     // ─────────────────────────────────────────────────────────────
     // UNITY EVENTS
     // ─────────────────────────────────────────────────────────────
@@ -149,6 +155,9 @@ public sealed class Buoyancy : MonoBehaviour
 
         if (boatCOB == null)
             boatCOB = GetComponent<BoatCOB>();
+
+        if (waterplaneEstimator == null)
+            waterplaneEstimator = GetComponent<WaterplaneEstimator>();
 
         // Auto‑assign water surface
         var behaviours = Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None);
@@ -176,6 +185,8 @@ public sealed class Buoyancy : MonoBehaviour
         {
             Debug.LogError("Buoyancy: No WaterProbeSampler found in scene.");
             return;
+
+
         }
 
         // Pull probe data from sampler (arrays allocated in sampler.Awake)
@@ -185,6 +196,42 @@ public sealed class Buoyancy : MonoBehaviour
         out pointNormals,
         out samplePoints,
         out probeTypes);
+
+        // Build Z-slice bins based on probe positions
+        minZ = float.MaxValue;
+        maxZ = float.MinValue;
+
+        for (int i = 0; i < samplePoints.Length; i++)
+        {
+            float z = samplePoints[i].position.z;
+            if (z < minZ) minZ = z;
+            if (z > maxZ) maxZ = z;
+        }
+
+        // Decide how many slices we want along Z.
+        // Easiest: use vessel.LengthCount if you can get it, otherwise pick a number:
+        sliceCount = probeTypes.Length > 0 ? Mathf.Max(1, Mathf.RoundToInt(Mathf.Sqrt(probeTypes.Length))) : 1;
+
+        // Allocate
+        sliceCounts = new int[sliceCount];
+        sliceIndices = new int[samplePoints.Length];
+
+        // Assign each probe to a slice
+        for (int i = 0; i < samplePoints.Length; i++)
+        {
+            float t = Mathf.InverseLerp(minZ, maxZ, samplePoints[i].position.z);
+            int slice = Mathf.Clamp(Mathf.FloorToInt(t * sliceCount), 0, sliceCount - 1);
+            sliceIndices[i] = slice;
+            sliceCounts[slice]++;
+        }
+
+            waterplaneEstimator.Compute(
+            samplePoints,
+            pointHeights,
+            sliceIndices,
+            sliceCount,
+            minZ,
+            maxZ);
 
         if (autoComputeStrength)
             RecomputeBuoyancyStrength();
@@ -270,19 +317,33 @@ public sealed class Buoyancy : MonoBehaviour
                     return;
             }
 
+            int slice = sliceIndices[index];
+            float beam = waterplaneEstimator.sliceBeam[slice];
+
+            // Avoid divide-by-zero
+            float beamFactor = Mathf.Max(beam, 0.01f);
+
+            force /= beamFactor;
+            effectiveMagnitude /= beamFactor;
+
+            // Apply buoyancy force ONCE
             rb.AddForceAtPosition(force, p.position, ForceMode.Force);
             totalBuoyancyForce += effectiveMagnitude;
 
+            // Volume contribution
             float volume = effectiveMagnitude / (waterDensity.ValueKgPerCubicMeter * Physics.gravity.magnitude);
             totalSubmergedVolume += volume;
 
+            // COB accumulation
             Vector3 localPos = transform.InverseTransformPoint(p.position);
             cobSumLocal += localPos * effectiveMagnitude;
 
+            // Damping
             float verticalVel = Vector3.Dot(rb.GetPointVelocity(p.position), Vector3.up);
             Vector3 damping = -verticalVel * Vector3.up * waterDrag;
             rb.AddForceAtPosition(damping, p.position, ForceMode.Force);
 
+            // Angular damping
             rb.AddTorque(-rb.angularVelocity * waterAngularDrag, ForceMode.Force);
 
             // Righting moment depends on probe type
@@ -369,9 +430,62 @@ public sealed class Buoyancy : MonoBehaviour
     // ─────────────────────────────────────────────────────────────
     public void RecomputeBuoyancyStrength()
     {
-        buoyancyStrength =
-            waterDensity.ValueKgPerCubicMeter *
-            Physics.gravity.magnitude *
-            probeArea.ValueSquareMeters;
+        if (samplePoints == null || samplePoints.Length == 0)
+        {
+            buoyancyStrength = 0f;
+            return;
+        }
+
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            buoyancyStrength = 0f;
+            return;
+        }
+
+        float g = Physics.gravity.magnitude;
+        float targetWeight = rb.mass * g;
+
+        float sumDepthWeighted = 0f;
+
+        for (int i = 0; i < samplePoints.Length; i++)
+        {
+            ProbeType type = probeTypes[i];
+            if (type == ProbeType.Deck)
+                continue;
+
+            float waterY = pointHeights[i];
+            float depth = waterY - samplePoints[i].position.y;
+            if (depth <= 0f)
+                continue;
+
+            float typeScale =
+                (type == ProbeType.Keel) ? keelBuoyancyScale :
+                (type == ProbeType.Side) ? sideBuoyancyScale : 0f;
+
+            if (typeScale <= 0f)
+                continue;
+
+            int slice = sliceIndices[i];
+            float beam = waterplaneEstimator.sliceBeam[slice];
+            float beamFactor = Mathf.Max(beam, 0.01f);
+
+
+            // This matches your current ApplyBuoyancyAtPoint logic:
+            // baseMagnitude = depth * buoyancyStrength * typeScale;
+            // force per probe is divided by countInSlice.
+            // So total force = buoyancyStrength * Σ(depth * typeScale / countInSlice).
+            sumDepthWeighted += depth * typeScale / beamFactor;
+
+        }
+
+        if (sumDepthWeighted <= 0f)
+        {
+            buoyancyStrength = 0f;
+            return;
+        }
+
+        // Solve: targetWeight = buoyancyStrength * sumDepthWeighted
+        buoyancyStrength = targetWeight / sumDepthWeighted;
     }
 }

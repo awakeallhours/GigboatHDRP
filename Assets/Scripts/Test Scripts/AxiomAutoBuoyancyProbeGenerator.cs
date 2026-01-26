@@ -56,13 +56,13 @@ public static class AxiomAutoBuoyancyProbeGenerator
         float beamSpacing = (colliderMax.x - colliderMin.x) / (beamCount + 1);
         float lengthSpacing = (colliderMax.z - colliderMin.z) / (lengthCount + 1);
 
-        float keelCutoffY = minY + Mathf.Min(0.5f, hullHeight * 0.25f);
+        float keelCutoffY = minY + hullHeight * 0.6f;
 
         for (int bx = 1; bx <= beamCount; bx++)
         {
             float x = colliderMin.x + beamSpacing * bx;
 
-            for (int lz = 1; lz <= lengthCount; lz++)
+            for (int lz = 0; lz <= lengthCount + 1; lz++)
             {
                 float z = colliderMin.z + lengthSpacing * lz;
 

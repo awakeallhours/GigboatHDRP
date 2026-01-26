@@ -109,6 +109,12 @@ public static class AxiomBuoyancyProbeMenu
         );
 
         // ------------------------------------------------------------
+        // NEW: Filter keel probes against side probes
+        // ------------------------------------------------------------
+        FilterKeelProbesAgainstSideProbes(ref result.keelProbes, result.sideProbes);
+
+
+        // ------------------------------------------------------------
         // Remove temporary MeshCollider if we added it
         // ------------------------------------------------------------
         if (addedCollider)
@@ -153,5 +159,36 @@ public static class AxiomBuoyancyProbeMenu
         );
 
         EditorUtility.SetDirty(vessel);
+    }
+
+    private static void FilterKeelProbesAgainstSideProbes(
+    ref List<Vector3> keel,
+    List<Vector3> side)
+    {
+        if (side.Count == 0 || keel.Count == 0)
+            return;
+
+        List<Vector3> filtered = new List<Vector3>();
+
+        foreach (var kp in keel)
+        {
+            float bestDist = float.MaxValue;
+            float nearestSideY = float.MaxValue;
+
+            foreach (var sp in side)
+            {
+                float dz = Mathf.Abs(sp.z - kp.z);
+                if (dz < bestDist)
+                {
+                    bestDist = dz;
+                    nearestSideY = sp.y;
+                }
+            }
+
+            if (kp.y <= nearestSideY)
+                filtered.Add(kp);
+        }
+
+        keel = filtered;
     }
 }

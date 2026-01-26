@@ -8,7 +8,7 @@ namespace Axiom.Diagnostics.Visualization
         public COMVisualizer comVisualizer;
         public COBVisualizer cobVisualizer;
         public OrientationVisualizer orientationVisualizer;
-        public WaterlineVisualizer waterlineVisualizer;
+        public WaterplaneVisualizer waterplaneVisualizer;
         public ForcesAndStabilityVisualizer forcesAndStabilityVisualizer;
         public RightingMomentVisualizer RightingMomentVisualizer;
         public BuoyancyProbeForceVisualizer buoyancyForceVisualizer;
@@ -20,18 +20,11 @@ namespace Axiom.Diagnostics.Visualization
             if (comVisualizer != null && comVisualizer.rb != null)
                 comWorld = comVisualizer.rb.worldCenterOfMass;
 
-            // Ensure WaterlineVisualizer has a VelocityProvider
-            if (waterlineVisualizer != null && comVisualizer != null && comVisualizer.rb != null)
-            {
-                if (waterlineVisualizer.velocityProvider == null)
-                    waterlineVisualizer.velocityProvider = new VelocityProvider(comVisualizer.rb);
-            }
-
             // Draw modules
             comVisualizer?.Draw();
             cobVisualizer?.Draw();
             orientationVisualizer?.Draw(comWorld);
-            waterlineVisualizer?.Draw();
+            waterplaneVisualizer?.Draw();
             forcesAndStabilityVisualizer?.Draw();
             RightingMomentVisualizer?.Draw();
             buoyancyForceVisualizer?.Draw();
