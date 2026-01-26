@@ -16,13 +16,16 @@ public class AxiomBuoyancyProbeVisualizer : MonoBehaviour
     /// </summary>
     public AxiomBuoyancyVessel Vessel => vessel;
 
+    [Header("Visual Settings")]
+    [Tooltip("Base radius of gizmo spheres before scaling.")]
+    [SerializeField] private float baseRadius = 0.1f;
+
     private void OnDrawGizmos()
     {
         if (vessel == null)
             return;
 
         var probeObjects = vessel.ProbeObjects;
-        var settings = vessel.ProbeSettings;
 
         if (probeObjects == null || probeObjects.Count == 0)
             return;
@@ -43,9 +46,7 @@ public class AxiomBuoyancyProbeVisualizer : MonoBehaviour
                 Gizmos.color = Color.magenta;   // Unclassified / unexpected
 
             float scale = probe.lossyScale.x;
-            float radius = settings.radius / (scale == 0 ? 1 : scale);
-
-
+            float radius = baseRadius / (scale == 0 ? 1 : scale);
 
             Gizmos.DrawSphere(probe.position, radius);
         }

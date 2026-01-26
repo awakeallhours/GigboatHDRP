@@ -7,9 +7,7 @@ using System.Collections.Generic;
 /// and the current probe object hierarchy.
 ///
 /// This component does not perform buoyancy itself; it simply provides the
-/// geometric and configuration data required by
-/// <see cref="AxiomAutoBuoyancyProbeGenerator"/> and editor tools such as
-/// AxiomBuoyancyProbeMenu.
+/// geometric and configuration data required by the probe generator and editor tools.
 /// </summary>
 public class AxiomBuoyancyVessel : MonoBehaviour
 {
@@ -27,17 +25,31 @@ public class AxiomBuoyancyVessel : MonoBehaviour
 
 
     // ---------------------------------------------------------------------
-    // Probe Generation Settings
+    // Probe Generation Settings (cleaned)
     // ---------------------------------------------------------------------
 
     [Header("Probe Generation Settings")]
-    [Tooltip("Settings used when generating probes for this vessel.")]
-    [SerializeField] private AxiomAutoBuoyancyProbeGenerator.BoundingBoxSettings probeSettings;
+    [Tooltip("Number of probe columns across the beam (X axis).")]
+    [SerializeField] private int beamCount = 4;
 
-    /// <summary>
-    /// The settings used for probe generation on this vessel.
-    /// </summary>
-    public AxiomAutoBuoyancyProbeGenerator.BoundingBoxSettings ProbeSettings => probeSettings;
+    [Tooltip("Number of probe rows along the vessel length (Z axis).")]
+    [SerializeField] private int lengthCount = 10;
+
+    [Header("Probe Visual Radius")]
+    [SerializeField] private float probeRadius = 0.25f;
+
+    [Header("Side Probe Layers")]
+    [SerializeField] private bool overrideSideLayers = false;
+
+    [SerializeField] private int manualSideLayers = 3;
+
+    public bool OverrideSideLayers => overrideSideLayers;
+    public int ManualSideLayers => manualSideLayers;
+    public float ProbeRadius => probeRadius;
+
+    public int BeamCount => beamCount;
+    public int LengthCount => lengthCount;
+
 
     // ---------------------------------------------------------------------
     // Probe Object Hierarchy
@@ -49,25 +61,16 @@ public class AxiomBuoyancyVessel : MonoBehaviour
     [SerializeField] private Transform sideProbeRoot;
     [SerializeField] private Transform deckProbeRoot;
 
-    /// <summary>Root transform under which all probe objects are placed.</summary>
     public Transform ProbeRoot => probeRoot;
-
-    /// <summary>Parent transform for keel‑layer probes.</summary>
     public Transform KeelProbeRoot => keelProbeRoot;
-
-    /// <summary>Parent transform for side‑layer probes.</summary>
     public Transform SideProbeRoot => sideProbeRoot;
-
-    /// <summary>Parent transform for deck‑layer probes.</summary>
     public Transform DeckProbeRoot => deckProbeRoot;
 
-    /// <summary>
-    /// Read‑only list of all probe object transforms.
-    /// </summary>
     public IReadOnlyList<Transform> ProbeObjects => probeObjects;
 
     [SerializeField]
     private List<Transform> probeObjects = new List<Transform>();
+
 
     // ---------------------------------------------------------------------
     // Hull Bounds
@@ -89,6 +92,7 @@ public class AxiomBuoyancyVessel : MonoBehaviour
     }
 
     public bool HasValidHull => hullRenderer != null;
+
 
     // ---------------------------------------------------------------------
     // Probe Hierarchy Management

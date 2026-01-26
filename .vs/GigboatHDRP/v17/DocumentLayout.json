@@ -3,7 +3,7 @@
   "WorkspaceRootPath": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\test scripts\\axiomautobuoyancyprobegenerator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|c:\\users\\awake\\desktop\\unity projects\\gigboathdrp\\assets\\scripts\\test scripts\\axiomautobuoyancyprobegenerator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\test scripts\\axiomautobuoyancyprobegenerator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -19,11 +19,15 @@
       "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\diagnostics\\vesselvisualizer\\axiombuoyancyprobevisualizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|c:\\users\\awake\\desktop\\unity projects\\gigboathdrp\\assets\\scripts\\buoyancy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|c:\\users\\awake\\desktop\\unity projects\\gigboathdrp\\assets\\scripts\\diagnostics\\utilities\\axiomproberaycastdebugger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\diagnostics\\utilities\\axiomproberaycastdebugger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\buoyancy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\buoyancy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|c:\\users\\awake\\desktop\\unity projects\\gigboathdrp\\assets\\scripts\\waterprobesampler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\waterprobesampler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\waterprobesampler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -34,11 +38,24 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
+              "Title": "AxiomProbeRaycastDebugger.cs",
+              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\Utilities\\AxiomProbeRaycastDebugger.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Diagnostics\\Utilities\\AxiomProbeRaycastDebugger.cs",
+              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\Utilities\\AxiomProbeRaycastDebugger.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Diagnostics\\Utilities\\AxiomProbeRaycastDebugger.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAYwGAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-26T00:19:53.156Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "WaterProbeSampler.cs",
               "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\WaterProbeSampler.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\WaterProbeSampler.cs",
@@ -46,12 +63,11 @@
               "RelativeToolTip": "Assets\\Scripts\\WaterProbeSampler.cs",
               "ViewState": "AgIAABUAAAAAAAAAAAA2wGwAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-25T21:14:52.845Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-25T21:14:52.845Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "Buoyancy.cs",
               "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Buoyancy.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Buoyancy.cs",
@@ -59,8 +75,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Buoyancy.cs",
               "ViewState": "AgIAAOwAAAAAAAAAAAAQwGsBAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-25T21:13:40.317Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-25T21:13:40.317Z"
             },
             {
               "$type": "Document",
@@ -70,7 +85,7 @@
               "RelativeDocumentMoniker": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\AxiomBuoyancyProbeVisualizer.cs",
               "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\VesselVisualizer\\AxiomBuoyancyProbeVisualizer.cs",
               "RelativeToolTip": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\AxiomBuoyancyProbeVisualizer.cs",
-              "ViewState": "AgIAABAAAAAAAAAAAAA6wB0AAAArAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADUAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-25T19:26:50.055Z",
               "EditorCaption": ""
@@ -83,7 +98,7 @@
               "RelativeDocumentMoniker": "Assets\\Scripts\\Test Scripts\\AxiomAutoBuoyancyProbeGenerator.cs",
               "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Test Scripts\\AxiomAutoBuoyancyProbeGenerator.cs",
               "RelativeToolTip": "Assets\\Scripts\\Test Scripts\\AxiomAutoBuoyancyProbeGenerator.cs",
-              "ViewState": "AgIAAHEAAAAAAAAAAAAkwI8AAAAxAAAAAAAAAA==",
+              "ViewState": "AgIAADMAAAAAAAAAAAAswDoAAABEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-25T19:31:49.732Z",
               "EditorCaption": ""
@@ -96,7 +111,7 @@
               "RelativeDocumentMoniker": "Assets\\Scripts\\Test Scripts\\AxiomBuoyancyProbeMenu.cs",
               "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Test Scripts\\AxiomBuoyancyProbeMenu.cs",
               "RelativeToolTip": "Assets\\Scripts\\Test Scripts\\AxiomBuoyancyProbeMenu.cs",
-              "ViewState": "AgIAAHUAAAAAAAAAAAAywAAAAAARAAAAAAAAAA==",
+              "ViewState": "AgIAACUAAAAAAAAAAAAowGoAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-25T19:31:54.161Z",
               "EditorCaption": ""
@@ -109,7 +124,7 @@
               "RelativeDocumentMoniker": "Assets\\Scripts\\Test Scripts\\AxiomBuoyancyVessel.cs",
               "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Test Scripts\\AxiomBuoyancyVessel.cs",
               "RelativeToolTip": "Assets\\Scripts\\Test Scripts\\AxiomBuoyancyVessel.cs",
-              "ViewState": "AgIAABcAAAAAAAAAAAAYwIAAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAAKEAAAAAAAAAAAAAAC4AAAA0AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-25T19:26:00.174Z",
               "EditorCaption": ""

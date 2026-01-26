@@ -30,90 +30,6 @@ public static class AxiomBuoyancyProbeMenu
         return probeGO.transform;
     }
 
-    // ========================================================================
-    // BOUNDING BOX VERSION
-    // ========================================================================
-    [MenuItem("Axiom/Generate Probes (Bounding Box)")]
-    public static void GenerateBoundingBoxProbes()
-    {
-        // ------------------------------------------------------------
-        // Validate selection
-        // ------------------------------------------------------------
-        var vessel = Selection.activeGameObject?.GetComponent<AxiomBuoyancyVessel>();
-        if (vessel == null)
-        {
-            Debug.LogWarning("Axiom: Select a GameObject containing an AxiomBuoyancyVessel component.");
-            return;
-        }
-
-        // ------------------------------------------------------------
-        // Validate hull reference
-        // ------------------------------------------------------------
-        if (!vessel.HasValidHull)
-        {
-            Debug.LogWarning(
-                $"Axiom: Vessel '{vessel.name}' has no hullRenderer assigned. Cannot generate probes."
-            );
-            return;
-        }
-
-        Bounds bounds = vessel.GetHullBounds();
-
-        // ------------------------------------------------------------
-        // Validate probe settings
-        // ------------------------------------------------------------
-        var settings = vessel.ProbeSettings;
-        if (settings.beamCount < 1 || settings.lengthCount < 1)
-        {
-            Debug.LogWarning(
-                $"Axiom: Vessel '{vessel.name}' has invalid probe settings. BeamCount and LengthCount must be ≥ 1."
-            );
-            return;
-        }
-
-        // ------------------------------------------------------------
-        // Generate structured probe positions
-        // ------------------------------------------------------------
-        var result = AxiomAutoBuoyancyProbeGenerator.GenerateBoundingBox(bounds, settings);
-
-        // ------------------------------------------------------------
-        // Clear old probes + rebuild hierarchy
-        // ------------------------------------------------------------
-        vessel.ClearProbes();
-        vessel.EnsureProbeHierarchy();
-
-        var probeObjects = new List<Transform>();
-
-        // ------------------------------------------------------------
-        // Instantiate keel probes
-        // ------------------------------------------------------------
-        foreach (var pos in result.keelProbes)
-            CreateProbeObject(pos, vessel.KeelProbeRoot, settings.radius, probeObjects);
-
-        // ------------------------------------------------------------
-        // Instantiate side probes
-        // ------------------------------------------------------------
-        foreach (var pos in result.sideProbes)
-            CreateProbeObject(pos, vessel.SideProbeRoot, settings.radius, probeObjects);
-
-        // ------------------------------------------------------------
-        // Instantiate deck probes
-        // ------------------------------------------------------------
-        foreach (var pos in result.deckProbes)
-            CreateProbeObject(pos, vessel.DeckProbeRoot, settings.radius, probeObjects);
-
-        // ------------------------------------------------------------
-        // Assign probes to vessel
-        // ------------------------------------------------------------
-        vessel.SetProbeObjects(probeObjects);
-
-        Debug.Log(
-            $"Axiom: Generated {probeObjects.Count} probes for vessel '{vessel.name}' " +
-            $"(Keel: {result.keelProbes.Count}, Side: {result.sideProbes.Count}, Deck: {result.deckProbes.Count})."
-        );
-
-        EditorUtility.SetDirty(vessel);
-    }
 
     // ========================================================================
     // MESH VERSION
@@ -155,10 +71,9 @@ public static class AxiomBuoyancyProbeMenu
         Bounds bounds = vessel.GetHullBounds();
 
         // ------------------------------------------------------------
-        // Validate probe settings
+        // Validate probe density settings
         // ------------------------------------------------------------
-        var settings = vessel.ProbeSettings;
-        if (settings.beamCount < 1 || settings.lengthCount < 1)
+        if (vessel.BeamCount < 1 || vessel.LengthCount < 1)
         {
             Debug.LogWarning(
                 $"Axiom: Vessel '{vessel.name}' has invalid probe settings. BeamCount and LengthCount must be ≥ 1."
@@ -185,7 +100,13 @@ public static class AxiomBuoyancyProbeMenu
         // ------------------------------------------------------------
         // Generate mesh-based probe positions
         // ------------------------------------------------------------
-        var result = AxiomAutoBuoyancyProbeGenerator.GenerateMeshBased(mc, bounds, settings);
+        var result = AxiomAutoBuoyancyProbeGenerator.GenerateMeshBased(
+            mc,
+            bounds,
+            vessel.BeamCount,
+            vessel.LengthCount,
+            vessel
+        );
 
         // ------------------------------------------------------------
         // Remove temporary MeshCollider if we added it
@@ -207,19 +128,19 @@ public static class AxiomBuoyancyProbeMenu
         // Instantiate keel probes
         // ------------------------------------------------------------
         foreach (var pos in result.keelProbes)
-            CreateProbeObject(pos, vessel.KeelProbeRoot, settings.radius, probeObjects);
+            CreateProbeObject(pos, vessel.KeelProbeRoot, vessel.ProbeRadius, probeObjects);
 
         // ------------------------------------------------------------
         // Instantiate side probes
         // ------------------------------------------------------------
         foreach (var pos in result.sideProbes)
-            CreateProbeObject(pos, vessel.SideProbeRoot, settings.radius, probeObjects);
+            CreateProbeObject(pos, vessel.SideProbeRoot, vessel.ProbeRadius, probeObjects);
 
         // ------------------------------------------------------------
         // Instantiate deck probes
         // ------------------------------------------------------------
         foreach (var pos in result.deckProbes)
-            CreateProbeObject(pos, vessel.DeckProbeRoot, settings.radius, probeObjects);
+            CreateProbeObject(pos, vessel.DeckProbeRoot, vessel.ProbeRadius, probeObjects);
 
         // ------------------------------------------------------------
         // Assign probes to vessel
