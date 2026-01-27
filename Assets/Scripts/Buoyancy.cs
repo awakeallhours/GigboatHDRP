@@ -162,6 +162,7 @@ public sealed class Buoyancy : MonoBehaviour
             return;
         }
 
+        // First: get probe data
         probeSampler.GetProbeData(
             out pointValid,
             out pointHeights,
@@ -169,6 +170,13 @@ public sealed class Buoyancy : MonoBehaviour
             out samplePoints,
             out probeTypes
         );
+
+        // Now we can check if samplePoints exist
+        if (samplePoints == null || samplePoints.Length == 0)
+        {
+            Debug.Log("samplePoints not ready yet");
+            return;
+        }
 
         // ─────────────────────────────────────────────
         // LOCAL‑SPACE Z RANGE
@@ -183,6 +191,9 @@ public sealed class Buoyancy : MonoBehaviour
             if (zLocal > maxZ) maxZ = zLocal;
         }
 
+        
+
+
         // Infer slice count (sqrt(N) heuristic)
         sliceCount = probeTypes.Length > 0
             ? Mathf.Max(1, Mathf.RoundToInt(Mathf.Sqrt(probeTypes.Length)))
@@ -191,9 +202,7 @@ public sealed class Buoyancy : MonoBehaviour
         sliceCounts = new int[sliceCount];
         sliceIndices = new int[samplePoints.Length];
 
-        // ─────────────────────────────────────────────
-        // ASSIGN PROBES TO LOCAL‑SPACE SLICES
-        // ─────────────────────────────────────────────
+        // Assign probes to slices
         for (int i = 0; i < samplePoints.Length; i++)
         {
             float zLocal = vesselRoot.InverseTransformPoint(samplePoints[i].position).z;
@@ -204,9 +213,7 @@ public sealed class Buoyancy : MonoBehaviour
             sliceCounts[slice]++;
         }
 
-        // ─────────────────────────────────────────────
-        // COMPUTE WATERPLANE GEOMETRY (LOCAL SPACE)
-        // ─────────────────────────────────────────────
+        // Compute waterplane geometry
         waterplaneEstimator.Compute(
             vesselRoot,
             samplePoints,

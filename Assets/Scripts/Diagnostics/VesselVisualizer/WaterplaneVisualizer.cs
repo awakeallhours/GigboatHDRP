@@ -35,10 +35,6 @@ namespace Axiom.Diagnostics.Visualization
         {
 #if UNITY_EDITOR
 
-            Debug.Log($"MinZ={estimator.MinZ}, MaxZ={estimator.MaxZ}, SliceLength={estimator.SliceLength}");
-            for (int i = 0; i < Mathf.Min(5, estimator.sliceBeam.Length); i++)
-                Debug.Log($"Beam[{i}]={estimator.sliceBeam[i]}");
-
             if (estimator == null || vesselRoot == null)
                 return;
 

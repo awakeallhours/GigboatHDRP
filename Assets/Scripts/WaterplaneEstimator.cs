@@ -9,7 +9,10 @@ public sealed class WaterplaneEstimator : MonoBehaviour
     private float sliceLengthInternal;
 
     [Header("Waterplane Detection")]
+    [Tooltip("Fraction of hull length used to detect waterplane probes. Lower = stricter.")]
     [SerializeField] private float waterlineDepthPercent = 0.02f;
+
+    [Tooltip("Minimum depth (in world units) for a probe to count as waterplane. Overrides percent if larger.")]
     [SerializeField] private float minDepthThreshold = 0.05f;
 
     [Header("Computed Waterplane Geometry (Read‑Only)")]
@@ -35,12 +38,8 @@ public sealed class WaterplaneEstimator : MonoBehaviour
         float minZ,
         float maxZ)
     {
-        // Convert min/max Z into LOCAL space
-        Vector3 minLocal = vesselRoot.InverseTransformPoint(new Vector3(0f, 0f, minZ));
-        Vector3 maxLocal = vesselRoot.InverseTransformPoint(new Vector3(0f, 0f, maxZ));
-
-        minZInternal = minLocal.z;
-        maxZInternal = maxLocal.z;
+        minZInternal = minZ;
+        maxZInternal = maxZ;
 
         // Allocate arrays
         sliceBeam = new float[sliceCount];
@@ -113,5 +112,11 @@ public sealed class WaterplaneEstimator : MonoBehaviour
         }
 
         LCF = (totalWaterplaneArea > 0f) ? weightedZ / totalWaterplaneArea : 0f;
+
+        /*    Debug.Log(
+        $"[Estimator Debug]\n" +
+        $"Input minZ={minZ}, maxZ={maxZ}\n" +
+        $"Internal minZ={minZInternal}, maxZInternal={maxZInternal}\n" +
+        $"LOA={loaInternal}, SliceLength={sliceLengthInternal}");*/
     }
 }

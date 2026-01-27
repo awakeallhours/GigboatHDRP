@@ -2887,6 +2887,73 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 801640936}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &826870823 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8459152874074219891, guid: f26803840282f8f42a3db5ea9798984e, type: 3}
+  m_PrefabInstance: {fileID: 95685682438740379}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &826870840 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1035521469752849885, guid: f26803840282f8f42a3db5ea9798984e, type: 3}
+  m_PrefabInstance: {fileID: 95685682438740379}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826870823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5781cc11803899c4fb082b6375876a5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!54 &826870843 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 4843524878311110342, guid: f26803840282f8f42a3db5ea9798984e, type: 3}
+  m_PrefabInstance: {fileID: 95685682438740379}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &826870848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826870823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05c7fea27fd52014ea5f036c12b6123f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comAggregator: {fileID: 826870849}
+  boatCOM: {fileID: 826870840}
+  waterplaneLCF: {fileID: 543889875}
+  rb: {fileID: 826870843}
+  speedThreshold: 0.2
+  throttleThreshold: 0.01
+  angularVelThreshold: 0.05
+  verticalVelThreshold: 0.05
+  deadband: 0.05
+  hysteresis: 0.02
+  trimSpeed: 0.1
+  stabilityTime: 2
+  smoothing: 0.1
+  currentThrottle: 0
+--- !u!114 &826870849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826870823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a500ca8aec6020408889f5344276929, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boatCOM: {fileID: 826870840}
+  baseMass: 1000
+  baseCOMLocal: {x: 0, y: 0.35, z: 0}
+  fuelMass: 0
+  fuelCOMLocal: {x: 0, y: 0, z: 0}
+  ballastMass: 0
+  ballastCOMLocal: {x: 0, y: 0, z: 0}
+  autoTrimOffsetLocal: {x: 0, y: 0, z: 0}
 --- !u!1 &870364406
 GameObject:
   m_ObjectHideFlags: 0
@@ -7875,17 +7942,37 @@ PrefabInstance:
       propertyPath: drawWaterplanePolygon
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 608552905500932634, guid: f26803840282f8f42a3db5ea9798984e, type: 3}
+      propertyPath: drawCOMDisc
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 608552905500932634, guid: f26803840282f8f42a3db5ea9798984e, type: 3}
+      propertyPath: drawCOMHeight
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1035521469752849885, guid: f26803840282f8f42a3db5ea9798984e, type: 3}
+      propertyPath: appliedCom.z
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1035521469752849885, guid: f26803840282f8f42a3db5ea9798984e, type: 3}
+      propertyPath: comForwardOffset
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4843524878311110342, guid: f26803840282f8f42a3db5ea9798984e, type: 3}
+      propertyPath: m_CenterOfMass.z
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 5873219584404681960, guid: f26803840282f8f42a3db5ea9798984e, type: 3}
       propertyPath: vesselRoot
       value: 
       objectReference: {fileID: 543889875}
     - target: {fileID: 6315319408766325232, guid: f26803840282f8f42a3db5ea9798984e, type: 3}
       propertyPath: minDepthThreshold
-      value: 3.7
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 6315319408766325232, guid: f26803840282f8f42a3db5ea9798984e, type: 3}
       propertyPath: waterlineDepthPercent
-      value: 5.95
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 8459152874074219891, guid: f26803840282f8f42a3db5ea9798984e, type: 3}
       propertyPath: m_Name
@@ -7934,7 +8021,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8459152874074219891, guid: f26803840282f8f42a3db5ea9798984e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 826870849}
+    - targetCorrespondingSourceObject: {fileID: 8459152874074219891, guid: f26803840282f8f42a3db5ea9798984e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 826870848}
   m_SourcePrefab: {fileID: 100100000, guid: f26803840282f8f42a3db5ea9798984e, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

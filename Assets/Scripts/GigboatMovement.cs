@@ -42,15 +42,10 @@ public class GigboatMovement : MonoBehaviour
     // KICK AHEAD / KICK ASTERN
     // ─────────────────────────────────────────────────────────────
     [Header("Kick Ahead / Kick Astern")]
-    [Tooltip("Maximum time between taps to register a double‑tap.")]
-    [SerializeField] private float doubleTapWindow = 0.25f;    // SI‑TODO
-
-    private float lastTapForward = -1f;
-    private float lastTapReverse = -1f;
-
+    
     private bool overrideActive = false;
     private float overrideThrottle = 0f;   // −100..+100 during override
-    private float savedThrottle = 0f;      // lever position before override
+    
 
     // ─────────────────────────────────────────────────────────────
     // RUDDER
