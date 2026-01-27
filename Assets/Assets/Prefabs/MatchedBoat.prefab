@@ -1573,7 +1573,6 @@ GameObject:
   - component: {fileID: 4337108325890889067}
   - component: {fileID: 7663862005857181451}
   - component: {fileID: -4567935784882914520}
-  - component: {fileID: -1572053931990226420}
   - component: {fileID: -8638164970245442137}
   m_Layer: 0
   m_Name: MatchedBoat
@@ -1621,7 +1620,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4833431607046282324}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 42cbda5583a859643966e73ca9ff357d, type: 3}
   m_Name: 
@@ -1645,7 +1644,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4833431607046282324}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bb2f04091d8e78f419bd4d37936f1b76, type: 3}
   m_Name: 
@@ -1737,7 +1736,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4833431607046282324}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 014c455dd2d52244983ca5a08b7824d8, type: 3}
   m_Name: 
@@ -1767,7 +1766,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4833431607046282324}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d1017d3b051cac642b25847ad9960687, type: 3}
   m_Name: 
@@ -1780,6 +1779,7 @@ MonoBehaviour:
   waterSurfaceSource: {fileID: 0}
   boatCOB: {fileID: -4567935784882914520}
   probeSampler: {fileID: -143646874513710580}
+  waterplaneEstimator: {fileID: 0}
   buoyancyScale: 1
   keelBuoyancyScale: 1
   sideBuoyancyScale: 1
@@ -1915,7 +1915,7 @@ Rigidbody:
   m_Mass: 2000
   m_Drag: 0
   m_AngularDrag: 0
-  m_CenterOfMass: {x: 7.934092e-13, y: 0.35, z: -0.2}
+  m_CenterOfMass: {x: 7.934092e-13, y: -0.5, z: -0.2}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
@@ -1964,18 +1964,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb753618636bea64293e6b1461fb4aec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  samplePoints:
-  - {fileID: 3129992416833491610}
-  - {fileID: 5998854642304655755}
-  - {fileID: 4267753403338524935}
-  - {fileID: 6728273268906666960}
-  - {fileID: 1407071608131589043}
-  - {fileID: 4436612481927714831}
-  - {fileID: 8106226593832977797}
-  - {fileID: 5728641551181461686}
-  - {fileID: 4411290532301870726}
-  probeTypes: 010000000100000001000000010000000100000001000000000000000000000000000000
-  testProbe: 0
+  vessel: {fileID: 0}
 --- !u!114 &-5939297710904165419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2013,7 +2002,7 @@ MonoBehaviour:
   neutralBandMin: 0.3
   enableCOMOffset: 1
   enableDebugLogs: 1
-  appliedCom: {x: 7.934092e-13, y: 0.35, z: -0.2}
+  appliedCom: {x: 7.934092e-13, y: -0.5, z: -0.2}
 --- !u!114 &4337108325890889067
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2061,52 +2050,6 @@ MonoBehaviour:
   localCOB: {x: 0, y: 0, z: 0}
   submergedVolume: 0
   totalBuoyancyForce: 0
---- !u!114 &-1572053931990226420
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4833431607046282324}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64c6b611802405c458904be4148c44cd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  boatCOM: {fileID: 9126587473363942451}
-  boatCOB: {fileID: -4567935784882914520}
-  lineWidth: 1
-  comEditingLocked: 0
-  probeSampler: {fileID: -143646874513710580}
-  rb: {fileID: 6401897688909232224}
-  thrustPoint: {fileID: 7717750645490284848}
-  thrustForce: {x: 0, y: 0, z: 0}
-  hullBottomLocalY: 0
-  drawCOB: 1
-  drawRightingMoment: 1
-  drawBuoyancyProbes: 1
-  drawWaterlinePlane: 1
-  buoyancy: {fileID: 2887459210936165740}
-  sampler: {fileID: -143646874513710580}
-  buoyancyForceColor: {r: 0, g: 1, b: 1, a: 1}
-  buoyancyForceScale: 0.001
-  probeDepthColorShallow: {r: 0, g: 0, b: 1, a: 1}
-  probeDepthColorDeep: {r: 1, g: 0, b: 0, a: 1}
-  probeDepthMaxForColor: 2
-  waterlineColor: {r: 0.2, g: 0.6, b: 1, a: 0.6}
-  waterlineHalfSize: 3
-  waterlineGridResolution: 4
-  drawGM: 1
-  drawGZ: 1
-  drawRollAxis: 1
-  drawRollRate: 1
-  rollRateScale: 0.5
-  drawThrustPoint: 1
-  drawThrustVector: 1
-  drawHullBottom: 1
-  drawForward: 1
-  drawVelocity: 1
-  drawSlip: 1
 --- !u!114 &-8638164970245442137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2121,7 +2064,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boatRoot: {fileID: 361113420622967515}
   rb: {fileID: 6401897688909232224}
+  stabilityProfileComponent: {fileID: 0}
   cob: {fileID: -4567935784882914520}
+  com: {fileID: 0}
+  probeSampler: {fileID: 0}
+  powertrain: {fileID: 0}
 --- !u!1 &4864625990696992598
 GameObject:
   m_ObjectHideFlags: 0

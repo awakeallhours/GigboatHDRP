@@ -862,7 +862,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3192948572218398588}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bb2f04091d8e78f419bd4d37936f1b76, type: 3}
   m_Name: 
@@ -954,16 +954,22 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3192948572218398588}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d1017d3b051cac642b25847ad9960687, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   notes: 
   rb: {fileID: 3726496846366623501}
-  sampler: {fileID: 0}
+  waterSurfaceSource: {fileID: 0}
   boatCOB: {fileID: 0}
+  probeSampler: {fileID: 0}
+  waterplaneEstimator: {fileID: 0}
   buoyancyScale: 1
+  keelBuoyancyScale: 1
+  sideBuoyancyScale: 0.4
+  keelRightingScale: 1
+  sideRightingScale: 0.2
   buoyancyStrength: 5500
   waterDrag: 1
   waterAngularDrag: 0.5
@@ -982,6 +988,7 @@ MonoBehaviour:
   sternReferenceDepth:
     inputValue: 0
     unit: 0
+  debugBuoyancy: 0
 --- !u!114 &6323059479506823599
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -989,7 +996,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3192948572218398588}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 65599c6e24d62224c9e5f9d87f423924, type: 3}
   m_Name: 
@@ -1012,7 +1019,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3192948572218398588}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 014c455dd2d52244983ca5a08b7824d8, type: 3}
   m_Name: 
@@ -1042,7 +1049,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3192948572218398588}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3159bc38f3a676d478530f6e52a67789, type: 3}
   m_Name: 
@@ -1103,7 +1110,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 2.7, y: 2.4, z: 7.12}
   m_Center: {x: 0, y: 0.56, z: 0}

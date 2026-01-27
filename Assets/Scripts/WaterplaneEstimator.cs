@@ -8,37 +8,26 @@ public sealed class WaterplaneEstimator : MonoBehaviour
     private float loaInternal;
     private float sliceLengthInternal;
 
-    // ─────────────────────────────────────────────────────────────
-    // CONFIGURATION
-    // ─────────────────────────────────────────────────────────────
-
     [Header("Waterplane Detection")]
-    [Tooltip("Percentage of LOA used to determine how deep below the surface a probe can be and still count as part of the waterplane. Typical: 0.01–0.05 (1–5% of LOA).")]
     [SerializeField] private float waterlineDepthPercent = 0.02f;
-
-    [Tooltip("Minimum allowed threshold after scaling (prevents zero or near-zero thresholds on tiny vessels).")]
     [SerializeField] private float minDepthThreshold = 0.05f;
 
-    // ─────────────────────────────────────────────────────────────
-    // OUTPUTS
-    // ─────────────────────────────────────────────────────────────
-
     [Header("Computed Waterplane Geometry (Read‑Only)")]
-    public float[] sliceBeam;               // Width per slice at waterline
-    public float[] sliceArea;               // Area per slice
-    public float totalWaterplaneArea;       // Sum of slice areas
-    public float LCF;                       // Longitudinal Centre of Flotation (Z)
-
-    // ─────────────────────────────────────────────────────────────
-    // PUBLIC API
-    // ─────────────────────────────────────────────────────────────
+    public float[] sliceBeam;
+    public float[] sliceArea;
+    public float totalWaterplaneArea;
+    public float LCF;
 
     public float MinZ => minZInternal;
     public float MaxZ => maxZInternal;
     public float LOA => loaInternal;
     public float SliceLength => sliceLengthInternal;
 
+    /// <summary>
+    /// Compute waterplane geometry using LOCAL vesselRoot space.
+    /// </summary>
     public void Compute(
+        Transform vesselRoot,
         Transform[] samplePoints,
         float[] pointHeights,
         int[] sliceIndices,
@@ -46,32 +35,33 @@ public sealed class WaterplaneEstimator : MonoBehaviour
         float minZ,
         float maxZ)
     {
-        // Store geometry bounds
-        minZInternal = minZ;
-        maxZInternal = maxZ;
+        // Convert min/max Z into LOCAL space
+        Vector3 minLocal = vesselRoot.InverseTransformPoint(new Vector3(0f, 0f, minZ));
+        Vector3 maxLocal = vesselRoot.InverseTransformPoint(new Vector3(0f, 0f, maxZ));
+
+        minZInternal = minLocal.z;
+        maxZInternal = maxLocal.z;
 
         // Allocate arrays
         sliceBeam = new float[sliceCount];
         sliceArea = new float[sliceCount];
 
-        // Compute LOA
-        float LOA = Mathf.Max(0.001f, maxZ - minZ);
-        loaInternal = LOA; // <── STORE IT
+        // Compute LOA in LOCAL space
+        float LOA = Mathf.Max(0.001f, maxZInternal - minZInternal);
+        loaInternal = LOA;
 
-        // Compute base threshold from LOA
+        // Depth threshold (world Y)
         float baseThreshold = LOA * waterlineDepthPercent;
-
-        // Apply transform scale (depth is measured in world Y)
         float scaledThreshold = Mathf.Max(
             baseThreshold * transform.lossyScale.y,
             minDepthThreshold
         );
 
-        // Slice length
+        // Slice length in LOCAL space
         float sliceLength = LOA / sliceCount;
-        sliceLengthInternal = sliceLength; // <── STORE IT
+        sliceLengthInternal = sliceLength;
 
-        // Track min/max X per slice
+        // Track min/max X per slice (LOCAL space)
         float[] minX = new float[sliceCount];
         float[] maxX = new float[sliceCount];
 
@@ -81,30 +71,30 @@ public sealed class WaterplaneEstimator : MonoBehaviour
             maxX[s] = float.MinValue;
         }
 
-        // ─────────────────────────────────────────────────────────────
+        // ─────────────────────────────────────────────
         // PASS 1: Identify waterplane probes per slice
-        // ─────────────────────────────────────────────────────────────
-
+        // ─────────────────────────────────────────────
         for (int i = 0; i < samplePoints.Length; i++)
         {
             int slice = sliceIndices[i];
 
+            // Convert probe position to LOCAL vesselRoot space
+            Vector3 local = vesselRoot.InverseTransformPoint(samplePoints[i].position);
+
             float depth = pointHeights[i] - samplePoints[i].position.y;
 
-            // Only count probes that are submerged but within threshold
             if (depth > 0f && depth <= scaledThreshold)
             {
-                float x = samplePoints[i].position.x;
+                float x = local.x;
 
                 if (x < minX[slice]) minX[slice] = x;
                 if (x > maxX[slice]) maxX[slice] = x;
             }
         }
 
-        // ─────────────────────────────────────────────────────────────
+        // ─────────────────────────────────────────────
         // PASS 2: Compute beam, area, and LCF
-        // ─────────────────────────────────────────────────────────────
-
+        // ─────────────────────────────────────────────
         totalWaterplaneArea = 0f;
         float weightedZ = 0f;
 
@@ -118,7 +108,7 @@ public sealed class WaterplaneEstimator : MonoBehaviour
 
             totalWaterplaneArea += area;
 
-            float sliceZ = minZ + (s + 0.5f) * sliceLength;
+            float sliceZ = minZInternal + (s + 0.5f) * sliceLength;
             weightedZ += area * sliceZ;
         }
 

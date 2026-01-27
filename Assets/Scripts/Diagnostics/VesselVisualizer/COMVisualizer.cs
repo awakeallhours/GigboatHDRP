@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Axiom.Vessel.Diagnostics;
 
 #if UNITY_EDITOR
@@ -19,6 +19,22 @@ namespace Axiom.Diagnostics.Visualization
         [Tooltip("Radius of the COM disc in meters.")]
         public float comDiscRadius = 0.15f;
 
+        [Header("Master Toggle")]
+        public bool drawGizmos = true;
+
+        [Header("Feature Toggles")]
+        public bool drawNeutralBand = true;
+        public bool drawCOMHeight = true;
+        public bool drawCOMDisc = true;
+        public bool drawLabels = true;
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            if (drawGizmos)
+                Draw();
+        }
+#endif
 
         public void Draw()
         {
@@ -42,22 +58,45 @@ namespace Axiom.Diagnostics.Visualization
             Vector3 left = Vector3.left * (lineWidth * 0.5f);
             Vector3 right = Vector3.right * (lineWidth * 0.5f);
 
-            // Neutral band line
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawLine(neutralPos + left, neutralPos + right);
-            Handles.color = Color.cyan;
-            Handles.Label(neutralPos + Vector3.right * (lineWidth * 0.6f), "Neutral Band");
+            // ─────────────────────────────────────────────
+            // NEUTRAL BAND
+            // ─────────────────────────────────────────────
+            if (drawNeutralBand)
+            {
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawLine(neutralPos + left, neutralPos + right);
 
-            // COM height line
-            bool valid = comY >= neutralY;
-            Gizmos.color = valid ? Color.green : Color.red;
-            Gizmos.DrawLine(comHeightPos + left, comHeightPos + right);
-            Handles.color = valid ? Color.green : Color.red;
-            Handles.Label(comHeightPos + Vector3.right * (lineWidth * 0.6f), "COM Height");
+                if (drawLabels)
+                {
+                    Handles.color = Color.cyan;
+                    Handles.Label(neutralPos + Vector3.right * (lineWidth * 0.6f), "Neutral Band");
+                }
+            }
 
-            // COM disc
-            Handles.color = Color.yellow;
-            Handles.DrawSolidDisc(comWorld, Vector3.up, comDiscRadius);
+            // ─────────────────────────────────────────────
+            // COM HEIGHT LINE
+            // ─────────────────────────────────────────────
+            if (drawCOMHeight)
+            {
+                bool valid = comY >= neutralY;
+                Gizmos.color = valid ? Color.green : Color.red;
+                Gizmos.DrawLine(comHeightPos + left, comHeightPos + right);
+
+                if (drawLabels)
+                {
+                    Handles.color = valid ? Color.green : Color.red;
+                    Handles.Label(comHeightPos + Vector3.right * (lineWidth * 0.6f), "COM Height");
+                }
+            }
+
+            // ─────────────────────────────────────────────
+            // COM DISC
+            // ─────────────────────────────────────────────
+            if (drawCOMDisc)
+            {
+                Handles.color = Color.yellow;
+                Handles.DrawSolidDisc(comWorld, Vector3.up, comDiscRadius);
+            }
 #endif
         }
     }

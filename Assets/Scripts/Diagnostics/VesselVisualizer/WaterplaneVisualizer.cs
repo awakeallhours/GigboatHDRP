@@ -8,10 +8,7 @@ namespace Axiom.Diagnostics.Visualization
     public sealed class WaterplaneVisualizer : MonoBehaviour
     {
         [Header("References")]
-        [Tooltip("Waterplane estimator providing slice beams, areas, and LCF.")]
         public WaterplaneEstimator estimator;
-
-        [Tooltip("Root transform of the vessel (same one used for probe sampling).")]
         public Transform vesselRoot;
 
         [Header("Toggles")]
@@ -37,6 +34,11 @@ namespace Axiom.Diagnostics.Visualization
         public void Draw()
         {
 #if UNITY_EDITOR
+
+            Debug.Log($"MinZ={estimator.MinZ}, MaxZ={estimator.MaxZ}, SliceLength={estimator.SliceLength}");
+            for (int i = 0; i < Mathf.Min(5, estimator.sliceBeam.Length); i++)
+                Debug.Log($"Beam[{i}]={estimator.sliceBeam[i]}");
+
             if (estimator == null || vesselRoot == null)
                 return;
 
@@ -45,11 +47,11 @@ namespace Axiom.Diagnostics.Visualization
                 return;
 
             float[] beams = estimator.sliceBeam;
-            float minZ = estimator.MinZ;
+            float minZ = estimator.MinZ;          // LOCAL Z
             float sliceLength = estimator.SliceLength;
 
             // ─────────────────────────────────────────────
-            // DRAW SLICE BEAMS
+            // SLICE BEAMS
             // ─────────────────────────────────────────────
             if (drawSliceBeams)
             {
@@ -63,15 +65,18 @@ namespace Axiom.Diagnostics.Visualization
 
                     float z = minZ + (s + 0.5f) * sliceLength;
 
-                    Vector3 left = vesselRoot.TransformPoint(new Vector3(-beam * 0.5f, 0f, z));
-                    Vector3 right = vesselRoot.TransformPoint(new Vector3(beam * 0.5f, 0f, z));
+                    Vector3 leftLocal = new Vector3(-beam * 0.5f, 0f, z);
+                    Vector3 rightLocal = new Vector3(beam * 0.5f, 0f, z);
 
-                    Handles.DrawLine(left, right);
+                    Handles.DrawLine(
+                        vesselRoot.TransformPoint(leftLocal),
+                        vesselRoot.TransformPoint(rightLocal)
+                    );
                 }
             }
 
             // ─────────────────────────────────────────────
-            // DRAW WATERPLANE POLYGON
+            // WATERPLANE POLYGON
             // ─────────────────────────────────────────────
             if (drawWaterplanePolygon)
             {
@@ -86,9 +91,8 @@ namespace Axiom.Diagnostics.Visualization
                     float beam = beams[s];
                     float z = minZ + (s + 0.5f) * sliceLength;
 
-                    poly[idx++] = vesselRoot.TransformPoint(
-                        new Vector3(-beam * 0.5f, waterplaneYOffset, z)
-                    );
+                    Vector3 pLocal = new Vector3(-beam * 0.5f, waterplaneYOffset, z);
+                    poly[idx++] = vesselRoot.TransformPoint(pLocal);
                 }
 
                 // Right side backward
@@ -97,16 +101,15 @@ namespace Axiom.Diagnostics.Visualization
                     float beam = beams[s];
                     float z = minZ + (s + 0.5f) * sliceLength;
 
-                    poly[idx++] = vesselRoot.TransformPoint(
-                        new Vector3(beam * 0.5f, waterplaneYOffset, z)
-                    );
+                    Vector3 pLocal = new Vector3(beam * 0.5f, waterplaneYOffset, z);
+                    poly[idx++] = vesselRoot.TransformPoint(pLocal);
                 }
 
                 Handles.DrawAAPolyLine(2f, poly);
             }
 
             // ─────────────────────────────────────────────
-            // DRAW WATERLINE (left/right edges only)
+            // WATERLINE
             // ─────────────────────────────────────────────
             if (drawWaterline)
             {
@@ -120,20 +123,25 @@ namespace Axiom.Diagnostics.Visualization
 
                     float z = minZ + (s + 0.5f) * sliceLength;
 
-                    Vector3 left = vesselRoot.TransformPoint(new Vector3(-beam * 0.5f, 0f, z));
-                    Vector3 right = vesselRoot.TransformPoint(new Vector3(beam * 0.5f, 0f, z));
+                    Vector3 leftLocal = new Vector3(-beam * 0.5f, 0f, z);
+                    Vector3 rightLocal = new Vector3(beam * 0.5f, 0f, z);
 
-                    Handles.DrawLine(left, right);
+                    Handles.DrawLine(
+                        vesselRoot.TransformPoint(leftLocal),
+                        vesselRoot.TransformPoint(rightLocal)
+                    );
                 }
             }
 
             // ─────────────────────────────────────────────
-            // DRAW LCF MARKER
+            // LCF MARKER
             // ─────────────────────────────────────────────
             if (drawLCF)
             {
                 float lcfZ = estimator.LCF;
-                Vector3 lcfWorld = vesselRoot.TransformPoint(new Vector3(0f, waterplaneYOffset, lcfZ));
+
+                Vector3 lcfLocal = new Vector3(0f, waterplaneYOffset, lcfZ);
+                Vector3 lcfWorld = vesselRoot.TransformPoint(lcfLocal);
 
                 Handles.color = lcfColor;
                 Handles.SphereHandleCap(0, lcfWorld, Quaternion.identity, 0.15f, EventType.Repaint);
@@ -141,17 +149,16 @@ namespace Axiom.Diagnostics.Visualization
             }
 
             // ─────────────────────────────────────────────
-            // DRAW HULL BOTTOM MARKER (optional)
+            // HULL BOTTOM MARKER
             // ─────────────────────────────────────────────
             if (drawHullBottom)
             {
-                Vector3 hullBottom = vesselRoot.TransformPoint(
-                    new Vector3(0f, hullBottomLocalY, 0f)
-                );
+                Vector3 bottomLocal = new Vector3(0f, hullBottomLocalY, 0f);
+                Vector3 bottomWorld = vesselRoot.TransformPoint(bottomLocal);
 
                 Handles.color = hullBottomColor;
-                Handles.SphereHandleCap(0, hullBottom, Quaternion.identity, 0.1f, EventType.Repaint);
-                Handles.Label(hullBottom + Vector3.up * 0.1f, "Hull Bottom");
+                Handles.SphereHandleCap(0, bottomWorld, Quaternion.identity, 0.1f, EventType.Repaint);
+                Handles.Label(bottomWorld + Vector3.up * 0.1f, "Hull Bottom");
             }
 #endif
         }
