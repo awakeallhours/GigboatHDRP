@@ -60,6 +60,7 @@ public sealed class Buoyancy : MonoBehaviour
     [Header("Hybrid Buoyancy (SI Clean)")]
     [SerializeField] private DensityValue waterDensity;
     [SerializeField] private AreaValue probeArea;
+    private bool strengthComputed = false;
     [SerializeField] private bool autoComputeStrength = true;
 
     [SerializeField] private bool enableRightingMoment = true;
@@ -178,7 +179,7 @@ public sealed class Buoyancy : MonoBehaviour
             return;
         }
 
-        Debug.Log($"Buoyancy: samplePoints={samplePoints?.Length ?? 0}, firstValid={System.Array.IndexOf(pointValid, true)}");
+        
         // ─────────────────────────────────────────────
         // LOCAL‑SPACE Z RANGE
         // ─────────────────────────────────────────────
@@ -225,8 +226,9 @@ public sealed class Buoyancy : MonoBehaviour
             maxZ
         );
 
-        if (autoComputeStrength)
-            RecomputeBuoyancyStrength();
+        Debug.Log($"Buoyancy: samplePoints={samplePoints?.Length ?? 0}, firstValid={System.Array.IndexOf(pointValid, true)}");
+
+        
     }
 
     private void FixedUpdate()
@@ -234,9 +236,38 @@ public sealed class Buoyancy : MonoBehaviour
         if (samplePoints == null || pointValid == null)
             return;
 
+        if (autoComputeStrength && !strengthComputed)
+        {
+            bool hasPositiveDepth = false;
+
+            for (int i = 0; i < samplePoints.Length; i++)
+            {
+                if (!pointValid[i]) continue;
+
+                float waterY = pointHeights[i];
+                float probeY = samplePoints[i].position.y;
+                float depth = waterY - probeY;
+
+                if (depth > 0f)
+                {
+                    hasPositiveDepth = true;
+                    break;
+                }
+            }
+
+            if (hasPositiveDepth)
+            {
+                RecomputeBuoyancyStrength();
+                strengthComputed = true;
+                Debug.Log($"[Buoyancy] Auto strength computed after first submerged probe. Strength={buoyancyStrength}");
+            }
+        }
+
         cobSumLocal = Vector3.zero;
         totalBuoyancyForce = 0f;
         totalSubmergedVolume = 0f;
+
+        
 
         ApplyAllBuoyancyForces();
         ApplyGlobalHeaveDamping();

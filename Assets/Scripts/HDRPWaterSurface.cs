@@ -1,13 +1,26 @@
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
+using System.Collections;
 
 public class HDRPWaterSurface : MonoBehaviour, IWaterSurface
 {
     private WaterSurface water;
+    private bool ready = false;
 
-    private void Awake()
+    private IEnumerator Start()
     {
+        // Wait one frame so HDRP can initialise the water simulation
+        yield return null;
+
         water = FindFirstObjectByType<WaterSurface>();
+
+        if (water == null)
+        {
+            Debug.LogError("HDRPWaterSurface: No WaterSurface found in scene.");
+            yield break;
+        }
+
+        ready = true;
     }
 
     public bool TryGetHeightAndNormal(
@@ -18,7 +31,7 @@ public class HDRPWaterSurface : MonoBehaviour, IWaterSurface
         waterHeight = 0f;
         waterNormal = Vector3.up;
 
-        if (water == null)
+        if (!ready || water == null)
             return false;
 
         WaterSearchParameters wp = new WaterSearchParameters

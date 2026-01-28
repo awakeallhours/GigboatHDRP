@@ -1,13 +1,14 @@
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
+using System.Collections;
 
 public class WaterProbeSampler : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private AxiomBuoyancyVessel vessel;
 
-    [Tooltip("Assigned at runtime")]
     private WaterSurface water;
+    private bool waterReady = false;
 
     private Transform[] samplePoints;
     private ProbeType[] probeTypes;
@@ -16,27 +17,22 @@ public class WaterProbeSampler : MonoBehaviour
     private Vector3[] pointNormals;
     private bool[] pointValid;
 
-    //Public Acessors
     public bool[] PointValid => pointValid;
     public float[] PointHeights => pointHeights;
     public Vector3[] PointNormals => pointNormals;
     public Transform[] SamplePoints => samplePoints;
     public ProbeType[] ProbeTypes => probeTypes;
 
-
     public int ProbeCount => samplePoints?.Length ?? 0;
 
     private void Awake()
     {
-        water = FindFirstObjectByType<WaterSurface>();
-
         if (vessel == null)
         {
             Debug.LogError("WaterProbeSampler: No vessel assigned.");
             return;
         }
 
-        // Pull probes from vessel
         var probes = vessel.ProbeObjects;
         int count = probes.Count;
 
@@ -47,24 +43,37 @@ public class WaterProbeSampler : MonoBehaviour
         {
             samplePoints[i] = probes[i];
 
-            // Determine probe type based on parent
             if (probes[i].parent == vessel.KeelProbeRoot)
                 probeTypes[i] = ProbeType.Keel;
             else if (probes[i].parent == vessel.SideProbeRoot)
                 probeTypes[i] = ProbeType.Side;
             else
-                probeTypes[i] = ProbeType.Deck; // fallback
+                probeTypes[i] = ProbeType.Deck;
         }
 
-        // Allocate arrays
         pointHeights = new float[count];
         pointNormals = new Vector3[count];
         pointValid = new bool[count];
     }
 
+    private IEnumerator Start()
+    {
+        // Wait one frame for HDRP water to initialise
+        yield return null;
+
+        water = FindFirstObjectByType<WaterSurface>();
+
+        Debug.Log($"[Sampler] WaterSurface found = {water}");
+
+        if (water == null)
+            yield break;
+
+        waterReady = true;
+    }
+
     private void FixedUpdate()
     {
-        if (water == null || samplePoints == null)
+        if (!waterReady || water == null || samplePoints == null)
             return;
 
         for (int i = 0; i < samplePoints.Length; i++)
@@ -74,6 +83,9 @@ public class WaterProbeSampler : MonoBehaviour
     private void SampleProbe(int index)
     {
         Transform p = samplePoints[index];
+
+        if (index == 0)
+            Debug.Log($"[Sampler] Probe[0] world pos = {p.position}");
 
         WaterSearchParameters wp = new WaterSearchParameters
         {
@@ -85,6 +97,9 @@ public class WaterProbeSampler : MonoBehaviour
 
         bool ok = water.ProjectPointOnWaterSurface(wp, out WaterSearchResult wr);
         pointValid[index] = ok;
+
+        if (index == 0)
+            Debug.Log($"[Sampler] Probe[0] ok = {ok}");
 
         if (!ok)
             return;
