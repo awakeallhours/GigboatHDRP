@@ -3065,7 +3065,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2b6e8dbac3070324ba21fad0fdade27b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 136.8
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2b6e8dbac3070324ba21fad0fdade27b, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3073,7 +3073,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2b6e8dbac3070324ba21fad0fdade27b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 23.77
+      value: -151.1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2b6e8dbac3070324ba21fad0fdade27b, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3188,6 +3188,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2b6e8dbac3070324ba21fad0fdade27b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6350204558340539779}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2b6e8dbac3070324ba21fad0fdade27b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6250892711338293621}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2b6e8dbac3070324ba21fad0fdade27b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 982615311359087264}
   m_SourcePrefab: {fileID: 100100000, guid: 2b6e8dbac3070324ba21fad0fdade27b, type: 3}
 --- !u!23 &7954499095497049254 stripped
 MeshRenderer:
@@ -3213,6 +3219,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   notes: 
   rb: {fileID: 4843524878311110342}
+  vesselRoot: {fileID: 9092523646095425481}
   waterSurfaceSource: {fileID: 0}
   boatCOB: {fileID: 3726060595828530290}
   probeSampler: {fileID: 2771821640223702839}
@@ -3274,7 +3281,7 @@ Rigidbody:
   m_Mass: 100000
   m_Drag: 0
   m_AngularDrag: 0
-  m_CenterOfMass: {x: 0, y: 0.35, z: 0}
+  m_CenterOfMass: {x: 0, y: 0.35, z: 0.2}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
@@ -3339,11 +3346,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   comHeight: 0.35
-  comForwardOffset: 0
+  comForwardOffset: 0.2
   neutralBandMin: 0
   enableCOMOffset: 1
   enableDebugLogs: 0
-  appliedCom: {x: 0, y: 0.35, z: 0}
+  appliedCom: {x: 0, y: 0.35, z: 0.2}
 --- !u!114 &5746972381319487080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3504,8 +3511,8 @@ MonoBehaviour:
   comDiscRadius: 0.15
   drawGizmos: 0
   drawNeutralBand: 0
-  drawCOMHeight: 0
-  drawCOMDisc: 0
+  drawCOMHeight: 1
+  drawCOMDisc: 1
   drawLabels: 1
 --- !u!114 &1854770395660734986
 MonoBehaviour:
@@ -3636,11 +3643,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   estimator: {fileID: 6315319408766325232}
   vesselRoot: {fileID: 9092523646095425481}
-  drawSliceBeams: 0
-  drawWaterplanePolygon: 0
-  drawWaterline: 0
-  drawLCF: 0
-  drawHullBottom: 0
+  drawSliceBeams: 1
+  drawWaterplanePolygon: 1
+  drawWaterline: 1
+  drawLCF: 1
+  drawHullBottom: 1
   sliceBeamColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   waterplaneColor: {r: 0, g: 1, b: 1, a: 1}
   waterlineColor: {r: 0, g: 1, b: 0, a: 1}
@@ -3660,7 +3667,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b78160f784c6d064a8d002566f0f4efd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waterlineDepthPercent: 0.02
+  waterlineDepthPercent: 0.2
   minDepthThreshold: 0.05
   sliceBeam: []
   sliceArea: []
@@ -3693,6 +3700,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f8a5a3308c55134187d2fb8ffcf4afc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6250892711338293621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8459152874074219891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a500ca8aec6020408889f5344276929, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boatCOM: {fileID: 1035521469752849885}
+  baseMass: 1000
+  baseCOMLocal: {x: 0, y: 0.35, z: 0}
+  fuelMass: 0
+  fuelCOMLocal: {x: 0, y: 0, z: 0}
+  ballastMass: 0
+  ballastCOMLocal: {x: 0, y: 0, z: 0}
+  autoTrimOffsetLocal: {x: 0, y: 0, z: 0}
+--- !u!114 &982615311359087264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8459152874074219891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05c7fea27fd52014ea5f036c12b6123f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comAggregator: {fileID: 6250892711338293621}
+  boatCOM: {fileID: 1035521469752849885}
+  waterplaneLCF: {fileID: 9092523646095425481}
+  rb: {fileID: 4843524878311110342}
+  speedThreshold: 0.2
+  throttleThreshold: 0.01
+  angularVelThreshold: 0.05
+  verticalVelThreshold: 0.05
+  deadband: 0.05
+  hysteresis: 0.02
+  trimSpeed: 0.1
+  stabilityTime: 2
+  smoothing: 0.1
+  currentThrottle: 0
 --- !u!4 &9092523646095425481 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2b6e8dbac3070324ba21fad0fdade27b, type: 3}

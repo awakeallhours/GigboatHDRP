@@ -178,6 +178,7 @@ public sealed class Buoyancy : MonoBehaviour
             return;
         }
 
+        Debug.Log($"Buoyancy: samplePoints={samplePoints?.Length ?? 0}, firstValid={System.Array.IndexOf(pointValid, true)}");
         // ─────────────────────────────────────────────
         // LOCAL‑SPACE Z RANGE
         // ─────────────────────────────────────────────

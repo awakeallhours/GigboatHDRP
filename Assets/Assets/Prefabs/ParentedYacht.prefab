@@ -1,0 +1,563 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2433339042422469792
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 886259112773840288}
+  - component: {fileID: 6867531817824023142}
+  - component: {fileID: 5861340572601938350}
+  - component: {fileID: 2060520405777917267}
+  - component: {fileID: 4196250400328420841}
+  - component: {fileID: 8894277589979729115}
+  - component: {fileID: 5084340571044756530}
+  - component: {fileID: 4272584260967728217}
+  - component: {fileID: 3818613400230334758}
+  - component: {fileID: 3911756490453043601}
+  - component: {fileID: 4212121121423105054}
+  - component: {fileID: 2676178080872558653}
+  - component: {fileID: 241897388254044413}
+  - component: {fileID: 2481315798534025850}
+  - component: {fileID: 2526309656573866091}
+  - component: {fileID: 3545416036047114727}
+  - component: {fileID: 7552668861356144393}
+  - component: {fileID: 7250114152408183285}
+  - component: {fileID: 4623945812535826436}
+  - component: {fileID: 5218733687160022914}
+  - component: {fileID: 7804673914378369639}
+  - component: {fileID: 6004194125801010913}
+  m_Layer: 0
+  m_Name: ParentedYacht
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &886259112773840288
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 188.9, y: 2.2, z: -159.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 685328709775276260}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &6867531817824023142
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  serializedVersion: 4
+  m_Mass: 10000
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_CenterOfMass: {x: -0.0032789307, y: 0.35, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 0
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &5861340572601938350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5781cc11803899c4fb082b6375876a5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comHeight: 0.35
+  comForwardOffset: 0
+  neutralBandMin: 0
+  enableCOMOffset: 1
+  enableDebugLogs: 1
+  appliedCom: {x: -0.0032789307, y: 0.35, z: 0}
+--- !u!114 &2060520405777917267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a500ca8aec6020408889f5344276929, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boatCOM: {fileID: 5861340572601938350}
+  baseMass: 1000
+  baseCOMLocal: {x: 0, y: 0.35, z: 0}
+  fuelMass: 0
+  fuelCOMLocal: {x: 0, y: 0, z: 0}
+  ballastMass: 0
+  ballastCOMLocal: {x: 0, y: 0, z: 0}
+  autoTrimOffsetLocal: {x: 0, y: 0, z: 0}
+--- !u!114 &4196250400328420841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd3cf7f89c1c1d84cb3ff0a865d36b38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  localCOB: {x: 0, y: 0, z: 0}
+  submergedVolume: 0
+  totalBuoyancyForce: 0
+--- !u!114 &8894277589979729115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05c7fea27fd52014ea5f036c12b6123f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comAggregator: {fileID: 2060520405777917267}
+  boatCOM: {fileID: 5861340572601938350}
+  waterplaneLCF: {fileID: 0}
+  rb: {fileID: 6867531817824023142}
+  speedThreshold: 0.2
+  throttleThreshold: 0.01
+  angularVelThreshold: 0.05
+  verticalVelThreshold: 0.05
+  deadband: 0.05
+  hysteresis: 0.02
+  trimSpeed: 0.05
+  stabilityTime: 2
+  smoothing: 0.1
+  currentThrottle: 0
+--- !u!114 &5084340571044756530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1017d3b051cac642b25847ad9960687, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  notes: 
+  rb: {fileID: 0}
+  vesselRoot: {fileID: 0}
+  waterSurfaceSource: {fileID: 0}
+  boatCOB: {fileID: 0}
+  probeSampler: {fileID: 0}
+  waterplaneEstimator: {fileID: 0}
+  buoyancyScale: 1
+  keelBuoyancyScale: 1
+  sideBuoyancyScale: 0.4
+  keelRightingScale: 1
+  sideRightingScale: 0.2
+  buoyancyStrength: 10
+  waterDrag: 1
+  waterAngularDrag: 0.5
+  heaveDampingStrength: 2000
+  waterDensity:
+    waterType: 1
+    inputValue: 1025
+    unit: 0
+  probeArea:
+    inputValue: 1
+    unit: 0
+  autoComputeStrength: 1
+  enableRightingMoment: 1
+  rightingStrength: 0.5
+  sternProbeIndex: 0
+  sternReferenceDepth:
+    inputValue: 0
+    unit: 0
+  debugBuoyancy: 0
+--- !u!114 &4272584260967728217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb753618636bea64293e6b1461fb4aec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vessel: {fileID: 0}
+--- !u!114 &3818613400230334758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b78160f784c6d064a8d002566f0f4efd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waterlineDepthPercent: 0.02
+  minDepthThreshold: 0.05
+  sliceBeam: []
+  sliceArea: []
+  totalWaterplaneArea: 0
+  LCF: 0
+--- !u!114 &3911756490453043601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f8a5a3308c55134187d2fb8ffcf4afc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4212121121423105054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e54d120c2f4efcf4496fbf93f2d22c5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hullRenderer: {fileID: 0}
+  beamCount: 4
+  lengthCount: 10
+  probeRadius: 0.25
+  overrideSideLayers: 0
+  manualSideLayers: 3
+  probeRoot: {fileID: 0}
+  keelProbeRoot: {fileID: 0}
+  sideProbeRoot: {fileID: 0}
+  deckProbeRoot: {fileID: 0}
+  probeObjects: []
+--- !u!114 &2676178080872558653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc5892af645ae494cabd3171e7f92a0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boatRoot: {fileID: 0}
+  rb: {fileID: 0}
+  stabilityProfileComponent: {fileID: 0}
+  cob: {fileID: 0}
+  com: {fileID: 0}
+  probeSampler: {fileID: 0}
+  powertrain: {fileID: 0}
+--- !u!114 &241897388254044413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54ae97707717666458241ee195fd282d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boatCOM: {fileID: 0}
+  rb: {fileID: 0}
+  lineWidth: 1
+  comDiscRadius: 0.15
+  drawGizmos: 1
+  drawNeutralBand: 1
+  drawCOMHeight: 1
+  drawCOMDisc: 1
+  drawLabels: 1
+--- !u!114 &2481315798534025850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9e4be4da4bafbc43920882e40abd2fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boatCOB: {fileID: 0}
+  boatCOM: {fileID: 0}
+  rb: {fileID: 0}
+  cobSphereRadius: 0.12
+  drawCOB: 1
+--- !u!114 &2526309656573866091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1df3d9cbf46141647b98d0922b9a6da3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bootstrap: {fileID: 0}
+  rb: {fileID: 0}
+  drawRollAxis: 1
+  drawRollRate: 1
+  rollAxisHalfLength: 2
+  rollRateScale: 0.5
+--- !u!114 &3545416036047114727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98cdf90e923f75946a30dedba9654c59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bootstrap: {fileID: 0}
+  boatCOB: {fileID: 0}
+  boatCOM: {fileID: 0}
+  rb: {fileID: 0}
+  stabilityProfileComponent: {fileID: 0}
+  forceProviders: []
+  thrustPoint: {fileID: 0}
+  thrustForce: {x: 0, y: 0, z: 0}
+  drawThrustPoint: 1
+  drawThrustVector: 1
+  drawForward: 1
+  thrustColor: {r: 1, g: 0, b: 0, a: 1}
+  drawGZ: 1
+  drawGM: 1
+  vectorScale: 1
+  gzColor: {r: 0, g: 1, b: 0, a: 1}
+  gmColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  forceScale: 1
+  forceColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  drawForceLabels: 1
+--- !u!114 &7552668861356144393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5a672d0e2dbb114ebd6bbce0cbf8ad2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7250114152408183285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83f9f891f6c296c4f8196948c5cbc804, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buoyancy: {fileID: 0}
+  sampler: {fileID: 0}
+  drawBuoyancyForces: 1
+  shallowColor: {r: 0, g: 0, b: 1, a: 1}
+  deepColor: {r: 1, g: 0, b: 0, a: 1}
+  maxDepthForColor: 2
+  forceColor: {r: 0, g: 1, b: 1, a: 1}
+  forceScale: 0.001
+--- !u!114 &4623945812535826436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6b921bdd167eac4981d1f40f8a3c04c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  estimator: {fileID: 0}
+  vesselRoot: {fileID: 0}
+  drawSliceBeams: 1
+  drawWaterplanePolygon: 1
+  drawWaterline: 1
+  drawLCF: 1
+  drawHullBottom: 0
+  sliceBeamColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  waterplaneColor: {r: 0, g: 1, b: 1, a: 1}
+  waterlineColor: {r: 0, g: 1, b: 0, a: 1}
+  lcfColor: {r: 1, g: 0, b: 1, a: 1}
+  hullBottomColor: {r: 0, g: 0, b: 1, a: 1}
+  waterplaneYOffset: 0.02
+  hullBottomLocalY: -0.5
+--- !u!114 &5218733687160022914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92d4b60e93486c64f9da9fbafd7a2401, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vessel: {fileID: 0}
+  baseRadius: 0.1
+--- !u!114 &7804673914378369639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfa61f9645874094b8fc3401fd1e7c7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vessel: {fileID: 0}
+  drawSideRays: 1
+  gizmoSphereRadius: 0.25
+--- !u!114 &6004194125801010913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433339042422469792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6fa9e37ace722e498bab3c979c9f75f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bootstrap: {fileID: 0}
+  boatCOB: {fileID: 0}
+  rb: {fileID: 0}
+  drawRightingMoment: 1
+--- !u!1001 &5603598295140571206
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 886259112773840288}
+    m_Modifications:
+    - target: {fileID: 4918278381727817890, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4918278381727817890, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4918278381727817890, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4918278381727817890, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4918278381727817890, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4918278381727817890, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4918278381727817890, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4918278381727817890, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4918278381727817890, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4918278381727817890, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5695624772653611544, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+      propertyPath: m_Name
+      value: Vehicle_SuperYacht_01
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 2471790987644928743, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 6526646615886580836, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 3776804882007049687, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 7015016139445610401, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 476046612876488614, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 8248231512327999896, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 1595353698063577601, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 7722585518585616694, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 9104515263247509204, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 4213349503442108843, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 3419220641989312921, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 2479383224718501143, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 2355452457803340289, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 4535598950109406690, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 5299245267779885084, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 2308971409555338325, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 7753343179654331805, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 353398725919878161, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 8248997974876080820, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 5011001128788327806, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    - {fileID: 8731301775797962141, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+--- !u!4 &685328709775276260 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4918278381727817890, guid: 37b4f0ac01459dd4592998779aa98e2d, type: 3}
+  m_PrefabInstance: {fileID: 5603598295140571206}
+  m_PrefabAsset: {fileID: 0}

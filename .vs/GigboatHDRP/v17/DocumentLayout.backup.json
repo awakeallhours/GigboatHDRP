@@ -3,11 +3,15 @@
   "WorkspaceRootPath": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|c:\\users\\awake\\desktop\\unity projects\\gigboathdrp\\assets\\scripts\\trimcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\trimcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|c:\\users\\awake\\desktop\\unity projects\\gigboathdrp\\assets\\scripts\\comaggregator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\comaggregator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|c:\\users\\awake\\desktop\\unity projects\\gigboathdrp\\assets\\scripts\\providers\\masspropertiesprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\assets\\scripts\\providers\\masspropertiesprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B19AAD5C-2E46-BC0C-1F44-6C2FB7E38A7B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\providers\\masspropertiesprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -43,19 +47,32 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "TrimController.cs",
+              "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\TrimController.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\TrimController.cs",
+              "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\TrimController.cs",
+              "RelativeToolTip": "Assets\\Scripts\\TrimController.cs",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAIwIgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T20:45:39.208Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "COMAggregator.cs",
               "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\COMAggregator.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\COMAggregator.cs",
               "ToolTip": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\COMAggregator.cs",
               "RelativeToolTip": "Assets\\Scripts\\COMAggregator.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGYAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAGYAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-27T20:43:49.495Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "MassPropertiesProvider.cs",
               "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Providers\\MassPropertiesProvider.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Providers\\MassPropertiesProvider.cs",
@@ -63,12 +80,11 @@
               "RelativeToolTip": "Assets\\Scripts\\Providers\\MassPropertiesProvider.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-27T20:35:24.92Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-27T20:35:24.92Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "StabilityProvider.cs",
               "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Providers\\StabilityProvider.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Providers\\StabilityProvider.cs",
@@ -80,7 +96,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "COMVisualizer.cs",
               "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\VesselVisualizer\\COMVisualizer.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Diagnostics\\VesselVisualizer\\COMVisualizer.cs",
@@ -92,7 +108,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "COMDiagnosticsWindow.cs",
               "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\Diagnostics\\Editor\\COMDiagnosticsWindow.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Diagnostics\\Editor\\COMDiagnosticsWindow.cs",
@@ -104,7 +120,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "BoatCOMIntegration.cs",
               "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\BoatCOMIntegration.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\BoatCOMIntegration.cs",
@@ -116,7 +132,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "BoatCOM.cs",
               "DocumentMoniker": "C:\\Users\\awake\\Desktop\\Unity Projects\\GigboatHDRP\\Assets\\Scripts\\BoatCOM.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\BoatCOM.cs",
