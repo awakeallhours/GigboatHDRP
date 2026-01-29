@@ -11,6 +11,22 @@ public class HullHydroData
 
     [Header("Probe Fallback")]
     public float[] probeWeights;              // normalised weights for distributing buoyant force
+
+    [System.Serializable]
+    public struct HullTriangle
+    {
+        public Vector3 v0Local;
+        public Vector3 v1Local;
+        public Vector3 v2Local;
+        public Vector3 normalLocal;
+        public float area;
+        public Vector3 centroidLocal;
+    }
+
+    [Header("Mesh-based Hydrostatics")]
+    public HullTriangle[] triangles;
+    public float hullMeshVolume;              // signed volume from mesh (m³)
+    public Vector3 hullMeshCentroidLocal;     // centroid in local hull space
 }
 
 [CreateAssetMenu(
