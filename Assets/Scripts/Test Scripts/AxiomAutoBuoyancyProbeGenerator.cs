@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.Analytics;
+using System.Linq;
 
 public static class AxiomAutoBuoyancyProbeGenerator
 {
@@ -56,7 +56,10 @@ public static class AxiomAutoBuoyancyProbeGenerator
         float beamSpacing = (colliderMax.x - colliderMin.x) / (beamCount + 1);
         float lengthSpacing = (colliderMax.z - colliderMin.z) / (lengthCount + 1);
 
-        float keelCutoffY = minY + hullHeight * 0.6f;
+        float keelCutoffY = minY + hullHeight * vessel.KeelCutoffHeightFraction;
+
+        // Track keel row heights by Z index
+        Dictionary<int, float> keelRowHeights = new Dictionary<int, float>();
 
         for (int bx = 1; bx <= beamCount; bx++)
         {
@@ -75,6 +78,9 @@ public static class AxiomAutoBuoyancyProbeGenerator
                         hit.point.y <= keelCutoffY)
                     {
                         result.keelProbes.Add(hit.point);
+
+                        if (!keelRowHeights.ContainsKey(lz))
+                            keelRowHeights[lz] = hit.point.y;
                     }
                 }
             }
@@ -88,6 +94,7 @@ public static class AxiomAutoBuoyancyProbeGenerator
             rendererBounds,
             lengthCount,
             vessel,
+            keelRowHeights,
             out result.sideProbes,
             out result.deckProbes
         );
@@ -96,21 +103,25 @@ public static class AxiomAutoBuoyancyProbeGenerator
     }
 
     // =====================================================================
-    // SIDE + DECK PROBES
+    // SIDE + DECK PROBES (AUTO + OVERRIDE + SINGLE DECK ROW)
     // =====================================================================
     private static void GenerateSideAndDeckProbes(
         MeshCollider mc,
         Bounds rendererBounds,
         int lengthCount,
         AxiomBuoyancyVessel vessel,
+        Dictionary<int, float> keelRowHeights,
         out List<Vector3> sideProbes,
         out List<Vector3> deckProbes)
     {
         sideProbes = new List<Vector3>();
         deckProbes = new List<Vector3>();
 
+        if (keelRowHeights.Count == 0)
+            return;
+
         // ------------------------------------------------------------
-        // COLLIDER BOUNDS FOR X/Z
+        // BOUNDS
         // ------------------------------------------------------------
         Bounds local = mc.sharedMesh.bounds;
         Vector3 colliderMin = mc.transform.TransformPoint(local.min);
@@ -118,92 +129,127 @@ public static class AxiomAutoBuoyancyProbeGenerator
 
         float hullWidth = colliderMax.x - colliderMin.x;
 
-        // ------------------------------------------------------------
-        // RENDERER BOUNDS FOR Y
-        // ------------------------------------------------------------
         float minY = rendererBounds.min.y;
         float maxY = rendererBounds.max.y;
         float hullHeight = maxY - minY;
 
         // ------------------------------------------------------------
-        // VERTICAL LAYERS (AUTO + MANUAL OVERRIDE)
+        // DECK CUTOFF
         // ------------------------------------------------------------
-        int verticalLayers;
+        float deckCutoffY = maxY - Mathf.Min(
+            vessel.DeckRegionAbsolute,
+            hullHeight * vessel.DeckRegionHeightFraction
+        );
+
+        // ------------------------------------------------------------
+        // KEEL TOP
+        // ------------------------------------------------------------
+        float keelTopY = keelRowHeights.Values.Max();
+
+        if (deckCutoffY <= keelTopY)
+            return;
+
+        // ------------------------------------------------------------
+        // SIDE ROW HEIGHTS
+        // ------------------------------------------------------------
+        List<float> sideRowHeights = new List<float>();
 
         if (vessel.OverrideSideLayers)
         {
-            verticalLayers = Mathf.Max(1, vessel.ManualSideLayers);
+            // MANUAL MODE — evenly spaced rows
+            int N = Mathf.Max(1, vessel.ManualSideLayers);
+
+            for (int i = 0; i < N; i++)
+            {
+                float t = (i + 1f) / (N + 1f);
+                float y = Mathf.Lerp(keelTopY, deckCutoffY, t);
+                sideRowHeights.Add(y);
+            }
         }
         else
         {
-            float desiredVerticalResolution = 0.75f;
-            float scaleFactor = mc.transform.lossyScale.y;
-            float scaledResolution = desiredVerticalResolution * scaleFactor;
+            // AUTO MODE — spacing based on hull height
+            float spacing = hullHeight * 0.05f; // 5% of hull height
 
-            verticalLayers = Mathf.Clamp(
-                Mathf.RoundToInt(hullHeight / scaledResolution),
-                1, 6
-            );
+            float y = keelTopY + spacing;
+            int safety = 0;
+
+            while (y < deckCutoffY && safety < 200)
+            {
+                sideRowHeights.Add(y);
+                y += spacing;
+                safety++;
+            }
         }
 
-        float topFrac = .40f;
-        float bottomFrac = 0.05f;
+        // ------------------------------------------------------------
+        // DECK ROW HEIGHT (always exactly one)
+        // ------------------------------------------------------------
+        float deckRowY = deckCutoffY;
 
-        float deckCutoffY = maxY - Mathf.Min(0.03f, hullHeight * 0.1f);
-
+        // ------------------------------------------------------------
+        // RAYCAST SETUP
+        // ------------------------------------------------------------
         int mask = 1 << mc.gameObject.layer;
-
         float lengthSpacing = (colliderMax.z - colliderMin.z) / (lengthCount + 1);
-
-        float maxRaycastDistance = hullWidth * 3f;
-        float sideOffset = hullWidth * 0.25f;
+        float maxRaycastDistance = hullWidth * vessel.SideRaycastDistanceMultiplier;
+        float sideOffset = hullWidth * vessel.SideOffsetWidthFraction;
 
         Vector3 inwardPort = mc.transform.right;
         Vector3 inwardStar = -mc.transform.right;
 
         // ------------------------------------------------------------
-        // MAIN LOOP
+        // SIDE PROBES
         // ------------------------------------------------------------
-        for (int v = 0; v < verticalLayers; v++)
+        foreach (float rowY in sideRowHeights)
         {
-            float t = (verticalLayers == 1) ? 0.5f : (float)v / (verticalLayers - 1);
-            float frac = Mathf.Lerp(topFrac, bottomFrac, t); // top → bottom
-
-            float y = Mathf.Lerp(minY, maxY, frac);
-
             for (int lz = 1; lz <= lengthCount; lz++)
             {
                 float z = colliderMin.z + lengthSpacing * lz;
 
                 // PORT
-                Vector3 portOrigin = new Vector3(colliderMin.x - sideOffset, y, z);
+                Vector3 portOrigin = new Vector3(colliderMin.x - sideOffset, rowY, z);
 
                 if (Physics.Raycast(portOrigin, inwardPort, out RaycastHit hitP, maxRaycastDistance, mask))
                 {
                     if (hitP.collider != null && hitP.collider.transform.IsChildOf(mc.transform))
-                    {
-                        if (hitP.point.y >= deckCutoffY)
-                        
-                            deckProbes.Add(hitP.point);
-                        else                                            
-                            sideProbes.Add(hitP.point);
-                    }
+                        sideProbes.Add(hitP.point);
                 }
 
                 // STARBOARD
-                Vector3 starOrigin = new Vector3(colliderMax.x + sideOffset, y, z);
+                Vector3 starOrigin = new Vector3(colliderMax.x + sideOffset, rowY, z);
 
                 if (Physics.Raycast(starOrigin, inwardStar, out RaycastHit hitS, maxRaycastDistance, mask))
                 {
                     if (hitS.collider != null && hitS.collider.transform.IsChildOf(mc.transform))
-                    {
-                        if (hitS.point.y >= deckCutoffY)
-                            
-                            deckProbes.Add(hitS.point);
-                        else                                        
-                            sideProbes.Add(hitS.point);
-                    }
+                        sideProbes.Add(hitS.point);
                 }
+            }
+        }
+
+        // ------------------------------------------------------------
+        // DECK PROBES (one row at deck cutoff)
+        // ------------------------------------------------------------
+        for (int lz = 1; lz <= lengthCount; lz++)
+        {
+            float z = colliderMin.z + lengthSpacing * lz;
+
+            // PORT
+            Vector3 portOrigin = new Vector3(colliderMin.x - sideOffset, deckRowY, z);
+
+            if (Physics.Raycast(portOrigin, inwardPort, out RaycastHit hitP, maxRaycastDistance, mask))
+            {
+                if (hitP.collider != null && hitP.collider.transform.IsChildOf(mc.transform))
+                    deckProbes.Add(hitP.point);
+            }
+
+            // STARBOARD
+            Vector3 starOrigin = new Vector3(colliderMax.x + sideOffset, deckRowY, z);
+
+            if (Physics.Raycast(starOrigin, inwardStar, out RaycastHit hitS, maxRaycastDistance, mask))
+            {
+                if (hitS.collider != null && hitS.collider.transform.IsChildOf(mc.transform))
+                    deckProbes.Add(hitS.point);
             }
         }
     }

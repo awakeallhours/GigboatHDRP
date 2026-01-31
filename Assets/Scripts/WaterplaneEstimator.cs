@@ -12,7 +12,7 @@ public sealed class WaterplaneEstimator : MonoBehaviour
     [Tooltip("Fraction of hull length used to detect waterplane probes. Lower = stricter.")]
     [SerializeField] private float waterlineDepthPercent = 0.02f;
 
-    [Tooltip("Minimum depth (in world units) for a probe to count as waterplane. Overrides percent if larger.")]
+    [Tooltip("Minimum depth (in world units) for a probe to count as waterplane.")]
     [SerializeField] private float minDepthThreshold = 0.05f;
 
     [Header("Computed Waterplane Geometry (Read‑Only)")]
@@ -49,12 +49,9 @@ public sealed class WaterplaneEstimator : MonoBehaviour
         float LOA = Mathf.Max(0.001f, maxZInternal - minZInternal);
         loaInternal = LOA;
 
-        // Depth threshold (world Y)
+        // Depth threshold (world Y), no scale adaptation
         float baseThreshold = LOA * waterlineDepthPercent;
-        float scaledThreshold = Mathf.Max(
-            baseThreshold * transform.lossyScale.y,
-            minDepthThreshold
-        );
+        float depthThreshold = Mathf.Max(baseThreshold, minDepthThreshold);
 
         // Slice length in LOCAL space
         float sliceLength = LOA / sliceCount;
@@ -82,7 +79,7 @@ public sealed class WaterplaneEstimator : MonoBehaviour
 
             float depth = pointHeights[i] - samplePoints[i].position.y;
 
-            if (depth > 0f && depth <= scaledThreshold)
+            if (depth > 0f && depth <= depthThreshold)
             {
                 float x = local.x;
 
@@ -112,11 +109,5 @@ public sealed class WaterplaneEstimator : MonoBehaviour
         }
 
         LCF = (totalWaterplaneArea > 0f) ? weightedZ / totalWaterplaneArea : 0f;
-
-        /*    Debug.Log(
-        $"[Estimator Debug]\n" +
-        $"Input minZ={minZ}, maxZ={maxZ}\n" +
-        $"Internal minZ={minZInternal}, maxZInternal={maxZInternal}\n" +
-        $"LOA={loaInternal}, SliceLength={sliceLengthInternal}");*/
     }
 }

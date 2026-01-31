@@ -25,7 +25,7 @@ public class AxiomBuoyancyVessel : MonoBehaviour
 
 
     // ---------------------------------------------------------------------
-    // Probe Generation Settings (cleaned)
+    // Probe Generation Settings (density)
     // ---------------------------------------------------------------------
 
     [Header("Probe Generation Settings")]
@@ -35,20 +35,81 @@ public class AxiomBuoyancyVessel : MonoBehaviour
     [Tooltip("Number of probe rows along the vessel length (Z axis).")]
     [SerializeField] private int lengthCount = 10;
 
+    public int BeamCount => beamCount;
+    public int LengthCount => lengthCount;
+
+
+    // ---------------------------------------------------------------------
+    // Probe Classification & Distribution Parameters
+    // ---------------------------------------------------------------------
+
+    [Header("Probe Classification Parameters")]
+
+    [Tooltip("Fraction of hull height below which a probe is considered a keel probe. 0 = bottom, 1 = top.")]
+    [SerializeField] private float keelCutoffHeightFraction = 0.6f;
+
+    [Tooltip("Fraction of hull height from the top that counts as deck. Example: 0.1 = top 10% of hull.")]
+    [SerializeField] private float deckRegionHeightFraction = 0.1f;
+
+    [Tooltip("Absolute deck thickness in metres. Used if smaller than the fraction-based value.")]
+    [SerializeField] private float deckRegionAbsolute = 0.03f;
+
+    [Tooltip("Fraction of hull height below which side probes are NOT allowed. Side probes must be above this Y-level.")]
+    [SerializeField] private float sideLowerCutoffFraction = 0.6f;
+
+    public float KeelCutoffHeightFraction => keelCutoffHeightFraction;
+    public float DeckRegionHeightFraction => deckRegionHeightFraction;
+    public float DeckRegionAbsolute => deckRegionAbsolute;
+    public float SideLowerCutoffFraction => sideLowerCutoffFraction;
+
+
+    // ---------------------------------------------------------------------
+    // Side Probe Raycasting
+    // ---------------------------------------------------------------------
+
+    [Header("Side Probe Raycasting")]
+
+    [Tooltip("Fraction of hull width used to offset side probe raycasts outward.")]
+    [SerializeField] private float sideOffsetWidthFraction = 0.25f;
+
+    [Tooltip("Multiplier applied to hull width to determine max raycast distance for side probes.")]
+    [SerializeField] private float sideRaycastDistanceMultiplier = 3f;
+
+    public float SideOffsetWidthFraction => sideOffsetWidthFraction;
+    public float SideRaycastDistanceMultiplier => sideRaycastDistanceMultiplier;
+
+
+    // ---------------------------------------------------------------------
+    // Vertical Probe Layering
+    // ---------------------------------------------------------------------
+
+    [Header("Vertical Probe Layering")]
+
+    [Tooltip("Vertical spacing between probe layers in metres when auto-calculated.")]
+    [SerializeField] private float verticalLayerResolution = 0.75f;
+
+    public float VerticalLayerResolution => verticalLayerResolution;
+
+
+    // ---------------------------------------------------------------------
+    // Probe Visual Radius
+    // ---------------------------------------------------------------------
+
     [Header("Probe Visual Radius")]
     [SerializeField] private float probeRadius = 0.25f;
+    public float ProbeRadius => probeRadius;
+
+
+    // ---------------------------------------------------------------------
+    // Side Probe Layers
+    // ---------------------------------------------------------------------
 
     [Header("Side Probe Layers")]
     [SerializeField] private bool overrideSideLayers = false;
-
     [SerializeField] private int manualSideLayers = 3;
 
     public bool OverrideSideLayers => overrideSideLayers;
     public int ManualSideLayers => manualSideLayers;
-    public float ProbeRadius => probeRadius;
-
-    public int BeamCount => beamCount;
-    public int LengthCount => lengthCount;
 
 
     // ---------------------------------------------------------------------
@@ -98,9 +159,6 @@ public class AxiomBuoyancyVessel : MonoBehaviour
     // Probe Hierarchy Management
     // ---------------------------------------------------------------------
 
-    /// <summary>
-    /// Ensures the probe hierarchy exists. Creates it if missing.
-    /// </summary>
     public void EnsureProbeHierarchy()
     {
         if (probeRoot == null)
@@ -132,9 +190,6 @@ public class AxiomBuoyancyVessel : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Deletes all existing probe GameObjects and clears the probe list.
-    /// </summary>
     public void ClearProbes()
     {
         probeObjects.Clear();
@@ -148,10 +203,6 @@ public class AxiomBuoyancyVessel : MonoBehaviour
         deckProbeRoot = null;
     }
 
-    /// <summary>
-    /// Assigns a new set of probe GameObjects to this vessel.
-    /// Called by the editor menu after generating and instantiating probes.
-    /// </summary>
     public void SetProbeObjects(List<Transform> newProbeObjects)
     {
         probeObjects.Clear();

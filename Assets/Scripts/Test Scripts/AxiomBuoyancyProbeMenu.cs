@@ -19,8 +19,8 @@ public static class AxiomBuoyancyProbeMenu
 
         var col = probeGO.AddComponent<SphereCollider>();
 
-        float scale = probeGO.transform.lossyScale.x;
-        col.radius = radius / (scale == 0 ? 1 : scale);
+        // Literal radius — no scale compensation
+        col.radius = radius;
 
         col.isTrigger = true;
 
@@ -162,8 +162,8 @@ public static class AxiomBuoyancyProbeMenu
     }
 
     private static void FilterKeelProbesAgainstSideProbes(
-    ref List<Vector3> keel,
-    List<Vector3> side)
+        ref List<Vector3> keel,
+        List<Vector3> side)
     {
         if (side.Count == 0 || keel.Count == 0)
             return;

@@ -17,7 +17,7 @@ public class AxiomBuoyancyProbeVisualizer : MonoBehaviour
     public AxiomBuoyancyVessel Vessel => vessel;
 
     [Header("Visual Settings")]
-    [Tooltip("Base radius of gizmo spheres before scaling.")]
+    [Tooltip("Radius of gizmo spheres.")]
     [SerializeField] private float baseRadius = 0.1f;
 
     private void OnDrawGizmos()
@@ -45,10 +45,8 @@ public class AxiomBuoyancyProbeVisualizer : MonoBehaviour
             else
                 Gizmos.color = Color.magenta;   // Unclassified / unexpected
 
-            float scale = probe.lossyScale.x;
-            float radius = baseRadius / (scale == 0 ? 1 : scale);
-
-            Gizmos.DrawSphere(probe.position, radius);
+            // Literal radius — no scale compensation
+            Gizmos.DrawSphere(probe.position, baseRadius);
         }
     }
 }
