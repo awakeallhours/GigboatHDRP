@@ -190,6 +190,23 @@ public class AxiomBuoyancyVessel : MonoBehaviour
         }
     }
 
+    // ---------------------------------------------------------------------
+    // Deck Detection Mode (NEW)
+    // ---------------------------------------------------------------------
+    [Header("Deck Detection")]
+    [Tooltip("How the deck height is computed from downward raycasts.")]
+    [SerializeField] private DeckDetectionMode deckMode = DeckDetectionMode.Median;
+    public DeckDetectionMode DeckMode => deckMode;
+
+    [Tooltip("If true, deck height is detected automatically using downward raycasts. If false, ManualDeckHeight is used.")]
+    [SerializeField] private bool autoDeckDetection = true;
+    public bool AutoDeckDetection => autoDeckDetection;
+
+    [Tooltip("Manual deck height (world Y). Used only when AutoDeckDetection = false.")]
+    [SerializeField] private float manualDeckHeight = 0f;
+    public float ManualDeckHeight => manualDeckHeight;
+
+
     public void ClearProbes()
     {
         probeObjects.Clear();
@@ -210,4 +227,14 @@ public class AxiomBuoyancyVessel : MonoBehaviour
         if (newProbeObjects != null && newProbeObjects.Count > 0)
             probeObjects.AddRange(newProbeObjects);
     }
+
+    
+
+
+}
+
+public enum DeckDetectionMode
+{
+    Average,
+    Median
 }
