@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class HullPreprocessor : MonoBehaviour
 {
@@ -48,6 +49,20 @@ public class HullPreprocessor : MonoBehaviour
             return;
         }
 
+        // ---------------------------------------------------------------------
+        // VALIDATION STEP (NEW — USE SHARED VALIDATOR)
+        // ---------------------------------------------------------------------
+        var validation = HullMeshValidator.Validate(mesh);
+
+        if (!validation.IsValid)
+        {
+            Debug.LogError("[HullPreprocessor] Mesh validation failed. Hydrostatics will NOT be baked.");
+            return;
+        }
+
+        // ---------------------------------------------------------------------
+        // ORIGINAL BAKE LOGIC
+        // ---------------------------------------------------------------------
         Vector3[] verts = mesh.vertices;
         int[] tris = mesh.triangles;
 
